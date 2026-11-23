@@ -1,0 +1,2137 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sixfold: Duelo dos Seis Veios — PvE, PvP Ranqueado & Online</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background: radial-gradient(circle at top, #181826 0%, #0b0b12 60%, #07070c 100%);
+      color: #f3f4f6;
+      min-height: 100vh;
+    }
+    .font-cinzel { font-family: 'Cinzel', serif; }
+    .card-hover {
+      transition: transform 0.2s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.2s ease, border-color 0.2s ease;
+    }
+    .card-hover:hover:not(:disabled) {
+      transform: translateY(-6px) scale(1.02);
+      box-shadow: 0 14px 28px -8px rgba(245, 158, 11, 0.32);
+    }
+    .glass-panel {
+      background: rgba(17, 24, 39, 0.78);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    @keyframes pulseGlow {
+      0%, 100% { box-shadow: 0 0 12px rgba(245, 158, 11, 0.25); }
+      50% { box-shadow: 0 0 24px rgba(245, 158, 11, 0.55); }
+    }
+    .glow-active { animation: pulseGlow 2.4s infinite; }
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: rgba(15, 23, 42, 0.6); }
+    ::-webkit-scrollbar-thumb { background: rgba(100, 116, 139, 0.5); border-radius: 9999px; }
+  </style>
+</head>
+<body class="antialiased selection:bg-amber-500/30 selection:text-amber-200">
+
+  <!-- Cabeçalho Principal -->
+  <header class="sticky top-0 z-30 glass-panel border-b border-amber-500/20 px-3 sm:px-6 py-3">
+    <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3">
+      <!-- Logo -->
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500 via-orange-600 to-purple-800 flex items-center justify-center shadow-lg border border-amber-300/40 text-lg font-bold">
+          ✦
+        </div>
+        <div>
+          <h1 class="font-cinzel text-base sm:text-xl font-bold tracking-wide text-amber-300 leading-tight">
+            SIXFOLD: DUELO DOS SEIS VEIOS
+          </h1>
+          <div class="flex items-center gap-2 text-[11px] text-slate-400">
+            <span id="cloudStatusBadge" class="inline-flex items-center gap-1 text-emerald-400">
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span> Conectando...
+            </span>
+            <span>•</span>
+            <span id="headerPlayerName" class="text-slate-300 font-medium">Duelista</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Seletor de Modo de Jogo -->
+      <div class="flex items-center bg-slate-900/90 p-1 rounded-xl border border-slate-700/70">
+        <button id="btnModePve" onclick="switchGameMode('pve')" class="px-3 py-1.5 rounded-lg text-xs font-semibold transition bg-amber-500 text-slate-950 shadow">
+          🗺️ Campanha PvE
+        </button>
+        <button id="btnModePvp" onclick="switchGameMode('pvp')" class="px-3 py-1.5 rounded-lg text-xs font-semibold transition text-slate-300 hover:text-white">
+          🏆 PvP Ranqueado
+        </button>
+      </div>
+
+      <!-- Ações Rápidas -->
+      <div class="flex flex-wrap items-center gap-1.5 sm:gap-2">
+        <button onclick="downloadRenderBundle()" class="px-2.5 sm:px-3 py-1.5 rounded-xl bg-sky-600/25 hover:bg-sky-600/40 border border-sky-400/50 text-sky-200 text-xs font-bold transition flex items-center gap-1.5 shadow">
+          <span>🚀</span><span>Baixar p/ Render</span>
+        </button>
+        <button onclick="openOnlineModal()" class="px-2.5 sm:px-3 py-1.5 rounded-xl bg-emerald-600/20 hover:bg-emerald-600/35 border border-emerald-400/40 text-emerald-200 text-xs font-semibold transition flex items-center gap-1.5">
+          <span>🌐</span><span>Online Ao Vivo</span>
+        </button>
+        <button onclick="openDeckBuilderModal()" class="px-2.5 sm:px-3 py-1.5 rounded-xl bg-indigo-600/20 hover:bg-indigo-600/35 border border-indigo-400/40 text-indigo-200 text-xs font-semibold transition flex items-center gap-1.5">
+          <span>🃏</span><span>Baralho</span>
+        </button>
+        <button onclick="openGrimoireModal()" class="px-2.5 sm:px-3 py-1.5 rounded-xl bg-purple-600/20 hover:bg-purple-600/35 border border-purple-400/40 text-purple-200 text-xs font-semibold transition flex items-center gap-1.5">
+          <span>📖</span><span>Grimório</span>
+        </button>
+        <button onclick="openSimulatorModal()" class="px-2.5 sm:px-3 py-1.5 rounded-xl bg-amber-600/20 hover:bg-amber-600/35 border border-amber-400/40 text-amber-200 text-xs font-semibold transition flex items-center gap-1.5">
+          <span>⚔️</span><span>Simular Torneio</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Banner de Sala Online Ativa -->
+  <div id="onlineActiveBanner" class="hidden bg-gradient-to-r from-emerald-950 via-teal-900 to-emerald-950 border-b border-emerald-500/40 px-4 py-2 text-xs">
+    <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-2">
+      <div class="flex flex-wrap items-center gap-2 text-emerald-200 font-medium">
+        <span class="px-2 py-0.5 rounded bg-emerald-500/20 border border-emerald-400/40 font-mono font-bold" id="bannerRoomCode">SALA: ------</span>
+        <span class="px-2 py-0.5 rounded bg-amber-500/20 border border-amber-400/40 text-amber-200 font-semibold" id="bannerRoomMode">MODO</span>
+        <span id="bannerRoomStatus">Aguardando aliados...</span>
+      </div>
+      <div class="flex items-center gap-2">
+        <button id="btnAdvanceCoopStage" onclick="advanceCoopStage()" class="hidden px-2.5 py-1 rounded-lg bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold">
+          ⏭️ Próximo Capítulo Co-op
+        </button>
+        <button onclick="leaveOnlineRoom()" class="px-2.5 py-1 rounded-lg bg-rose-500/20 hover:bg-rose-500/35 border border-rose-400/40 text-rose-200 font-semibold">
+          Sair da Sala
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Simulador de Torneio & Ajuste de % por Classe -->
+  <div id="simulatorModal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="glass-panel rounded-2xl max-w-5xl w-full max-h-[90vh] flex flex-col border border-amber-500/30 shadow-2xl">
+      <div class="p-4 border-b border-slate-800 flex flex-wrap items-center justify-between gap-2">
+        <div>
+          <h3 class="font-cinzel text-lg font-bold text-amber-300">⚔️ Torneio de Balanceamento Ao Vivo (18 Classes)</h3>
+          <p class="text-xs text-slate-400">Ajuste o modificador % de cada classe, rode 30.600 duelos e aplique direto no jogo.</p>
+        </div>
+        <div class="flex flex-wrap items-center gap-2">
+          <button onclick="resetSimCardMods()" class="px-2.5 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold">↺ Zerar %</button>
+          <button onclick="applySimModsToGame()" class="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold shadow">✅ Aplicar no Jogo</button>
+          <button onclick="runLiveTournamentInGame()" class="px-3 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-bold shadow">🔄 Rodar Torneio</button>
+          <button onclick="closeSimulatorModal()" class="px-2.5 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold">✕ Fechar</button>
+        </div>
+      </div>
+      <div id="simulatorSummary" class="px-4 py-2.5 bg-slate-900/90 border-b border-slate-800 text-xs text-slate-300 flex flex-wrap gap-4"></div>
+      <div id="simulatorResultsBody" class="p-4 overflow-y-auto space-y-2 text-xs"></div>
+    </div>
+  </div>
+
+  <!-- Modal: Multiplayer Online & Ranking Global -->
+  <div id="onlineModal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="glass-panel rounded-2xl max-w-3xl w-full max-h-[88vh] flex flex-col border border-emerald-500/30 shadow-2xl">
+      <div class="p-4 border-b border-slate-800 flex items-center justify-between">
+        <div>
+          <h3 class="font-cinzel text-lg font-bold text-emerald-300">🌐 Arena Online & Ranking Global</h3>
+          <p class="text-xs text-slate-400">Desafie um amigo em tempo real com código de sala ou suba no placar mundial.</p>
+        </div>
+        <button onclick="closeOnlineModal()" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold">✕ Fechar</button>
+      </div>
+      <div class="p-4 overflow-y-auto space-y-4 text-xs">
+        <!-- Apelido do Duelista -->
+        <div class="bg-slate-900/80 p-3 rounded-xl border border-slate-800 flex flex-wrap items-center justify-between gap-2">
+          <div class="flex items-center gap-2 flex-1 min-w-[200px]">
+            <label class="text-slate-400 font-semibold">Seu Apelido:</label>
+            <input id="inputNickname" type="text" maxlength="20" class="bg-slate-950 border border-slate-700 rounded-lg px-2.5 py-1.5 text-white font-semibold focus:outline-none focus:border-emerald-400" />
+          </div>
+          <button onclick="savePlayerNickname()" class="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold">Salvar Perfil</button>
+        </div>
+
+        <!-- Criar ou Entrar em Sala Privada -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <div class="bg-slate-900/80 p-3.5 rounded-xl border border-emerald-500/25 space-y-2.5">
+            <div class="font-bold text-emerald-300 text-sm">✨ Criar Sala Privada</div>
+            <p class="text-slate-400">Gere um código de 6 dígitos e envie para seu amigo entrar na arena.</p>
+            <button onclick="createOnlineRoom()" class="w-full py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold shadow">
+              ✨ Gerar Sala de Duelo
+            </button>
+            <div id="createdRoomBox" class="hidden p-2.5 rounded-lg bg-slate-950 border border-emerald-500/40 flex items-center justify-between">
+              <span class="font-mono text-base font-extrabold text-emerald-300 tracking-widest" id="createdRoomCodeText">------</span>
+              <button onclick="copyRoomCode()" class="px-2.5 py-1 rounded bg-emerald-500/20 hover:bg-emerald-500/35 text-emerald-200 font-semibold">📋 Copiar</button>
+            </div>
+          </div>
+
+          <div class="bg-slate-900/80 p-3.5 rounded-xl border border-sky-500/25 space-y-2.5">
+            <div class="font-bold text-sky-300 text-sm">🔑 Entrar com Código</div>
+            <p class="text-slate-400">Cole o código enviado pelo seu amigo para iniciar o duelo ao vivo.</p>
+            <div class="flex gap-2">
+              <input id="inputJoinRoomCode" type="text" maxlength="6" placeholder="EX: A7K9P2" class="flex-1 uppercase font-mono bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white font-bold tracking-widest focus:outline-none focus:border-sky-400" />
+              <button onclick="joinOnlineRoom()" class="px-4 py-2 rounded-xl bg-sky-600 hover:bg-sky-500 text-white font-bold shadow">Entrar</button>
+            </div>
+          </div>
+          <div class="mt-3 flex flex-wrap items-center justify-between gap-2 text-xs">
+            <div class="text-slate-300">
+              <span class="text-slate-400">Intenção:</span> <span id="enemyIntentText" class="font-semibold text-amber-300">Ataque 8</span>
+            </div>
+            <div id="enemyStatusTags" class="flex flex-wrap gap-1"></div>
+          </div>
+          <!-- Lista de Aliados Co-op (até 4 jogadores) -->
+          <div id="coopPartyBar" class="hidden mt-3 pt-2.5 border-t border-slate-800/80">
+            <div class="text-[10px] uppercase tracking-wider text-emerald-400 font-bold mb-1.5">🛡️ Grupo Co-op (Escala: <span id="coopScaleLabel">1.0x</span>)</div>
+            <div id="coopMembersList" class="grid grid-cols-2 gap-1.5 text-[11px]"></div>
+          </div>
+        </div>
+      </div>
+  <!-- Modal: Multiplayer Online & Ranking Global -->
+  <div id="onlineModal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="glass-panel rounded-2xl max-w-3xl w-full max-h-[88vh] flex flex-col border border-emerald-500/30 shadow-2xl">
+      <div class="p-4 border-b border-slate-800 flex items-center justify-between">
+        <div>
+          <h3 class="font-cinzel text-lg font-bold text-emerald-300">🌐 Arena Online (PvP 1v1 & Co-op PvE até 4 Jogadores)</h3>
+          <p class="text-xs text-slate-400">Jogue em grupo com até 4 amigos (chefes escalam automaticamente) ou duele 1v1.</p>
+        </div>
+        <button onclick="closeOnlineModal()" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold">✕ Fechar</button>
+      </div>
+      <div class="p-4 overflow-y-auto space-y-4 text-xs">
+        <!-- Apelido do Duelista -->
+        <div class="bg-slate-900/80 p-3 rounded-xl border border-slate-800 flex flex-wrap items-center justify-between gap-2">
+          <div class="flex items-center gap-2 flex-1 min-w-[200px]">
+            <label class="text-slate-400 font-semibold">Seu Apelido:</label>
+            <input id="inputNickname" type="text" maxlength="20" class="bg-slate-950 border border-slate-700 rounded-lg px-2.5 py-1.5 text-white font-semibold focus:outline-none focus:border-emerald-400" />
+          </div>
+          <button onclick="savePlayerNickname()" class="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold">Salvar Perfil</button>
+        </div>
+
+        <!-- Criar ou Entrar em Sala Privada -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <div class="bg-slate-900/80 p-3.5 rounded-xl border border-emerald-500/25 space-y-2.5">
+            <div class="font-bold text-emerald-300 text-sm">✨ Criar Sala Multiplayer</div>
+            <p class="text-slate-400">Escolha o modo da sala e envie o código de 6 dígitos aos seus amigos:</p>
+            <div class="grid grid-cols-2 gap-2">
+              <button onclick="createOnlineRoom('coop')" class="py-2 px-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold shadow">
+                🛡️ Co-op PvE (1–4)
+              </button>
+              <button onclick="createOnlineRoom('pvp')" class="py-2 px-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold shadow">
+                ⚔️ Duelo PvP (1v1)
+              </button>
+            </div>
+            <div id="createdRoomBox" class="hidden p-2.5 rounded-lg bg-slate-950 border border-emerald-500/40 flex items-center justify-between">
+              <span class="font-mono text-base font-extrabold text-emerald-300 tracking-widest" id="createdRoomCodeText">------</span>
+              <button onclick="copyRoomCode()" class="px-2.5 py-1 rounded bg-emerald-500/20 hover:bg-emerald-500/35 text-emerald-200 font-semibold">📋 Copiar</button>
+            </div>
+          </div>
+
+          <div class="bg-slate-900/80 p-3.5 rounded-xl border border-sky-500/25 space-y-2.5">
+            <div class="font-bold text-sky-300 text-sm">🔑 Entrar com Código</div>
+            <p class="text-slate-400">Cole o código da sala (PvP 1v1 ou Co-op PvE até 4 jogadores) para entrar:</p>
+            <div class="flex gap-2">
+              <input id="inputJoinRoomCode" type="text" maxlength="6" placeholder="EX: A7K9P2" class="flex-1 uppercase font-mono bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white font-bold tracking-widest focus:outline-none focus:border-sky-400" />
+              <button onclick="joinOnlineRoom()" class="px-4 py-2 rounded-xl bg-sky-600 hover:bg-sky-500 text-white font-bold shadow">Entrar</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Guia Rápido de Hospedagem Gratuita (Render / GitHub) -->
+        <div class="bg-slate-950/90 p-3.5 rounded-xl border border-indigo-500/30 space-y-2.5">
+          <div class="font-bold text-indigo-300 text-sm flex items-center justify-between">
+            <span>🚀 Passo a Passo: Hospedar no Render + Multiplayer Online</span>
+            <span class="text-[10px] px-2 py-0.5 rounded bg-indigo-500/20 text-indigo-200">Opção 2 (Render)</span>
+          </div>
+          <ol class="list-decimal list-inside text-slate-300 space-y-1 text-[11px]">
+            <li><strong>Criar Banco Online Grátis (Firebase):</strong> Acesse <code class="text-amber-300">console.firebase.google.com</code> → <em>Adicionar projeto</em> → ative <strong>Authentication</strong> (provedor <em>Anônimo</em>) e <strong>Firestore Database</strong> (modo de teste). Nas configurações do projeto, crie um App Web (<code class="text-amber-300">&lt;/&gt;</code>) e copie o objeto <code class="text-emerald-300">firebaseConfig</code>.</li>
+            <li><strong>Conectar abaixo:</strong> Cole o JSON do <code class="text-emerald-300">firebaseConfig</code> no campo abaixo e clique em <strong>Salvar & Conectar Nuvem</strong>.</li>
+            <li><strong>Exportar e Subir no Render:</strong> Clique em <strong>Exportar</strong> no topo da tela e salve como <code class="text-amber-300">index.html</code>. Crie um repositório no <strong>GitHub</strong> com esse arquivo, acesse <strong>render.com</strong> → <em>New +</em> → <strong>Static Site</strong>, conecte o repositório, deixe <em>Build Command</em> vazio e coloque <code class="text-amber-300">.</code> em <em>Publish Directory</em>.</li>
+          </ol>
+
+          <!-- Campo para colar Firebase Config Próprio (para o site hospedado no Render) -->
+          <div class="pt-2 border-t border-slate-800 space-y-2">
+            <div class="flex items-center justify-between">
+              <span class="text-[11px] font-bold text-emerald-300">🔌 Configuração Firebase para Site Externo (Render):</span>
+              <span id="customFbStatus" class="text-[10px] text-slate-400">Usando ambiente padrão</span>
+            </div>
+            <textarea id="inputCustomFirebaseConfig" rows="3" placeholder='Cole aqui o objeto JSON do seu Firebase (ex: {"apiKey":"...","authDomain":"...","projectId":"..."})'
+              class="w-full font-mono text-[11px] bg-slate-900 border border-slate-700 rounded-xl p-2 text-slate-200 focus:outline-none focus:border-emerald-400"></textarea>
+            <div class="flex flex-wrap items-center justify-end gap-2">
+              <button onclick="clearCustomFirebaseConfig()" class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-[11px] font-semibold">Limpar</button>
+              <button onclick="saveCustomFirebaseConfig()" class="px-3 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-[11px] font-bold shadow">💾 Salvar & Conectar Nuvem</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Placar Global -->
+        <div class="bg-slate-900/80 p-3.5 rounded-xl border border-slate-800">
+          <div class="flex items-center justify-between mb-2">
+            <span class="font-bold text-amber-300 text-sm">🏅 Ranking Global da Temporada</span>
+            <span class="text-[11px] text-slate-400">Top Duelistas MMR</span>
+          </div>
+          <div id="globalLeaderboardList" class="space-y-1.5">
+            <div class="text-slate-400 py-2">Carregando ranking...</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Grimório de Reações -->
+  <div id="grimoireModal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="glass-panel rounded-2xl max-w-3xl w-full max-h-[85vh] flex flex-col border border-purple-500/30 shadow-2xl">
+      <div class="p-4 border-b border-slate-800 flex items-center justify-between">
+        <div>
+          <h3 class="font-cinzel text-lg font-bold text-purple-300">📖 Grimório das 15 Reações Elementais</h3>
+          <p class="text-xs text-slate-400">Aplique um elemento e detone com outro para desencadear Ecos do Âmago.</p>
+        </div>
+        <button onclick="closeGrimoireModal()" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold">✕ Fechar</button>
+      </div>
+      <div id="grimoireGrid" class="p-4 overflow-y-auto grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs"></div>
+    </div>
+  </div>
+
+  <!-- Modal: Forja de Baralho -->
+  <div id="deckBuilderModal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="glass-panel rounded-2xl max-w-4xl w-full max-h-[88vh] flex flex-col border border-indigo-500/30 shadow-2xl">
+      <div class="p-4 border-b border-slate-800 flex flex-wrap items-center justify-between gap-2">
+        <div>
+          <h3 class="font-cinzel text-lg font-bold text-indigo-300">🃏 Forja de Baralho (<span id="deckBuilderCount">6</span>/12 cartas)</h3>
+          <p class="text-xs text-slate-400">Monte entre 6 e 12 cartas combinando habilidades da sua classe e magias elementais.</p>
+        </div>
+        <div class="flex items-center gap-2">
+          <button onclick="resetDeckToClassDefault()" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold">↺ Padrão da Classe</button>
+          <button onclick="saveCustomDeck()" class="px-3 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold">💾 Salvar Baralho</button>
+          <button onclick="closeDeckBuilderModal()" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold">✕ Fechar</button>
+        </div>
+      </div>
+      <div class="p-4 overflow-y-auto grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+        <div>
+          <h4 class="font-bold text-amber-300 mb-2">Seu Baralho Atual</h4>
+          <div id="deckBuilderCurrent" class="space-y-1.5"></div>
+        </div>
+        <div>
+          <h4 class="font-bold text-sky-300 mb-2">Grimório de Cartas Disponíveis</h4>
+          <div id="deckBuilderPool" class="space-y-1.5 max-h-[55vh] overflow-y-auto pr-1"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Layout Principal da Arena & Progressão -->
+  <main class="max-w-7xl mx-auto p-3 sm:p-6 grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-6">
+    <!-- Coluna Esquerda: Perfil, Ascensão de Classe & Modo -->
+    <aside class="lg:col-span-4 space-y-4">
+      <section class="glass-panel rounded-2xl p-4 space-y-3">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <div id="uiClassIcon" class="w-12 h-12 rounded-2xl bg-slate-900 border border-amber-500/30 flex items-center justify-center text-2xl shadow-inner">🌱</div>
+            <div>
+              <div class="flex items-center gap-2">
+                <h2 id="uiClassName" class="font-cinzel text-lg font-bold text-white">Novato</h2>
+                <span id="uiClassTier" class="px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 text-[10px] font-bold">Grau 0</span>
+              </div>
+              <p id="uiClassArchetype" class="text-xs text-slate-400">Aprendiz dos Seis Veios</p>
+            </div>
+          </div>
+          <button onclick="resetFullCampaign()" title="Reiniciar Campanha" class="p-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-400 hover:text-white text-xs border border-slate-800">↺</button>
+        </div>
+
+        <p id="uiClassPassive" class="text-xs text-amber-200/90 bg-amber-500/10 border border-amber-500/20 rounded-xl p-2.5">
+          Começa no Nv. 1 com 1 Ponto de Ascensão.
+        </p>
+
+        <div class="space-y-1">
+          <div class="flex justify-between text-xs">
+            <span class="text-slate-300 font-semibold">Nível <span id="uiLevel">1</span></span>
+            <span class="text-slate-400"><span id="uiXp">0</span> / <span id="uiXpNext">100</span> XP</span>
+          </div>
+          <div class="w-full h-2 bg-slate-900 rounded-full overflow-hidden border border-slate-800">
+            <div id="uiXpBar" class="h-full bg-gradient-to-r from-amber-500 to-orange-500 transition-all duration-300" style="width: 0%"></div>
+          </div>
+        </div>
+
+        <div class="pt-2 border-t border-slate-800/80">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-xs font-bold text-slate-300">Árvore de Ascensão</span>
+            <span class="text-xs font-bold text-amber-400">Pontos: <span id="uiSkillPoints">1</span></span>
+          </div>
+          <div id="uiEvolutionList" class="grid grid-cols-2 gap-2"></div>
+        </div>
+      </section>
+
+      <!-- Painel Campanha PvE -->
+      <section id="panelPveProgress" class="glass-panel rounded-2xl p-4 space-y-2.5">
+        <div class="flex items-center justify-between">
+          <h3 class="font-cinzel text-sm font-bold text-amber-300">🗺️ Progresso da Campanha</h3>
+          <span id="uiStageCounter" class="text-[11px] text-slate-400">Capítulo 1/6</span>
+        </div>
+        <div id="uiStageList" class="space-y-1.5"></div>
+      </section>
+
+      <!-- Painel PvP Ranqueado -->
+      <section id="panelPvpRanked" class="hidden glass-panel rounded-2xl p-4 space-y-3 border border-amber-500/25">
+        <div class="flex items-center justify-between">
+          <h3 class="font-cinzel text-sm font-bold text-amber-300">🏆 Liga Ranqueada</h3>
+          <span id="uiPvpLeagueBadge" class="px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300 text-xs font-bold">Bronze • 1000 MMR</span>
+        </div>
+        <div class="grid grid-cols-3 gap-2 text-center">
+          <div class="bg-slate-900/80 p-2 rounded-xl border border-slate-800">
+            <div class="text-[10px] text-slate-400">MMR</div>
+            <div id="uiPvpMmr" class="text-sm font-bold text-white">1000</div>
+          </div>
+          <div class="bg-slate-900/80 p-2 rounded-xl border border-slate-800">
+            <div class="text-[10px] text-slate-400">Vitórias</div>
+            <div id="uiPvpWins" class="text-sm font-bold text-emerald-400">0</div>
+          </div>
+          <div class="bg-slate-900/80 p-2 rounded-xl border border-slate-800">
+            <div class="text-[10px] text-slate-400">Derrotas</div>
+            <div id="uiPvpLosses" class="text-sm font-bold text-rose-400">0</div>
+          </div>
+        </div>
+        <button onclick="findPvpMatch()" class="w-full py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-400 hover:to-orange-500 text-slate-950 font-bold text-xs shadow-lg transition">
+          ⚔️ Buscar Novo Oponente Ranqueado
+        </button>
+      </section>
+    </aside>
+
+    <!-- Coluna Direita: Arena de Batalha -->
+    <section class="lg:col-span-8 space-y-4">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <!-- Card do Jogador -->
+        <div class="glass-panel rounded-2xl p-4 border-l-4 border-l-emerald-500 relative overflow-hidden">
+          <div class="flex items-center justify-between mb-2">
+            <div>
+              <span class="text-[10px] uppercase tracking-wider text-emerald-400 font-bold">Duelista</span>
+              <h3 id="arenaPlayerName" class="font-cinzel text-base font-bold text-white">Você</h3>
+            </div>
+            <div class="flex items-center gap-1.5">
+              <span id="playerShieldBadge" class="hidden px-2 py-0.5 rounded-lg bg-sky-500/20 text-sky-300 border border-sky-400/30 text-xs font-bold">🛡️ 0</span>
+              <span id="playerPowerBadge" class="px-2 py-0.5 rounded-lg bg-amber-500/20 text-amber-300 border border-amber-400/30 text-xs font-bold">⚡ +0</span>
+            </div>
+          </div>
+          <div class="space-y-1.5">
+            <div class="flex justify-between text-xs font-semibold">
+              <span class="text-emerald-300">Vida (HP)</span>
+              <span id="playerHpText">40 / 40</span>
+            </div>
+            <div class="w-full h-3 bg-slate-950 rounded-full overflow-hidden border border-slate-800">
+              <div id="playerHpBar" class="h-full bg-gradient-to-r from-emerald-600 to-teal-400 transition-all duration-300" style="width: 100%"></div>
+            </div>
+          </div>
+          <div class="mt-3 flex items-center justify-between text-xs">
+            <div class="flex items-center gap-1.5">
+              <span class="text-slate-400">Energia (SP):</span>
+              <span id="playerSpText" class="px-2 py-0.5 rounded bg-cyan-500/20 text-cyan-300 font-bold">3 / 3</span>
+            </div>
+            <div id="playerStatusTags" class="flex flex-wrap gap-1"></div>
+          </div>
+        </div>
+
+        <!-- Card do Oponente / Chefe -->
+        <div class="glass-panel rounded-2xl p-4 border-l-4 border-l-rose-500 relative overflow-hidden">
+          <div class="flex items-center justify-between mb-2">
+            <div>
+              <span id="arenaEnemyLabel" class="text-[10px] uppercase tracking-wider text-rose-400 font-bold">Adversário</span>
+              <h3 id="arenaEnemyName" class="font-cinzel text-base font-bold text-white">Guardião de Brasalar</h3>
+            </div>
+            <div class="flex items-center gap-1.5">
+              <span id="enemyShieldBadge" class="hidden px-2 py-0.5 rounded-lg bg-sky-500/20 text-sky-300 border border-sky-400/30 text-xs font-bold">🛡️ 0</span>
+            </div>
+          </div>
+          <div class="space-y-1.5">
+            <div class="flex justify-between text-xs font-semibold">
+              <span class="text-rose-300">Vida (HP)</span>
+              <span id="enemyHpText">40 / 40</span>
+            </div>
+            <div class="w-full h-3 bg-slate-950 rounded-full overflow-hidden border border-slate-800">
+              <div id="enemyHpBar" class="h-full bg-gradient-to-r from-rose-600 to-orange-500 transition-all duration-300" style="width: 100%"></div>
+            </div>
+          </div>
+          <div class="mt-3 flex flex-wrap items-center justify-between gap-2 text-xs">
+            <div class="text-slate-300">
+              <span class="text-slate-400">Intenção:</span> <span id="enemyIntentText" class="font-semibold text-amber-300">Ataque 8</span>
+            </div>
+            <div id="enemyStatusTags" class="flex flex-wrap gap-1"></div>
+          </div>
+          <!-- Lista de Aliados Co-op (até 4 jogadores) -->
+          <div id="coopPartyBar" class="hidden mt-3 pt-2.5 border-t border-slate-800/80">
+            <div class="text-[10px] uppercase tracking-wider text-emerald-400 font-bold mb-1.5">🛡️ Grupo Co-op (Escala: <span id="coopScaleLabel">1.0x</span>)</div>
+            <div id="coopMembersList" class="grid grid-cols-2 gap-1.5 text-[11px]"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Mão de Cartas e Controle de Turno -->
+      <div class="glass-panel rounded-2xl p-4 space-y-3">
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          <div class="flex items-center gap-2">
+            <h3 class="font-cinzel text-sm font-bold text-amber-300">Sua Mão</h3>
+            <span id="turnIndicatorBadge" class="px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 text-[11px] font-bold">Seu Turno</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span id="deckCounterBadge" class="text-xs text-slate-400">Compra: 6 | Descarte: 0</span>
+            <button id="btnEndTurn" onclick="endPlayerTurn()" class="px-4 py-2 rounded-xl bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-400 hover:to-orange-500 text-slate-950 font-bold text-xs shadow-lg transition">
+              ⏭️ Encerrar Turno
+            </button>
+          </div>
+        </div>
+        <div id="handContainer" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 min-h-[155px]"></div>
+      </div>
+
+      <!-- Registro de Combate -->
+      <div class="glass-panel rounded-2xl p-3.5">
+        <div class="flex items-center justify-between mb-1.5">
+          <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Registro de Combate</span>
+          <span id="uiAppliedBalanceBadge" class="hidden text-[11px] text-emerald-400 font-semibold">✓ Balanceamento % Ativo</span>
+        </div>
+        <div id="combatLog" class="h-32 overflow-y-auto space-y-1 text-xs font-mono text-slate-300 pr-1"></div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Firebase Multiplayer & Nuvem -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+    import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    import { getFirestore, doc, setDoc, getDoc, updateDoc, onSnapshot, collection, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+    const appId = typeof __app_id !== 'undefined' ? __app_id : 'sixfold-duel-default';
+    let db = null;
+    let auth = null;
+    let currentUser = null;
+    let roomUnsubscribe = null;
+
+    async function initCloudServices() {
+      const badge = document.getElementById('cloudStatusBadge');
+      const customStatus = document.getElementById('customFbStatus');
+      try {
+        let firebaseConfig = null;
+        const savedCustomFb = localStorage.getItem('sixfold_custom_firebase_config');
+        if (savedCustomFb) {
+          firebaseConfig = JSON.parse(savedCustomFb);
+          const ta = document.getElementById('inputCustomFirebaseConfig');
+          if (ta) ta.value = savedCustomFb;
+          if (customStatus) customStatus.textContent = '✓ Firebase Próprio Ativo';
+        } else if (typeof __firebase_config !== 'undefined' && __firebase_config) {
+          firebaseConfig = JSON.parse(__firebase_config);
+        }
+
+        if (!firebaseConfig || !firebaseConfig.apiKey) {
+          if (badge) badge.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span> Configure o Firebase no menu Online';
+          return;
+        }
+
+        const app = initializeApp(firebaseConfig);
+        auth = getAuth(app);
+        db = getFirestore(app);
+
+        onAuthStateChanged(auth, async (user) => {
+          if (user) {
+            currentUser = user;
+            if (badge) badge.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span> Online na Nuvem';
+            await loadCloudProfile();
+            await refreshGlobalLeaderboard();
+          }
+        });
+
+        if (!savedCustomFb && typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+          await signInWithCustomToken(auth, __initial_auth_token);
+        } else {
+          await signInAnonymously(auth);
+        }
+      } catch (err) {
+        console.warn('Cloud init fallback:', err);
+        if (badge) badge.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span> Offline / Verifique Config';
+      }
+    }
+
+    async function loadCloudProfile() {
+      if (!db || !currentUser || !window.state) return;
+      try {
+        const profileRef = doc(db, 'artifacts', appId, 'users', currentUser.uid, 'profile', 'data');
+        const snap = await getDoc(profileRef);
+        if (snap.exists()) {
+          const d = snap.data();
+          const st = window.state;
+          if (d.nickname) st.nickname = d.nickname;
+          if (d.classId && window.CLASS_DB[d.classId]) st.classId = d.classId;
+          if (typeof d.level === 'number') st.level = d.level;
+          if (typeof d.xp === 'number') st.xp = d.xp;
+          if (typeof d.skillPoints === 'number') st.skillPoints = d.skillPoints;
+          if (typeof d.stage === 'number') st.stage = d.stage;
+          if (d.pvp) st.pvp = { ...st.pvp, ...d.pvp };
+          if (Array.isArray(d.customDeck) && d.customDeck.length >= 6) st.customDeck = d.customDeck;
+          window.applyClassStats();
+          window.updateUI();
+        } else {
+          await window.saveCloudProfile();
+        }
+      } catch (e) {
+        console.warn('Erro ao carregar perfil na nuvem:', e);
+      }
+    }
+
+    window.saveCloudProfile = async function() {
+      if (!db || !currentUser || !window.state) return;
+      try {
+        const st = window.state;
+        const cls = window.CLASS_DB[st.classId] || { name: 'Novato' };
+        const profileRef = doc(db, 'artifacts', appId, 'users', currentUser.uid, 'profile', 'data');
+        const payload = {
+          nickname: st.nickname,
+          classId: st.classId,
+          className: cls.name,
+          level: st.level,
+          xp: st.xp,
+          skillPoints: st.skillPoints,
+          stage: st.stage,
+          pvp: {
+            mmr: st.pvp.mmr || 1000,
+            wins: st.pvp.wins || 0,
+            losses: st.pvp.losses || 0
+          },
+          customDeck: st.customDeck || null,
+          updatedAt: Date.now()
+        };
+        await setDoc(profileRef, payload, { merge: true });
+
+        const lbRef = doc(db, 'artifacts', appId, 'public', 'data', 'leaderboard', currentUser.uid);
+        await setDoc(lbRef, {
+          uid: currentUser.uid,
+          nickname: st.nickname,
+          className: cls.name,
+          level: st.level,
+          mmr: st.pvp.mmr || 1000,
+          wins: st.pvp.wins || 0,
+          updatedAt: Date.now()
+        }, { merge: true });
+
+        await refreshGlobalLeaderboard();
+      } catch (e) {
+        console.warn('Erro ao salvar perfil na nuvem:', e);
+      }
+    };
+
+    window.saveCustomFirebaseConfig = function() {
+      const raw = (document.getElementById('inputCustomFirebaseConfig')?.value || '').trim();
+      if (!raw) return;
+      try {
+        // Aceita tanto JSON puro quanto trecho JS colado direto do console do Firebase
+        const normalized = raw
+          .replace(/^const\s+firebaseConfig\s*=\s*/i, '')
+          .replace(/;$/, '')
+          .replace(/([{,]\s*)([a-zA-Z0-9_]+)\s*:/g, '$1"$2":')
+          .replace(/'/g, '"');
+        const parsed = JSON.parse(normalized);
+        if (!parsed.apiKey || !parsed.projectId) {
+          window.logMsg('❌ Configuração inválida: certifique-se de incluir apiKey e projectId.', 'text-rose-400');
+          return;
+        }
+        localStorage.setItem('sixfold_custom_firebase_config', JSON.stringify(parsed));
+        window.logMsg('✅ Firebase configurado! Recarregando conexão online...', 'text-emerald-300');
+        setTimeout(() => location.reload(), 600);
+      } catch (e) {
+        window.logMsg('❌ Formato inválido. Cole o bloco { apiKey: "...", projectId: "..." } do Firebase.', 'text-rose-400');
+      }
+    };
+
+    window.clearCustomFirebaseConfig = function() {
+      localStorage.removeItem('sixfold_custom_firebase_config');
+      const ta = document.getElementById('inputCustomFirebaseConfig');
+      if (ta) ta.value = '';
+      window.logMsg('↺ Configuração personalizada removida. Recarregando...', 'text-amber-300');
+      setTimeout(() => location.reload(), 500);
+    };
+
+    async function refreshGlobalLeaderboard() {
+      if (!db) return;
+      const listEl = document.getElementById('globalLeaderboardList');
+      if (!listEl) return;
+      try {
+        const colRef = collection(db, 'artifacts', appId, 'public', 'data', 'leaderboard');
+        const snap = await getDocs(colRef);
+        const rows = [];
+        snap.forEach(d => rows.push(d.data()));
+        rows.sort((a, b) => (b.mmr || 1000) - (a.mmr || 1000));
+
+        if (rows.length === 0) {
+          listEl.innerHTML = '<div class="text-slate-400 py-2">Nenhum duelista registrado ainda. Seja o primeiro!</div>';
+          return;
+        }
+        listEl.innerHTML = rows.slice(0, 10).map((r, i) => `
+          <div class="flex items-center justify-between px-3 py-2 rounded-lg bg-slate-950/80 border border-slate-800/80">
+            <div class="flex items-center gap-2">
+              <span class="font-bold text-amber-400 w-5">#${i + 1}</span>
+              <span class="font-semibold text-white">${r.nickname || 'Duelista'}</span>
+              <span class="text-[11px] px-2 py-0.5 rounded bg-slate-800 text-slate-300">${r.className || 'Novato'} • Nv.${r.level || 1}</span>
+            </div>
+            <div class="text-right">
+              <span class="font-bold text-emerald-400">${r.mmr || 1000} MMR</span>
+              <span class="text-[11px] text-slate-400 ml-2">${r.wins || 0}V</span>
+            </div>
+          </div>
+        `).join('');
+      } catch (e) {
+        console.warn('Erro leaderboard:', e);
+      }
+    }
+
+    // Multiplicador de escalonamento Co-op PvE (1 a 4 jogadores)
+    function getCoopScaling(playerCount) {
+      if (playerCount <= 1) return { hpMult: 1.0, atkMult: 1.0, label: '1.0x (Solo)' };
+      if (playerCount === 2) return { hpMult: 1.85, atkMult: 1.25, label: '1.85x HP / 1.25x ATK (2 Jogadores)' };
+      if (playerCount === 3) return { hpMult: 2.70, atkMult: 1.45, label: '2.70x HP / 1.45x ATK (3 Jogadores)' };
+      return { hpMult: 3.55, atkMult: 1.65, label: '3.55x HP / 1.65x ATK (4 Jogadores)' };
+    }
+
+    window.createOnlineRoom = async function(roomMode = 'coop') {
+      if (!db || !currentUser) {
+        window.logMsg('⚠️ Serviço online indisponível neste ambiente.', 'text-amber-400');
+        return;
+      }
+      const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+      let code = '';
+      for (let i = 0; i < 6; i++) code += chars[Math.floor(Math.random() * chars.length)];
+
+      window.applyClassStats();
+      const st = window.state;
+      const cls = window.CLASS_DB[st.classId];
+      const roomRef = doc(db, 'artifacts', appId, 'public', 'data', 'rooms', code);
+
+      if (roomMode === 'coop') {
+        const stg = window.CAMPAIGN_STAGES[st.stage] || window.CAMPAIGN_STAGES[0];
+        const memberObj = {
+          uid: currentUser.uid,
+          nickname: st.nickname,
+          classId: st.classId,
+          className: cls.name,
+          hp: st.player.maxHp,
+          maxHp: st.player.maxHp,
+          shield: 0,
+          power: st.player.power
+        };
+        await setDoc(roomRef, {
+          code,
+          roomMode: 'coop',
+          status: 'playing',
+          stageIdx: st.stage,
+          turnIndex: 0,
+          turnOrder: [currentUser.uid],
+          members: { [currentUser.uid]: memberObj },
+          boss: {
+            name: stg.enemyName,
+            baseHp: stg.hp,
+            baseAtk: stg.atk,
+            hp: stg.hp,
+            maxHp: stg.hp,
+            atk: stg.atk,
+            element: stg.element,
+            shield: 0,
+            aura: null,
+            weak: 0,
+            disarmed: false
+          },
+          lastLog: `${st.nickname} abriu sala Co-op PvE (${code})! Até 4 jogadores podem entrar.`,
+          updatedAt: Date.now()
+        });
+      } else {
+        await setDoc(roomRef, {
+          code,
+          roomMode: 'pvp',
+          status: 'waiting',
+          turn: 'host',
+          lastLog: `${st.nickname} criou a sala PvP 1v1 (${code}).`,
+          host: {
+            uid: currentUser.uid,
+            nickname: st.nickname,
+            classId: st.classId,
+            className: cls.name,
+            hp: st.player.maxHp,
+            maxHp: st.player.maxHp,
+            shield: 0,
+            power: st.player.power,
+            aura: null
+          },
+          guest: null,
+          updatedAt: Date.now()
+        });
+      }
+
+      document.getElementById('createdRoomBox').classList.remove('hidden');
+      document.getElementById('createdRoomCodeText').textContent = code;
+      listenToRoom(code, 'host');
+    };
+
+    window.joinOnlineRoom = async function() {
+      if (!db || !currentUser) return;
+      const input = document.getElementById('inputJoinRoomCode');
+      const code = (input?.value || '').trim().toUpperCase();
+      if (code.length < 4) return;
+
+      const roomRef = doc(db, 'artifacts', appId, 'public', 'data', 'rooms', code);
+      const snap = await getDoc(roomRef);
+      if (!snap.exists()) {
+        window.logMsg(`❌ Sala ${code} não encontrada.`, 'text-rose-400');
+        return;
+      }
+
+      const data = snap.data();
+      window.applyClassStats();
+      const st = window.state;
+      const cls = window.CLASS_DB[st.classId];
+
+      if (data.roomMode === 'coop') {
+        const order = Array.isArray(data.turnOrder) ? [...data.turnOrder] : [];
+        if (!order.includes(currentUser.uid) && order.length >= 4) {
+          window.logMsg('⚠️ Esta sala Co-op já atingiu o limite máximo de 4 jogadores!', 'text-amber-400');
+          return;
+        }
+        if (!order.includes(currentUser.uid)) order.push(currentUser.uid);
+
+        const newCount = order.length;
+        const prevCount = Math.max(1, (data.turnOrder || []).length);
+        const prevScale = getCoopScaling(prevCount);
+        const newScale = getCoopScaling(newCount);
+
+        const boss = data.boss || {};
+        const newMaxHp = Math.round((boss.baseHp || 40) * newScale.hpMult);
+        const hpRatio = boss.maxHp > 0 ? (boss.hp / boss.maxHp) : 1;
+        const newCurHp = Math.max(1, Math.round(newMaxHp * hpRatio));
+        const newAtk = Math.round((boss.baseAtk || 8) * newScale.atkMult);
+
+        const memberObj = {
+          uid: currentUser.uid,
+          nickname: st.nickname,
+          classId: st.classId,
+          className: cls.name,
+          hp: st.player.maxHp,
+          maxHp: st.player.maxHp,
+          shield: 0,
+          power: st.player.power
+        };
+
+        await updateDoc(roomRef, {
+          turnOrder: order,
+          [`members.${currentUser.uid}`]: memberObj,
+          'boss.maxHp': newMaxHp,
+          'boss.hp': newCurHp,
+          'boss.atk': newAtk,
+          lastLog: `🛡️ ${st.nickname} (${cls.name}) entrou no grupo (${newCount}/4)! Chefe escalado para ${newScale.label}.`,
+          updatedAt: Date.now()
+        });
+
+        window.closeOnlineModal();
+        listenToRoom(code, 'coop_member');
+        return;
+      }
+
+      // Modo PvP 1v1
+      await updateDoc(roomRef, {
+        status: 'playing',
+        lastLog: `${st.nickname} (${cls.name}) entrou na arena!`,
+        guest: {
+          uid: currentUser.uid,
+          nickname: st.nickname,
+          classId: st.classId,
+          className: cls.name,
+          hp: st.player.maxHp,
+          maxHp: st.player.maxHp,
+          shield: 0,
+          power: st.player.power,
+          aura: null
+        },
+        updatedAt: Date.now()
+      });
+
+      window.closeOnlineModal();
+      listenToRoom(code, 'guest');
+    };
+
+    function listenToRoom(code, role) {
+      if (roomUnsubscribe) roomUnsubscribe();
+      const st = window.state;
+      st.online.active = true;
+      st.online.roomCode = code;
+      st.online.role = role;
+      st.online.finished = false;
+
+      document.getElementById('onlineActiveBanner').classList.remove('hidden');
+      document.getElementById('bannerRoomCode').textContent = `SALA: ${code}`;
+
+      const roomRef = doc(db, 'artifacts', appId, 'public', 'data', 'rooms', code);
+      roomUnsubscribe = onSnapshot(roomRef, (snap) => {
+        if (!snap.exists()) return;
+        const data = snap.data();
+        st.online.roomData = data;
+        st.online.roomMode = data.roomMode || 'pvp';
+
+        if (data.roomMode === 'coop') {
+          const order = data.turnOrder || [];
+          const activeUid = order[data.turnIndex % Math.max(1, order.length)];
+          st.online.isMyTurn = (activeUid === currentUser.uid);
+
+          const me = (data.members || {})[currentUser.uid];
+          if (me) {
+            st.player.hp = me.hp;
+            st.player.maxHp = me.maxHp;
+            st.player.shield = me.shield || 0;
+            st.player.power = me.power || 0;
+          }
+
+          const boss = data.boss;
+          const activeMember = (data.members || {})[activeUid];
+          if (boss) {
+            st.enemy = {
+              name: `${boss.name} (Co-op ${order.length}/4)`,
+              hp: boss.hp,
+              maxHp: boss.maxHp,
+              atk: boss.atk,
+              element: boss.element || 'fire',
+              shield: boss.shield || 0,
+              aura: boss.aura || null,
+              weak: boss.weak || 0,
+              disarmed: boss.disarmed || false,
+              intentText: st.online.isMyTurn ? `Seu turno! Ataque do Chefe: ~${boss.atk}` : `Turno de ${activeMember?.nickname || 'Aliado'}`
+            };
+          }
+
+          const scale = getCoopScaling(order.length);
+          document.getElementById('bannerRoomMode').textContent = `CO-OP PvE (${order.length}/4)`;
+          document.getElementById('bannerRoomStatus').textContent = `Turno atual: ${activeMember?.nickname || '---'} • Escala: ${scale.label}`;
+
+          const nextBtn = document.getElementById('btnAdvanceCoopStage');
+          if (boss && boss.hp <= 0 && order[0] === currentUser.uid) {
+            nextBtn.classList.remove('hidden');
+          } else {
+            nextBtn.classList.add('hidden');
+          }
+
+          // Atualiza barra de grupo Co-op
+          const partyBar = document.getElementById('coopPartyBar');
+          const membersList = document.getElementById('coopMembersList');
+          partyBar.classList.remove('hidden');
+          document.getElementById('coopScaleLabel').textContent = scale.label;
+          membersList.innerHTML = order.map(uid => {
+            const m = (data.members || {})[uid];
+            if (!m) return '';
+            const isTurn = uid === activeUid;
+            return `
+              <div class="px-2 py-1 rounded-lg border ${isTurn ? 'bg-emerald-500/20 border-emerald-400/50 text-emerald-200' : 'bg-slate-900/80 border-slate-800 text-slate-300'} flex items-center justify-between">
+                <span class="truncate font-semibold">${isTurn ? '▶ ' : ''}${m.nickname} (${m.className})</span>
+                <span class="font-mono text-[10px] ml-1">${Math.max(0, Math.round(m.hp))}/${m.maxHp} HP</span>
+              </div>
+            `;
+          }).join('');
+
+          if (data.lastLog && data.lastLog !== st.online.lastLogShown) {
+            st.online.lastLogShown = data.lastLog;
+            window.logMsg(`🛡️ ${data.lastLog}`, 'text-emerald-300');
+          }
+          window.updateUI();
+          return;
+        }
+
+        // Modo PvP 1v1
+        document.getElementById('coopPartyBar').classList.add('hidden');
+        document.getElementById('btnAdvanceCoopStage').classList.add('hidden');
+        document.getElementById('bannerRoomMode').textContent = 'PVP 1v1';
+        st.online.isMyTurn = (data.turn === role);
+
+        const me = data[role];
+        const opp = data[role === 'host' ? 'guest' : 'host'];
+
+        if (me) {
+          st.player.hp = me.hp;
+          st.player.maxHp = me.maxHp;
+          st.player.shield = me.shield || 0;
+          st.player.power = me.power || 0;
+          st.player.aura = me.aura || null;
+        }
+
+        if (opp) {
+          st.enemy = {
+            name: `${opp.nickname} (${opp.className})`,
+            hp: opp.hp,
+            maxHp: opp.maxHp,
+            shield: opp.shield || 0,
+            power: opp.power || 0,
+            aura: opp.aura || null,
+            intentText: st.online.isMyTurn ? 'Aguardando você' : 'Jogando turno...'
+          };
+          document.getElementById('bannerRoomStatus').textContent = `Duelo Ao Vivo vs ${opp.nickname} (${opp.className})`;
+          window.closeOnlineModal();
+        } else {
+          document.getElementById('bannerRoomStatus').textContent = 'Aguardando amigo entrar com o código...';
+        }
+
+        if (data.lastLog && data.lastLog !== st.online.lastLogShown) {
+          st.online.lastLogShown = data.lastLog;
+          window.logMsg(`🌐 ${data.lastLog}`, 'text-emerald-300');
+        }
+
+        window.updateUI();
+      }, (err) => console.warn('Erro sala online:', err));
+    }
+
+    window.syncOnlineTurnState = async function(logSummary, passTurn = false) {
+      const st = window.state;
+      if (!db || !st.online.active || !st.online.roomCode || !st.online.roomData) return;
+      const roomRef = doc(db, 'artifacts', appId, 'public', 'data', 'rooms', st.online.roomCode);
+      const data = st.online.roomData;
+
+      if (data.roomMode === 'coop') {
+        const order = data.turnOrder || [];
+        const currentIdx = data.turnIndex || 0;
+        let nextIdx = currentIdx;
+        let bossLogExtra = '';
+
+        const membersCopy = JSON.parse(JSON.stringify(data.members || {}));
+        if (membersCopy[currentUser.uid]) {
+          membersCopy[currentUser.uid].hp = Math.max(0, Math.round(st.player.hp));
+          membersCopy[currentUser.uid].shield = Math.max(0, Math.round(st.player.shield));
+          membersCopy[currentUser.uid].power = Math.round(st.player.power);
+        }
+
+        const bossCopy = { ...(data.boss || {}) };
+        if (st.enemy) {
+          bossCopy.hp = Math.max(0, Math.round(st.enemy.hp));
+          bossCopy.shield = Math.max(0, Math.round(st.enemy.shield));
+          bossCopy.aura = st.enemy.aura || null;
+          bossCopy.weak = st.enemy.weak || 0;
+          bossCopy.disarmed = !!st.enemy.disarmed;
+        }
+
+        if (passTurn && bossCopy.hp > 0) {
+          nextIdx = (currentIdx + 1) % Math.max(1, order.length);
+          // Quando todos os jogadores do grupo agiram (volta ao índice 0), o Chefe ataca o grupo!
+          if (nextIdx === 0) {
+            if (bossCopy.disarmed) {
+              bossCopy.disarmed = false;
+              bossLogExtra = ` | ❄️ ${bossCopy.name} estava desarmado e perdeu o ataque!`;
+            } else {
+              let rawAtk = (bossCopy.atk || 10) + Math.floor(Math.random() * 4);
+              if (bossCopy.weak > 0) {
+                rawAtk = Math.round(rawAtk * 0.75);
+                bossCopy.weak -= 1;
+              }
+              // Distribui o golpe do chefe entre os aliados vivos
+              const aliveUids = order.filter(uid => membersCopy[uid] && membersCopy[uid].hp > 0);
+              const targetUid = aliveUids[Math.floor(Math.random() * aliveUids.length)];
+              if (targetUid && membersCopy[targetUid]) {
+                const target = membersCopy[targetUid];
+                const abs = Math.min(target.shield || 0, rawAtk);
+                target.shield = Math.max(0, (target.shield || 0) - abs);
+                const net = rawAtk - abs;
+                target.hp = Math.max(0, target.hp - net);
+                bossLogExtra = ` | 💥 ${bossCopy.name} atacou ${target.nickname} causando ${rawAtk} de dano (${abs} bloqueado)!`;
+              }
+            }
+          }
+        }
+
+        await updateDoc(roomRef, {
+          turnIndex: nextIdx,
+          members: membersCopy,
+          boss: bossCopy,
+          lastLog: logSummary + bossLogExtra,
+          updatedAt: Date.now()
+        });
+        return;
+      }
+
+      // Modo PvP 1v1
+      const role = st.online.role;
+      const oppRole = role === 'host' ? 'guest' : 'host';
+      const nextTurn = passTurn ? oppRole : role;
+      const payload = {
+        turn: nextTurn,
+        lastLog: logSummary,
+        updatedAt: Date.now()
+      };
+      payload[`${role}.hp`] = Math.max(0, Math.round(st.player.hp));
+      payload[`${role}.shield`] = Math.max(0, Math.round(st.player.shield));
+      payload[`${role}.power`] = Math.round(st.player.power);
+      payload[`${role}.aura`] = st.player.aura;
+
+      if (st.enemy) {
+        payload[`${oppRole}.hp`] = Math.max(0, Math.round(st.enemy.hp));
+        payload[`${oppRole}.shield`] = Math.max(0, Math.round(st.enemy.shield));
+        payload[`${oppRole}.aura`] = st.enemy.aura;
+      }
+
+      await updateDoc(roomRef, payload);
+    };
+
+    window.advanceCoopStage = async function() {
+      const st = window.state;
+      if (!db || !st.online.active || !st.online.roomData || st.online.roomData.roomMode !== 'coop') return;
+      const data = st.online.roomData;
+      const nextStageIdx = ((data.stageIdx || 0) + 1) % window.CAMPAIGN_STAGES.length;
+      const stg = window.CAMPAIGN_STAGES[nextStageIdx];
+      const count = (data.turnOrder || []).length;
+      const scale = getCoopScaling(count);
+      const scaledHp = Math.round(stg.hp * scale.hpMult);
+      const scaledAtk = Math.round(stg.atk * scale.atkMult);
+
+      const membersCopy = JSON.parse(JSON.stringify(data.members || {}));
+      Object.values(membersCopy).forEach(m => {
+        m.hp = Math.min(m.maxHp, m.hp + Math.round(m.maxHp * 0.4));
+      });
+
+      const roomRef = doc(db, 'artifacts', appId, 'public', 'data', 'rooms', st.online.roomCode);
+      await updateDoc(roomRef, {
+        stageIdx: nextStageIdx,
+        turnIndex: 0,
+        members: membersCopy,
+        boss: {
+          name: stg.enemyName,
+          baseHp: stg.hp,
+          baseAtk: stg.atk,
+          hp: scaledHp,
+          maxHp: scaledHp,
+          atk: scaledAtk,
+          element: stg.element,
+          shield: 0,
+          aura: null,
+          weak: 0,
+          disarmed: false
+        },
+        lastLog: `🌟 Grupo avançou para ${stg.title}! Chefe escalado (${scale.label}) e grupo recuperou 40% HP!`,
+        updatedAt: Date.now()
+      });
+    };
+
+    window.leaveOnlineRoom = function() {
+      if (roomUnsubscribe) roomUnsubscribe();
+      window.state.online = { active: false, roomCode: null, role: null, roomMode: null, isMyTurn: false, roomData: null, finished: false, lastLogShown: '' };
+      document.getElementById('onlineActiveBanner').classList.add('hidden');
+      document.getElementById('coopPartyBar').classList.add('hidden');
+      document.getElementById('btnAdvanceCoopStage').classList.add('hidden');
+      window.startStage(window.state.stage);
+    };
+
+    window.addEventListener('DOMContentLoaded', () => {
+      setTimeout(() => {
+        if (window.state) initCloudServices();
+      }, 60);
+    });
+  </script>
+
+  <!-- Motor Completo do Jogo, Classes, Cartas, Reações e Simulador -->
+  <script>
+    const ELEMENTS = {
+      fire: { name: 'Fogo', icon: '🔥', badge: 'bg-orange-500/20 text-orange-300 border-orange-500/40' },
+      water: { name: 'Água', icon: '💧', badge: 'bg-sky-500/20 text-sky-300 border-sky-500/40' },
+      air: { name: 'Ar', icon: '🌪️', badge: 'bg-teal-500/20 text-teal-300 border-teal-500/40' },
+      earth: { name: 'Terra', icon: '🪨', badge: 'bg-amber-700/30 text-amber-300 border-amber-600/40' },
+      light: { name: 'Luz', icon: '✨', badge: 'bg-yellow-500/20 text-yellow-200 border-yellow-400/40' },
+      dark: { name: 'Trevas', icon: '🌑', badge: 'bg-purple-600/25 text-purple-300 border-purple-500/40' },
+      neutral: { name: 'Neutro', icon: '⚔️', badge: 'bg-slate-700/40 text-slate-300 border-slate-600' }
+    };
+
+    const REACTIONS = {
+      'fire+light': { name: 'Purificação', desc: '+10 dano sagrado', bonusDmg: 10 },
+      'air+water': { name: 'Congelamento', desc: 'Cancela ataque inimigo', disarm: true, bonusDmg: 4 },
+      'fire+water': { name: 'Vapor da Forja', desc: '+6 dano & Fraqueza', bonusDmg: 6, weak: 2 },
+      'earth+fire': { name: 'Estátua de Guerra', desc: 'Estilhaça escudo & +12 dano', shatter: true, bonusDmg: 12 },
+      'air+fire': { name: 'Dança das Chamas', desc: '+11 dano & +1 carta', bonusDmg: 11, draw: 1 },
+      'dark+fire': { name: 'Mina Funesta', desc: '+15 dano sombrio', bonusDmg: 15 },
+      'earth+water': { name: 'Encosta de Lama', desc: '+8 Escudo & Fraqueza', shield: 8, weak: 2 },
+      'light+water': { name: 'Batismo', desc: '+10 HP & +6 Escudo', heal: 10, shield: 6 },
+      'dark+water': { name: 'Maré de Luto', desc: '+9 dano & drena +6 HP', bonusDmg: 9, heal: 6 },
+      'air+earth': { name: 'Metalização', desc: '+12 Escudo & +2 Poder', shield: 12, power: 2 },
+      'air+light': { name: 'Descarga', desc: '+10 dano & +1 SP', bonusDmg: 10, sp: 1 },
+      'air+dark': { name: 'Asfixia', desc: 'Desarma & +8 dano', disarm: true, bonusDmg: 8 },
+      'earth+light': { name: 'Baluarte', desc: '+14 Escudo imediato', shield: 14 },
+      'dark+earth': { name: 'Pântano dos Mortos', desc: '+10 dano & Fraqueza', bonusDmg: 10, weak: 2 },
+      'dark+light': { name: 'Eclipse', desc: 'Colapso do Âmago: +18 dano', bonusDmg: 18 }
+    };
+
+    const CARD_DB = {
+      // Comuns
+      flecha_incendiaria: { id: 'flecha_incendiaria', name: 'Flecha Incendiária', cost: 1, element: 'fire', damage: 6, owner: 'common', desc: 'Causa 6 de dano e aplica Fogo.' },
+      fonte_gelida: { id: 'fonte_gelida', name: 'Fonte Gélida', cost: 1, element: 'water', damage: 5, owner: 'common', desc: 'Causa 5 de dano e aplica Água.' },
+      palma_trovao: { id: 'palma_trovao', name: 'Palma do Trovão', cost: 1, element: 'air', damage: 6, owner: 'common', desc: 'Causa 6 de dano e aplica Ar.' },
+      lanca_montanha: { id: 'lanca_montanha', name: 'Lança da Montanha', cost: 1, element: 'earth', damage: 7, owner: 'common', desc: 'Causa 7 de dano e aplica Terra.' },
+      egide_runica: { id: 'egide_runica', name: 'Égide Rúnica', cost: 1, element: 'earth', block: 8, owner: 'common', desc: 'Concede +8 de Escudo.' },
+      graca_divina: { id: 'graca_divina', name: 'Graça Divina', cost: 0, element: 'light', sp: 1, draw: 1, owner: 'common', desc: 'Restaura +1 SP e compra 1 carta.' },
+      ultimo_suspiro: { id: 'ultimo_suspiro', name: 'Último Suspiro', cost: 1, element: 'dark', damage: 9, pierce: true, owner: 'common', desc: 'Causa 9 de dano direto (ignora escudo) e aplica Trevas.' },
+
+      // Novato
+      curativo_campanha: { id: 'curativo_campanha', name: 'Curativo de Campanha', cost: 1, element: 'light', heal: 6, block: 4, owner: 'novato', desc: 'Restaura +6 HP e ganha +4 Escudo.' },
+      recuo_tatico: { id: 'recuo_tatico', name: 'Recuo Tático', cost: 1, element: 'air', block: 9, draw: 1, owner: 'novato', desc: 'Ganha +9 Escudo e compra 1 carta.' },
+
+      // Mago
+      chama_brasalar: { id: 'chama_brasalar', name: 'Chama de Brasalar', cost: 1, element: 'fire', damage: 10, owner: 'mago', desc: 'Causa 10 de dano e aplica Fogo.' },
+      seta_geada: { id: 'seta_geada', name: 'Seta de Geada', cost: 1, element: 'water', damage: 9, weak: 1, owner: 'mago', desc: 'Causa 9 de dano, aplica Fraqueza e Água.' },
+
+      // Guerreiro
+      corte_incandescente: { id: 'corte_incandescente', name: 'Corte Incandescente', cost: 1, element: 'fire', damage: 10, owner: 'guerreiro', desc: 'Causa 10 de dano pesado e aplica Fogo.' },
+      postura_ferro: { id: 'postura_ferro', name: 'Postura de Ferro', cost: 1, element: 'earth', block: 11, power: 1, owner: 'guerreiro', desc: 'Ganha +11 Escudo e +1 Poder.' },
+
+      // Noviço
+      prece_alvorecer: { id: 'prece_alvorecer', name: 'Prece do Alvorecer', cost: 1, element: 'light', heal: 9, power: 2, owner: 'novico', desc: 'Restaura +9 HP e concede +2 Poder.' },
+      luz_purificadora: { id: 'luz_purificadora', name: 'Luz Purificadora', cost: 1, element: 'light', damage: 10, weak: 1, owner: 'novico', desc: 'Causa 10 de dano, aplica Fraqueza e Luz.' },
+
+      // Gatuno
+      lamina_peconha: { id: 'lamina_peconha', name: 'Lâmina da Peçonha', cost: 1, element: 'dark', damage: 9, weak: 2, owner: 'gatuno', desc: 'Causa 9 de dano, aplica 2 turnos de Fraqueza e Trevas.' },
+      passo_sombrio: { id: 'passo_sombrio', name: 'Passo Sombrio', cost: 1, element: 'air', block: 8, sp: 1, draw: 1, owner: 'gatuno', desc: 'Ganha +8 Escudo, +1 SP e compra 1 carta.' },
+
+      // Lutador
+      sequencia_vendaval: { id: 'sequencia_vendaval', name: 'Sequência do Vendaval', cost: 1, element: 'air', damage: 10, sp: 1, owner: 'lutador', desc: 'Causa 10 de dano rápido e restaura +1 SP.' },
+      guarda_marcial: { id: 'guarda_marcial', name: 'Guarda Marcial', cost: 1, element: 'earth', block: 10, draw: 1, owner: 'lutador', desc: 'Ganha +10 Escudo e compra 1 carta.' },
+
+      // Sombrio
+      toque_espectral: { id: 'toque_espectral', name: 'Toque Espectral', cost: 1, element: 'dark', damage: 11, pierce: true, owner: 'sombrio', desc: 'Causa 11 de dano direto e aplica Trevas.' },
+      duplicata_veu: { id: 'duplicata_veu', name: 'Duplicata do Véu', cost: 1, element: 'dark', block: 9, power: 2, owner: 'sombrio', desc: 'Cria clone sombrio: +9 Escudo e +2 Poder.' },
+
+      // Grau 2
+      queda_brasas: { id: 'queda_brasas', name: 'Queda de Brasas', cost: 2, element: 'fire', damage: 21, owner: 'bruxo', desc: 'Causa 21 de dano cataclísmico e aplica Fogo.' },
+      tormenta_marealta: { id: 'tormenta_marealta', name: 'Tormenta de Maréalta', cost: 2, element: 'water', damage: 19, weak: 2, owner: 'bruxo', desc: 'Causa 19 de dano, aplica Fraqueza e Água.' },
+      legiao_ossos: { id: 'legiao_ossos', name: 'Legião de Ossos', cost: 2, element: 'dark', damage: 22, block: 14, owner: 'necromante', desc: 'Causa 22 de dano, ganha +14 Escudo e aplica Trevas.' },
+      dreno_veu: { id: 'dreno_veu', name: 'Dreno do Véu', cost: 1, element: 'dark', damage: 16, heal: 12, owner: 'necromante', desc: 'Causa 16 de dano e drena +12 HP.' },
+      espirito_vento: { id: 'espirito_vento', name: 'Espírito do Vento', cost: 1, element: 'air', damage: 14, draw: 1, owner: 'espiritualista', desc: 'Invoca Espírito: 14 de dano, compra 1 carta e aplica Ar.' },
+      espirito_luz: { id: 'espirito_luz', name: 'Espírito da Luz', cost: 1, element: 'light', block: 15, power: 2, owner: 'espiritualista', desc: 'Invoca Espírito: +15 Escudo e +2 Poder.' },
+      investida_aco: { id: 'investida_aco', name: 'Investida de Aço', cost: 2, element: 'earth', damage: 24, power: 2, owner: 'cavaleiro', desc: 'Causa 24 de dano, ganha +2 Poder e aplica Terra.' },
+      muralha_aco: { id: 'muralha_aco', name: 'Muralha de Aço', cost: 1, element: 'earth', block: 20, power: 2, owner: 'cavaleiro', desc: 'Ganha +20 Escudo e +2 Poder.' },
+      estocada_precisao: { id: 'estocada_precisao', name: 'Estocada de Precisão', cost: 1, element: 'air', damage: 15, draw: 1, sp: 1, owner: 'duelista', desc: 'Causa 15 de dano, +1 SP, compra 1 carta e aplica Ar.' },
+      aparar_contra: { id: 'aparar_contra', name: 'Aparar & Contra-Atacar', cost: 1, element: 'neutral', damage: 12, block: 12, power: 2, owner: 'duelista', desc: 'Ganha +12 Escudo, causa 12 de dano e +2 Poder.' },
+      radiancia_sagrada: { id: 'radiancia_sagrada', name: 'Radiância Sagrada', cost: 1, element: 'light', heal: 14, block: 12, sp: 1, owner: 'clerigo', desc: 'Restaura +14 HP, +12 Escudo e +1 SP.' },
+      veredito_crepusculo: { id: 'veredito_crepusculo', name: 'Veredito do Crepúsculo', cost: 1, element: 'dark', damage: 17, heal: 6, owner: 'clerigo', desc: 'Causa 17 de dano crepuscular, cura +6 HP e aplica Trevas.' },
+      julgamento_martir: { id: 'julgamento_martir', name: 'Julgamento do Mártir', cost: 2, element: 'light', damage: 25, heal: 8, owner: 'paladino', desc: 'Causa 25 de dano sagrado, cura +8 HP e aplica Luz.' },
+      bastiao_alvorada: { id: 'bastiao_alvorada', name: 'Bastião da Alvorada', cost: 1, element: 'light', block: 18, heal: 9, owner: 'paladino', desc: 'Concede +18 Escudo e restaura +9 HP.' },
+      manto_sombras: { id: 'manto_sombras', name: 'Manto das Sombras', cost: 1, element: 'dark', damage: 12, block: 10, power: 2, owner: 'assassino', desc: 'Causa 12 de dano, ganha +10 Escudo e +2 Poder.' },
+      golpe_letal: { id: 'golpe_letal', name: 'Golpe Letal', cost: 2, element: 'dark', damage: 24, pierce: true, owner: 'assassino', desc: 'Causa 24 de dano crítico direto e aplica Trevas.' },
+      rajada_cem_palmas: { id: 'rajada_cem_palmas', name: 'Rajada de Cem Palmas', cost: 1, element: 'air', damage: 15, draw: 1, owner: 'monge', desc: 'Causa 15 de dano em rajada, compra 1 carta e aplica Ar.' },
+      punho_amago: { id: 'punho_amago', name: 'Punho do Âmago', cost: 2, element: 'fire', damage: 25, sp: 1, owner: 'monge', desc: 'Causa 25 de dano concentrado, +1 SP e aplica Fogo.' },
+      mordida_sanguinaria: { id: 'mordida_sanguinaria', name: 'Mordida Sanguinária', cost: 1, element: 'dark', damage: 15, heal: 10, owner: 'vampiro', desc: 'Causa 15 de dano e drena +10 HP.' },
+      sifao_carmesim: { id: 'sifao_carmesim', name: 'Sifão Carmesim', cost: 2, element: 'dark', damage: 21, heal: 14, owner: 'vampiro', desc: 'Causa 21 de dano e drena +14 HP.' },
+      veu_etereo: { id: 'veu_etereo', name: 'Véu Etéreo', cost: 1, element: 'dark', block: 16, disarm: true, owner: 'fantasma', desc: 'Ganha +16 Escudo e anula o ataque inimigo.' },
+      furto_astral: { id: 'furto_astral', name: 'Furto Astral', cost: 1, element: 'dark', damage: 16, pierce: true, power: 2, owner: 'fantasma', desc: 'Causa 16 de dano direto e rouba +2 Poder.' }
+    };
+
+    const CLASS_DB = {
+      novato: {
+        id: 'novato', name: 'Novato', tier: 0, icon: '🌱', archetype: 'Aprendiz dos Seis Veios',
+        passiveDesc: 'Começa no Nv. 1 com 1 Ponto de Ascensão.',
+        bonusHp: 0, bonusPower: 0, bonusSp: 0,
+        evolvesTo: ['mago', 'guerreiro', 'novico', 'gatuno', 'lutador', 'sombrio'],
+        deck: ['curativo_campanha', 'recuo_tatico', 'flecha_incendiaria', 'fonte_gelida', 'palma_trovao', 'egide_runica']
+      },
+      mago: {
+        id: 'mago', name: 'Mago', tier: 1, icon: '🔮', archetype: 'Canalizador dos Veios',
+        passiveDesc: '+2 Poder Mágico e acesso aos 4 elementos base.',
+        bonusHp: 4, bonusPower: 2, bonusSp: 0,
+        evolvesTo: ['bruxo', 'necromante', 'espiritualista'],
+        deck: ['chama_brasalar', 'seta_geada', 'palma_trovao', 'lanca_montanha', 'egide_runica', 'graca_divina']
+      },
+      guerreiro: {
+        id: 'guerreiro', name: 'Guerreiro', tier: 1, icon: '⚔️', archetype: 'Vanguarda de Ferro',
+        passiveDesc: '+10 HP Máx e +1 Poder Físico.',
+        bonusHp: 10, bonusPower: 1, bonusSp: 0,
+        evolvesTo: ['cavaleiro', 'duelista'],
+        deck: ['corte_incandescente', 'postura_ferro', 'corte_incandescente', 'postura_ferro', 'lanca_montanha', 'graca_divina']
+      },
+      novico: {
+        id: 'novico', name: 'Noviço', tier: 1, icon: '🕯️', archetype: 'Devoto da Alvorada',
+        passiveDesc: '+6 HP Máx, +1 Poder e curas amplificadas.',
+        bonusHp: 6, bonusPower: 1, bonusSp: 0,
+        evolvesTo: ['clerigo', 'paladino'],
+        deck: ['prece_alvorecer', 'luz_purificadora', 'prece_alvorecer', 'luz_purificadora', 'egide_runica', 'graca_divina']
+      },
+      gatuno: {
+        id: 'gatuno', name: 'Gatuno', tier: 1, icon: '🗡️', archetype: 'Lâmina Furtiva',
+        passiveDesc: '+2 Poder e controle de energia.',
+        bonusHp: 4, bonusPower: 2, bonusSp: 0,
+        evolvesTo: ['assassino', 'duelista'],
+        deck: ['lamina_peconha', 'passo_sombrio', 'lamina_peconha', 'passo_sombrio', 'palma_trovao', 'graca_divina']
+      },
+      lutador: {
+        id: 'lutador', name: 'Lutador', tier: 1, icon: '🥊', archetype: 'Mestre dos Combos',
+        passiveDesc: '+6 HP Máx, +1 Poder e geração constante de SP.',
+        bonusHp: 6, bonusPower: 1, bonusSp: 0,
+        evolvesTo: ['monge', 'guerreiro'],
+        deck: ['sequencia_vendaval', 'guarda_marcial', 'sequencia_vendaval', 'guarda_marcial', 'flecha_incendiaria', 'graca_divina']
+      },
+      sombrio: {
+        id: 'sombrio', name: 'Sombrio', tier: 1, icon: '🌑', archetype: 'Mestre do Véu',
+        passiveDesc: '+2 Poder Sombrio e ataques que ignoram escudo.',
+        bonusHp: 4, bonusPower: 2, bonusSp: 0,
+        evolvesTo: ['vampiro', 'fantasma', 'necromante'],
+        deck: ['toque_espectral', 'duplicata_veu', 'toque_espectral', 'duplicata_veu', 'ultimo_suspiro', 'graca_divina']
+      },
+      bruxo: {
+        id: 'bruxo', name: 'Bruxo', tier: 2, icon: '🔥', archetype: 'Arquimago Cataclísmico',
+        passiveDesc: '+5 Poder, +8 HP Máx e Reações Elementais devastadoras.',
+        bonusHp: 8, bonusPower: 5, bonusSp: 0, evolvesTo: [],
+        deck: ['queda_brasas', 'tormenta_marealta', 'queda_brasas', 'tormenta_marealta', 'palma_trovao', 'graca_divina']
+      },
+      necromante: {
+        id: 'necromante', name: 'Necromante', tier: 2, icon: '💀', archetype: 'Senhor dos Ossos e Véu',
+        passiveDesc: '+4 Poder, +12 HP Máx e drenagem vital.',
+        bonusHp: 12, bonusPower: 4, bonusSp: 0, evolvesTo: [],
+        deck: ['legiao_ossos', 'dreno_veu', 'legiao_ossos', 'dreno_veu', 'ultimo_suspiro', 'graca_divina']
+      },
+      espiritualista: {
+        id: 'espiritualista', name: 'Espiritualista', tier: 2, icon: '🧿', archetype: 'Invocador & Canalizador',
+        passiveDesc: '+4 Poder, +8 HP Máx e +1 SP Máximo.',
+        bonusHp: 8, bonusPower: 4, bonusSp: 1, evolvesTo: [],
+        deck: ['espirito_vento', 'espirito_luz', 'espirito_vento', 'espirito_luz', 'fonte_gelida', 'graca_divina']
+      },
+      cavaleiro: {
+        id: 'cavaleiro', name: 'Cavaleiro', tier: 2, icon: '🛡️', archetype: 'Bastião Inquebrável',
+        passiveDesc: '+4 Poder e +16 HP Máx.',
+        bonusHp: 16, bonusPower: 4, bonusSp: 0, evolvesTo: [],
+        deck: ['investida_aco', 'muralha_aco', 'investida_aco', 'muralha_aco', 'egide_runica', 'graca_divina']
+      },
+      duelista: {
+        id: 'duelista', name: 'Duelista', tier: 2, icon: '🤺', archetype: 'Mestre da Esgrima 1v1',
+        passiveDesc: '+4 Poder, +10 HP Máx e velocidade de compra.',
+        bonusHp: 10, bonusPower: 4, bonusSp: 0, evolvesTo: [],
+        deck: ['estocada_precisao', 'aparar_contra', 'estocada_precisao', 'aparar_contra', 'palma_trovao', 'graca_divina']
+      },
+      clerigo: {
+        id: 'clerigo', name: 'Clérigo', tier: 2, icon: '✨', archetype: 'Sumo Sacerdote do Crepúsculo',
+        passiveDesc: '+4 Poder, +12 HP Máx e equilíbrio Luz/Trevas.',
+        bonusHp: 12, bonusPower: 4, bonusSp: 0, evolvesTo: [],
+        deck: ['radiancia_sagrada', 'veredito_crepusculo', 'radiancia_sagrada', 'veredito_crepusculo', 'graca_divina', 'egide_runica']
+      },
+      paladino: {
+        id: 'paladino', name: 'Paladino', tier: 2, icon: '🔱', archetype: 'Templário da Alvorada',
+        passiveDesc: '+3 Poder e +18 HP Máx.',
+        bonusHp: 18, bonusPower: 3, bonusSp: 0, evolvesTo: [],
+        deck: ['julgamento_martir', 'bastiao_alvorada', 'julgamento_martir', 'bastiao_alvorada', 'luz_purificadora', 'graca_divina']
+      },
+      assassino: {
+        id: 'assassino', name: 'Assassino', tier: 2, icon: '🗡️', archetype: 'Executor Silencioso',
+        passiveDesc: '+5 Poder, +8 HP Máx e golpes perfurantes.',
+        bonusHp: 8, bonusPower: 5, bonusSp: 0, evolvesTo: [],
+        deck: ['manto_sombras', 'golpe_letal', 'manto_sombras', 'golpe_letal', 'lamina_peconha', 'graca_divina']
+      },
+      monge: {
+        id: 'monge', name: 'Monge', tier: 2, icon: '🧘', archetype: 'Punho Supremo do Âmago',
+        passiveDesc: '+4 Poder, +12 HP Máx e rajadas de energia.',
+        bonusHp: 12, bonusPower: 4, bonusSp: 0, evolvesTo: [],
+        deck: ['rajada_cem_palmas', 'punho_amago', 'rajada_cem_palmas', 'punho_amago', 'guarda_marcial', 'graca_divina']
+      },
+      vampiro: {
+        id: 'vampiro', name: 'Vampiro', tier: 2, icon: '🧛', archetype: 'Nobre da Noite Eterna',
+        passiveDesc: '+4 Poder, +12 HP Máx e roubo de vida intenso.',
+        bonusHp: 12, bonusPower: 4, bonusSp: 0, evolvesTo: [],
+        deck: ['mordida_sanguinaria', 'sifao_carmesim', 'mordida_sanguinaria', 'sifao_carmesim', 'ultimo_suspiro', 'graca_divina']
+      },
+      fantasma: {
+        id: 'fantasma', name: 'Fantasma', tier: 2, icon: '👻', archetype: 'Espectro Possessor',
+        passiveDesc: '+4 Poder, +10 HP Máx e +1 SP Máx.',
+        bonusHp: 10, bonusPower: 4, bonusSp: 1, evolvesTo: [],
+        deck: ['veu_etereo', 'furto_astral', 'veu_etereo', 'furto_astral', 'toque_espectral', 'graca_divina']
+      }
+    };
+
+    const CAMPAIGN_STAGES = [
+      { title: 'Cap. 1: Guardião de Brasalar', enemyName: 'Guardião de Brasalar', hp: 36, atk: 7, element: 'fire', xp: 70 },
+      { title: 'Cap. 2: Sentinela das Marés', enemyName: 'Sentinela das Marés', hp: 46, atk: 9, element: 'water', xp: 90 },
+      { title: 'Cap. 3: Vigia de Ventoalto', enemyName: 'Vigia de Ventoalto', hp: 56, atk: 11, element: 'air', xp: 110 },
+      { title: 'Cap. 4: Colosso de Rochedo', enemyName: 'Colosso de Rochedo', hp: 68, atk: 13, element: 'earth', xp: 140 },
+      { title: 'Cap. 5: Inquisidor da Alvorada', enemyName: 'Inquisidor da Alvorada', hp: 80, atk: 15, element: 'light', xp: 180 },
+      { title: 'Cap. 6: Soberano do Âmago', enemyName: 'Soberano do Âmago', hp: 96, atk: 18, element: 'dark', xp: 250 }
+    ];
+    window.CAMPAIGN_STAGES = CAMPAIGN_STAGES;
+    let simClassMods = {};
+    Object.keys(CLASS_DB).forEach(k => simClassMods[k] = 0);
+
+    let state = {
+      mode: 'pve',
+      nickname: 'Duelista_' + Math.floor(100 + Math.random() * 900),
+      classId: 'novato',
+      level: 1,
+      xp: 0,
+      skillPoints: 1,
+      stage: 0,
+      pvp: { mmr: 1000, wins: 0, losses: 0, opponent: null },
+      online: { active: false, roomCode: null, role: null, isMyTurn: false, roomData: null, finished: false, lastLogShown: '' },
+      customDeck: null,
+      player: { hp: 40, maxHp: 40, sp: 3, maxSp: 3, shield: 0, power: 0, aura: null, weak: 0 },
+      enemy: null,
+      hand: [],
+      deck: [],
+      discard: [],
+      cardsPlayedTurn: 0
+    };
+
+    window.state = state;
+    window.CLASS_DB = CLASS_DB;
+
+    function getClassMultiplier(classId) {
+      const pct = simClassMods[classId] || 0;
+      return Math.max(0.1, 1 + pct / 100);
+    }
+
+    function applyClassStats() {
+      const cls = CLASS_DB[state.classId] || CLASS_DB.novato;
+      const mult = getClassMultiplier(cls.id);
+      const levelHp = (state.level - 1) * 5;
+      const levelPow = Math.floor((state.level - 1) / 2);
+      state.player.maxHp = Math.round((40 + cls.bonusHp + levelHp) * (cls.id === 'novato' ? 1 : (0.85 + mult * 0.15)));
+      state.player.hp = state.player.maxHp;
+      state.player.maxSp = 3 + (cls.bonusSp || 0);
+      state.player.sp = state.player.maxSp;
+      state.player.power = Math.round((cls.bonusPower + levelPow) * mult);
+      state.player.shield = 0;
+      state.player.aura = null;
+      state.player.weak = 0;
+    }
+    window.applyClassStats = applyClassStats;
+
+    function buildBattleDeck() {
+      const cls = CLASS_DB[state.classId] || CLASS_DB.novato;
+      const list = (state.customDeck && state.customDeck.length >= 6) ? [...state.customDeck] : [...cls.deck];
+      for (let i = list.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [list[i], list[j]] = [list[j], list[i]];
+      }
+      state.deck = list;
+      state.discard = [];
+      state.hand = [];
+      drawCards(4);
+    }
+
+    function drawCards(count) {
+      for (let i = 0; i < count; i++) {
+        if (state.deck.length === 0) {
+          if (state.discard.length === 0) break;
+          state.deck = [...state.discard];
+          state.discard = [];
+          for (let j = state.deck.length - 1; j > 0; j--) {
+            const k = Math.floor(Math.random() * (j + 1));
+            [state.deck[j], state.deck[k]] = [state.deck[k], state.deck[j]];
+          }
+        }
+        if (state.hand.length < 6) {
+          state.hand.push(state.deck.pop());
+        }
+      }
+    }
+
+    function startStage(stageIdx) {
+      state.stage = Math.min(stageIdx, CAMPAIGN_STAGES.length - 1);
+      const stg = CAMPAIGN_STAGES[state.stage];
+      applyClassStats();
+      state.enemy = {
+        name: stg.enemyName,
+        hp: stg.hp,
+        maxHp: stg.hp,
+        atk: stg.atk,
+        element: stg.element,
+        shield: 0,
+        power: 0,
+        aura: null,
+        weak: 0,
+        disarmed: false,
+        xpReward: stg.xp,
+        intentText: `Ataque ${stg.atk} (${ELEMENTS[stg.element].icon})`
+      };
+      buildBattleDeck();
+      const combatLogEl = document.getElementById('combatLog');
+      if (combatLogEl) combatLogEl.innerHTML = '';
+      logMsg(`⚔️ ${stg.title} iniciado contra ${stg.enemyName}!`, 'text-amber-300');
+      updateUI();
+    }
+
+    function findPvpMatch() {
+      const allClasses = Object.values(CLASS_DB).filter(c => c.tier >= 1);
+      const pick = allClasses[Math.floor(Math.random() * allClasses.length)];
+      const names = ['Kaelen', 'Lyra', 'Vesper', 'Thorne', 'Seraphina', 'Draven', 'Isolde', 'Zarek', 'Nyx', 'Aurelia'];
+      const rivalName = names[Math.floor(Math.random() * names.length)];
+      const rivalMmr = Math.max(800, state.pvp.mmr + Math.floor(Math.random() * 140 - 70));
+
+      applyClassStats();
+      const mult = getClassMultiplier(pick.id);
+      const enemyHp = Math.round((44 + pick.bonusHp) * (0.85 + mult * 0.15));
+      const enemyAtk = Math.round((9 + pick.bonusPower * 1.5) * mult);
+
+      state.enemy = {
+        name: `${rivalName} (${pick.name})`,
+        hp: enemyHp,
+        maxHp: enemyHp,
+        atk: enemyAtk,
+        element: ['fire', 'water', 'air', 'earth', 'light', 'dark'][Math.floor(Math.random() * 6)],
+        shield: 4,
+        power: pick.bonusPower,
+        aura: null,
+        weak: 0,
+        disarmed: false,
+        isPvp: true,
+        rivalMmr,
+        intentText: `Golpe ${enemyAtk}`
+      };
+      buildBattleDeck();
+      document.getElementById('combatLog').innerHTML = '';
+      logMsg(`🏆 Partida Ranqueada encontrada! ${rivalName} (${pick.name} • ${rivalMmr} MMR)`, 'text-amber-300');
+      updateUI();
+    }
+
+    function switchGameMode(mode) {
+      state.mode = mode;
+      const btnPve = document.getElementById('btnModePve');
+      const btnPvp = document.getElementById('btnModePvp');
+      const panelPve = document.getElementById('panelPveProgress');
+      const panelPvp = document.getElementById('panelPvpRanked');
+
+      if (mode === 'pve') {
+        btnPve.className = 'px-3 py-1.5 rounded-lg text-xs font-semibold transition bg-amber-500 text-slate-950 shadow';
+        btnPvp.className = 'px-3 py-1.5 rounded-lg text-xs font-semibold transition text-slate-300 hover:text-white';
+        panelPve.classList.remove('hidden');
+        panelPvp.classList.add('hidden');
+        if (!state.online.active) startStage(state.stage);
+      } else {
+        btnPvp.className = 'px-3 py-1.5 rounded-lg text-xs font-semibold transition bg-amber-500 text-slate-950 shadow';
+        btnPve.className = 'px-3 py-1.5 rounded-lg text-xs font-semibold transition text-slate-300 hover:text-white';
+        panelPvp.classList.remove('hidden');
+        panelPve.classList.add('hidden');
+        if (!state.online.active) findPvpMatch();
+      }
+      updateUI();
+    }
+
+    function evolveClass(targetClassId) {
+      const target = CLASS_DB[targetClassId];
+      if (!target || state.skillPoints <= 0) return;
+      state.skillPoints -= 1;
+      state.classId = targetClassId;
+      state.customDeck = null;
+      logMsg(`🌟 Ascensão concluída! Você agora é ${target.name} (${target.archetype})!`, 'text-amber-300');
+      if (state.mode === 'pve') startStage(state.stage);
+      else findPvpMatch();
+      if (window.saveCloudProfile) window.saveCloudProfile();
+    }
+
+    function checkElementReaction(target, newElem) {
+      if (!newElem || newElem === 'neutral') return null;
+      if (!target.aura || target.aura === newElem) {
+        target.aura = newElem;
+        return null;
+      }
+      const pair = [target.aura, newElem].sort().join('+');
+      target.aura = null;
+      return REACTIONS[pair] || null;
+    }
+
+    function playCard(handIndex) {
+      if (state.online.active && !state.online.isMyTurn) {
+        logMsg('⏳ Aguarde o turno do seu oponente online!', 'text-amber-400');
+        return;
+      }
+      const cardId = state.hand[handIndex];
+      const card = CARD_DB[cardId];
+      if (!card || !state.enemy) return;
+
+      if (state.player.sp < card.cost) {
+        logMsg('⚠️ Energia (SP) insuficiente para esta carta!', 'text-rose-400');
+        return;
+      }
+
+      state.player.sp -= card.cost;
+      state.hand.splice(handIndex, 1);
+      state.discard.push(cardId);
+      state.cardsPlayedTurn += 1;
+
+      const mult = card.owner !== 'common' ? getClassMultiplier(card.owner) : 1;
+      let summary = `${state.nickname} jogou ${card.name}`;
+
+      if (card.block) {
+        const blk = Math.round(card.block * mult);
+        state.player.shield += blk;
+        summary += ` (+${blk} Escudo)`;
+      }
+      if (card.heal) {
+        const hl = Math.round(card.heal * mult);
+        state.player.hp = Math.min(state.player.maxHp, state.player.hp + hl);
+        summary += ` (+${hl} HP)`;
+      }
+      if (card.power) {
+        const pw = Math.round(card.power * mult);
+        state.player.power += pw;
+        summary += ` (+${pw} Poder)`;
+      }
+      if (card.sp) state.player.sp = Math.min(state.player.maxSp + 2, state.player.sp + card.sp);
+      if (card.draw) drawCards(card.draw);
+      if (card.weak) state.enemy.weak = (state.enemy.weak || 0) + card.weak;
+      if (card.disarm) state.enemy.disarmed = true;
+
+      if (card.damage) {
+        let dmg = Math.round(card.damage * mult) + state.player.power;
+        const react = checkElementReaction(state.enemy, card.element);
+        if (react) {
+          logMsg(`💥 REAÇÃO ELEMENTAL: ${react.name}! (${react.desc})`, 'text-fuchsia-300');
+          if (react.bonusDmg) dmg += react.bonusDmg;
+          if (react.shatter) state.enemy.shield = 0;
+          if (react.shield) state.player.shield += react.shield;
+          if (react.heal) state.player.hp = Math.min(state.player.maxHp, state.player.hp + react.heal);
+          if (react.power) state.player.power += react.power;
+          if (react.sp) state.player.sp += react.sp;
+          if (react.weak) state.enemy.weak = (state.enemy.weak || 0) + react.weak;
+          if (react.disarm) state.enemy.disarmed = true;
+          if (react.draw) drawCards(react.draw);
+        }
+
+        if (card.pierce) {
+          state.enemy.hp = Math.max(0, state.enemy.hp - dmg);
+        } else {
+          const absorbed = Math.min(state.enemy.shield, dmg);
+          state.enemy.shield -= absorbed;
+          state.enemy.hp = Math.max(0, state.enemy.hp - (dmg - absorbed));
+        }
+        summary += ` (${dmg} dano)`;
+      }
+
+      logMsg(`✨ ${summary}.`, 'text-sky-300');
+
+      if (state.enemy.hp <= 0) {
+        handleVictory();
+      } else if (state.online.active && window.syncOnlineTurnState) {
+        window.syncOnlineTurnState(summary, false);
+      }
+
+      updateUI();
+    }
+
+    function endPlayerTurn() {
+      if (!state.enemy) return;
+      if (state.online.active) {
+        if (!state.online.isMyTurn) return;
+        state.player.sp = state.player.maxSp;
+        drawCards(2);
+        if (window.syncOnlineTurnState) {
+          window.syncOnlineTurnState(`${state.nickname} encerrou o turno.`, true);
+        }
+        updateUI();
+        return;
+      }
+
+      // Turno da IA (PvE ou PvP Ranqueado)
+      if (state.enemy.disarmed) {
+        logMsg(`❄️ ${state.enemy.name} estava desarmado e perdeu o ataque!`, 'text-cyan-300');
+        state.enemy.disarmed = false;
+      } else {
+        let atk = state.enemy.atk + Math.floor(Math.random() * 4);
+        if (state.enemy.weak > 0) {
+          atk = Math.round(atk * 0.75);
+          state.enemy.weak -= 1;
+        }
+        const absorbed = Math.min(state.player.shield, atk);
+        state.player.shield -= absorbed;
+        const net = atk - absorbed;
+        state.player.hp = Math.max(0, state.player.hp - net);
+        logMsg(`💥 ${state.enemy.name} atacou causando ${atk} de dano (${absorbed} bloqueado).`, 'text-rose-300');
+      }
+
+      if (state.player.hp <= 0) {
+        handleDefeat();
+        return;
+      }
+
+      // Novo turno do jogador
+      state.player.sp = state.player.maxSp;
+      state.cardsPlayedTurn = 0;
+      drawCards(2);
+      const nextAtk = state.enemy.atk + Math.floor(Math.random() * 4);
+      state.enemy.intentText = `Ataque ~${nextAtk}`;
+      updateUI();
+    }
+
+    function handleVictory() {
+      if (state.online.active) {
+        logMsg(`🏆 VITÓRIA ONLINE! Você derrotou ${state.enemy.name}!`, 'text-emerald-300');
+        state.pvp.wins += 1;
+        state.pvp.mmr += 25;
+        if (window.syncOnlineTurnState) window.syncOnlineTurnState(`${state.nickname} venceu o duelo!`, true);
+        if (window.saveCloudProfile) window.saveCloudProfile();
+        return;
+      }
+
+      if (state.mode === 'pvp') {
+        const gain = 22;
+        state.pvp.wins += 1;
+        state.pvp.mmr += gain;
+        logMsg(`🏆 Vitória Ranqueada! +${gain} MMR (Total: ${state.pvp.mmr})`, 'text-emerald-300');
+        if (window.saveCloudProfile) window.saveCloudProfile();
+        setTimeout(() => findPvpMatch(), 1400);
+      } else {
+        const xpGain = state.enemy.xpReward || 80;
+        state.xp += xpGain;
+        while (state.xp >= state.level * 100) {
+          state.xp -= state.level * 100;
+          state.level += 1;
+          state.skillPoints += 1;
+          logMsg(`🎉 SUBIU DE NÍVEL! Nível ${state.level} (+1 Ponto de Ascensão)!`, 'text-amber-300');
+        }
+        logMsg(`🏆 Vitória na Campanha! +${xpGain} XP.`, 'text-emerald-300');
+        if (window.saveCloudProfile) window.saveCloudProfile();
+        const nextStage = (state.stage + 1) % CAMPAIGN_STAGES.length;
+        setTimeout(() => startStage(nextStage), 1400);
+      }
+    }
+
+    function handleDefeat() {
+      if (state.mode === 'pvp') {
+        const loss = 15;
+        state.pvp.losses += 1;
+        state.pvp.mmr = Math.max(500, state.pvp.mmr - loss);
+        logMsg(`💀 Derrota Ranqueada (-${loss} MMR). Buscando novo oponente...`, 'text-rose-400');
+        if (window.saveCloudProfile) window.saveCloudProfile();
+        setTimeout(() => findPvpMatch(), 1400);
+      } else {
+        logMsg(`💀 Você caiu em combate! Reiniciando capítulo atual...`, 'text-rose-400');
+        setTimeout(() => startStage(state.stage), 1400);
+      }
+    }
+
+    function getLeagueName(mmr) {
+      if (mmr >= 1600) return 'Grão-Mestre do Âmago';
+      if (mmr >= 1400) return 'Diamante';
+      if (mmr >= 1250) return 'Platina';
+      if (mmr >= 1100) return 'Ouro';
+      if (mmr >= 950) return 'Prata';
+      return 'Bronze';
+    }
+
+    function logMsg(text, colorClass = 'text-slate-300') {
+      const box = document.getElementById('combatLog');
+      if (!box) return;
+      const line = document.createElement('div');
+      line.className = colorClass;
+      line.textContent = text;
+      box.appendChild(line);
+      box.scrollTop = box.scrollHeight;
+    }
+    window.logMsg = logMsg;
+
+    function updateUI() {
+      const cls = CLASS_DB[state.classId] || CLASS_DB.novato;
+      document.getElementById('headerPlayerName').textContent = state.nickname;
+      document.getElementById('uiClassIcon').textContent = cls.icon;
+      document.getElementById('uiClassName').textContent = cls.name;
+      document.getElementById('uiClassTier').textContent = `Grau ${cls.tier}`;
+      document.getElementById('uiClassArchetype').textContent = cls.archetype;
+      document.getElementById('uiClassPassive').textContent = cls.passiveDesc;
+      document.getElementById('uiLevel').textContent = state.level;
+      document.getElementById('uiXp').textContent = state.xp;
+      document.getElementById('uiXpNext').textContent = state.level * 100;
+      document.getElementById('uiXpBar').style.width = `${Math.min(100, (state.xp / (state.level * 100)) * 100)}%`;
+      document.getElementById('uiSkillPoints').textContent = state.skillPoints;
+
+      // Evoluções
+      const evoBox = document.getElementById('uiEvolutionList');
+      if (cls.evolvesTo && cls.evolvesTo.length > 0) {
+        evoBox.innerHTML = cls.evolvesTo.map(eid => {
+          const ec = CLASS_DB[eid];
+          const can = state.skillPoints > 0;
+          return `
+            <button onclick="evolveClass('${eid}')" ${can ? '' : 'disabled'}
+              class="p-2 rounded-xl border text-left transition ${can ? 'bg-amber-500/15 hover:bg-amber-500/25 border-amber-400/40 text-white cursor-pointer' : 'bg-slate-900/50 border-slate-800 text-slate-500 cursor-not-allowed'}">
+              <div class="font-bold text-xs">${ec.icon} ${ec.name}</div>
+              <div class="text-[10px] opacity-80">Grau ${ec.tier}</div>
+            </button>
+          `;
+        }).join('');
+      } else {
+        evoBox.innerHTML = `<div class="col-span-2 text-xs text-amber-300/80 bg-slate-900/70 p-2 rounded-xl border border-slate-800">✦ Classe Máxima (Grau 2) alcançada!</div>`;
+      }
+
+      // Lista de Capítulos PvE
+      const stgList = document.getElementById('uiStageList');
+      document.getElementById('uiStageCounter').textContent = `Capítulo ${state.stage + 1}/${CAMPAIGN_STAGES.length}`;
+      stgList.innerHTML = CAMPAIGN_STAGES.map((s, idx) => `
+        <button onclick="startStage(${idx})" class="w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs border transition ${idx === state.stage ? 'bg-amber-500/20 border-amber-400/50 text-amber-200 font-bold' : 'bg-slate-900/60 border-slate-800 text-slate-400 hover:text-white'}">
+          <span>${ELEMENTS[s.element].icon} ${s.title}</span>
+          <span class="text-[10px]">${s.hp} HP</span>
+        </button>
+      `).join('');
+
+      // PvP Ranqueado
+      document.getElementById('uiPvpLeagueBadge').textContent = `${getLeagueName(state.pvp.mmr)} • ${state.pvp.mmr} MMR`;
+      document.getElementById('uiPvpMmr').textContent = state.pvp.mmr;
+      document.getElementById('uiPvpWins').textContent = state.pvp.wins;
+      document.getElementById('uiPvpLosses').textContent = state.pvp.losses;
+
+      // Arena Jogador
+      document.getElementById('arenaPlayerName').textContent = `${state.nickname} (${cls.name})`;
+      document.getElementById('playerHpText').textContent = `${Math.round(state.player.hp)} / ${state.player.maxHp}`;
+      document.getElementById('playerHpBar').style.width = `${Math.max(0, Math.min(100, (state.player.hp / state.player.maxHp) * 100))}%`;
+      document.getElementById('playerSpText').textContent = `${state.player.sp} / ${state.player.maxSp}`;
+      document.getElementById('playerPowerBadge').textContent = `⚡ +${state.player.power}`;
+
+      const pShield = document.getElementById('playerShieldBadge');
+      if (state.player.shield > 0) {
+        pShield.classList.remove('hidden');
+        pShield.textContent = `🛡️ ${state.player.shield}`;
+      } else {
+        pShield.classList.add('hidden');
+      }
+
+      // Arena Inimigo
+      if (state.enemy) {
+        document.getElementById('arenaEnemyName').textContent = state.enemy.name;
+        document.getElementById('enemyHpText').textContent = `${Math.round(state.enemy.hp)} / ${state.enemy.maxHp}`;
+        document.getElementById('enemyHpBar').style.width = `${Math.max(0, Math.min(100, (state.enemy.hp / state.enemy.maxHp) * 100))}%`;
+        document.getElementById('enemyIntentText').textContent = state.enemy.intentText || 'Preparando...';
+
+        const eShield = document.getElementById('enemyShieldBadge');
+        if (state.enemy.shield > 0) {
+          eShield.classList.remove('hidden');
+          eShield.textContent = `🛡️ ${state.enemy.shield}`;
+        } else {
+          eShield.classList.add('hidden');
+        }
+
+        const eTags = document.getElementById('enemyStatusTags');
+        let tagsHtml = '';
+        if (state.enemy.aura && ELEMENTS[state.enemy.aura]) {
+          const el = ELEMENTS[state.enemy.aura];
+          tagsHtml += `<span class="px-2 py-0.5 rounded border ${el.badge} font-semibold">${el.icon} ${el.name}</span>`;
+        }
+        if (state.enemy.weak > 0) {
+          tagsHtml += `<span class="px-2 py-0.5 rounded bg-purple-500/20 text-purple-300 border border-purple-500/40">Fraqueza (${state.enemy.weak})</span>`;
+        }
+        eTags.innerHTML = tagsHtml;
+      }
+
+      // Turno & Cartas na Mão
+      const turnBadge = document.getElementById('turnIndicatorBadge');
+      const btnEnd = document.getElementById('btnEndTurn');
+      if (state.online.active && !state.online.isMyTurn) {
+        turnBadge.textContent = 'Turno do Oponente';
+        turnBadge.className = 'px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-400/30 text-[11px] font-bold';
+        btnEnd.disabled = true;
+        btnEnd.classList.add('opacity-50', 'cursor-not-allowed');
+      } else {
+        turnBadge.textContent = 'Seu Turno';
+        turnBadge.className = 'px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 text-[11px] font-bold';
+        btnEnd.disabled = false;
+        btnEnd.classList.remove('opacity-50', 'cursor-not-allowed');
+      }
+
+      document.getElementById('deckCounterBadge').textContent = `Compra: ${state.deck.length} | Descarte: ${state.discard.length}`;
+      const handEl = document.getElementById('handContainer');
+      handEl.innerHTML = state.hand.map((cid, idx) => {
+        const c = CARD_DB[cid];
+        const el = ELEMENTS[c.element] || ELEMENTS.neutral;
+        const mult = c.owner !== 'common' ? getClassMultiplier(c.owner) : 1;
+        const scaledDmg = c.damage ? Math.round(c.damage * mult) : 0;
+        const scaledBlk = c.block ? Math.round(c.block * mult) : 0;
+        const canPlay = state.player.sp >= c.cost && (!state.online.active || state.online.isMyTurn);
+
+        let dynamicDesc = c.desc;
+        if (c.damage && mult !== 1) dynamicDesc = dynamicDesc.replace(String(c.damage), String(scaledDmg));
+        if (c.block && mult !== 1) dynamicDesc = dynamicDesc.replace(String(c.block), String(scaledBlk));
+
+        return `
+          <button onclick="playCard(${idx})" ${canPlay ? '' : 'disabled'}
+            class="card-hover flex flex-col justify-between p-3 rounded-2xl border text-left ${canPlay ? 'bg-slate-900/95 border-slate-700 hover:border-amber-400 cursor-pointer' : 'bg-slate-950/60 border-slate-800/70 opacity-55 cursor-not-allowed'}">
+            <div>
+              <div class="flex items-center justify-between gap-1 mb-1.5">
+                <span class="px-2 py-0.5 rounded-lg bg-cyan-500/20 text-cyan-300 border border-cyan-400/30 text-[11px] font-extrabold">${c.cost} SP</span>
+                <span class="px-1.5 py-0.5 rounded border text-[10px] font-semibold ${el.badge}">${el.icon} ${el.name}</span>
+              </div>
+              <div class="font-bold text-white text-xs leading-snug mb-1">${c.name}</div>
+              <p class="text-[11px] text-slate-300 leading-relaxed">${dynamicDesc}</p>
+            </div>
+            <div class="mt-2 pt-1.5 border-t border-slate-800/80 flex items-center justify-between text-[10px] text-slate-400">
+              <span>${c.owner === 'common' ? 'Comum' : (CLASS_DB[c.owner]?.name || 'Classe')}</span>
+              ${scaledDmg ? `<span class="text-amber-300 font-bold">⚔️ ${scaledDmg + state.player.power}</span>` : ''}
+            </div>
+          </button>
+        `;
+      }).join('');
+    }
+    window.updateUI = updateUI;
+
+    // Modais: Grimório
+    function openGrimoireModal() {
+      const grid = document.getElementById('grimoireGrid');
+      grid.innerHTML = Object.entries(REACTIONS).map(([pair, r]) => {
+        const [e1, e2] = pair.split('+');
+        return `
+          <div class="p-3 rounded-xl bg-slate-900/90 border border-slate-800">
+            <div class="flex items-center justify-between mb-1">
+              <span class="font-bold text-amber-300">${r.name}</span>
+              <span class="text-[11px]">${ELEMENTS[e1].icon} + ${ELEMENTS[e2].icon}</span>
+            </div>
+            <p class="text-slate-300">${r.desc}</p>
+          </div>
+        `;
+      }).join('');
+      document.getElementById('grimoireModal').classList.remove('hidden');
+    }
+    function closeGrimoireModal() { document.getElementById('grimoireModal').classList.add('hidden'); }
+
+    // Modais: Forja de Baralho
+    let tempDeck = [];
+    function openDeckBuilderModal() {
+      const cls = CLASS_DB[state.classId] || CLASS_DB.novato;
+      tempDeck = (state.customDeck && state.customDeck.length >= 6) ? [...state.customDeck] : [...cls.deck];
+      renderDeckBuilder();
+      document.getElementById('deckBuilderModal').classList.remove('hidden');
+    }
+    function closeDeckBuilderModal() { document.getElementById('deckBuilderModal').classList.add('hidden'); }
+    function renderDeckBuilder() {
+      document.getElementById('deckBuilderCount').textContent = tempDeck.length;
+      document.getElementById('deckBuilderCurrent').innerHTML = tempDeck.map((cid, i) => {
+        const c = CARD_DB[cid];
+        return `
+          <div class="flex items-center justify-between px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-800">
+            <span>${ELEMENTS[c.element].icon} <strong class="text-white">${c.name}</strong> (${c.cost} SP)</span>
+            <button onclick="removeCardFromTempDeck(${i})" class="text-rose-400 hover:text-rose-300 font-bold px-2">✕</button>
+          </div>
+        `;
+      }).join('');
+
+      document.getElementById('deckBuilderPool').innerHTML = Object.values(CARD_DB).map(c => `
+        <button onclick="addCardToTempDeck('${c.id}')" class="w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-800 text-left">
+          <span>${ELEMENTS[c.element].icon} <strong class="text-white">${c.name}</strong> <span class="text-slate-400">(${c.desc})</span></span>
+          <span class="text-emerald-400 font-bold ml-2">+</span>
+        </button>
+      `).join('');
+    }
+    function addCardToTempDeck(cid) {
+      if (tempDeck.length >= 12) return;
+      tempDeck.push(cid);
+      renderDeckBuilder();
+    }
+    function removeCardFromTempDeck(idx) {
+      if (tempDeck.length <= 6) return;
+      tempDeck.splice(idx, 1);
+      renderDeckBuilder();
+    }
+    function resetDeckToClassDefault() {
+      const cls = CLASS_DB[state.classId] || CLASS_DB.novato;
+      tempDeck = [...cls.deck];
+      renderDeckBuilder();
+    }
+    function saveCustomDeck() {
+      if (tempDeck.length < 6) return;
+      state.customDeck = [...tempDeck];
+      buildBattleDeck();
+      updateUI();
+      closeDeckBuilderModal();
+      logMsg('🃏 Baralho personalizado salvo e embaralhado!', 'text-indigo-300');
+    }
+
+    // Modal: Online
+    function openOnlineModal() {
+      document.getElementById('inputNickname').value = state.nickname;
+      document.getElementById('onlineModal').classList.remove('hidden');
+    }
+    function closeOnlineModal() { document.getElementById('onlineModal').classList.add('hidden'); }
+    function savePlayerNickname() {
+      const val = (document.getElementById('inputNickname').value || '').trim();
+      if (val) {
+        state.nickname = val;
+        updateUI();
+        if (window.saveCloudProfile) window.saveCloudProfile();
+        logMsg(`✓ Apelido atualizado para ${val}.`, 'text-emerald-300');
+      }
+    }
+    function copyRoomCode() {
+      const code = document.getElementById('createdRoomCodeText').textContent;
+      const el = document.createElement('textarea');
+      el.value = code;
+      document.body.appendChild(el);
+      el.select();
+      document.execCommand('copy');
+      document.body.removeChild(el);
+      logMsg(`📋 Código ${code} copiado! Envie para seu amigo.`, 'text-emerald-300');
+    }
+
+    function downloadRenderBundle() {
+      const htmlContent = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
+      const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'index.html';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      logMsg('🚀 Arquivo index.html baixado! Suba no GitHub e conecte como Static Site no Render.', 'text-sky-300');
+    }
+    window.downloadRenderBundle = downloadRenderBundle;
+
+    // Modal: Simulador de Torneio Ao Vivo com Buff/Nerf %
+    function openSimulatorModal() {
+      document.getElementById('simulatorModal').classList.remove('hidden');
+      runLiveTournamentInGame();
+    }
+    function closeSimulatorModal() { document.getElementById('simulatorModal').classList.add('hidden'); }
+
+    function adjustSimClassPct(classId, delta) {
+      simClassMods[classId] = Math.max(-90, Math.min(300, (simClassMods[classId] || 0) + delta));
+      runLiveTournamentInGame();
+    }
+
+    function setSimClassPct(classId, val) {
+      const num = parseInt(val, 10);
+      simClassMods[classId] = isNaN(num) ? 0 : Math.max(-90, Math.min(300, num));
+      runLiveTournamentInGame();
+    }
+
+    function resetSimCardMods() {
+      Object.keys(simClassMods).forEach(k => simClassMods[k] = 0);
+      runLiveTournamentInGame();
+    }
+
+    function applySimModsToGame() {
+      const badge = document.getElementById('uiAppliedBalanceBadge');
+      if (badge) badge.classList.remove('hidden');
+      applyClassStats();
+      updateUI();
+      logMsg('✅ Ajustes percentuais das classes aplicados ao jogo!', 'text-emerald-300');
+      closeSimulatorModal();
+    }
+
+    function simulateQuickDuel(cA, cB) {
+      const multA = getClassMultiplier(cA.id);
+      const multB = getClassMultiplier(cB.id);
+
+      let hpA = Math.round((40 + cA.bonusHp) * (cA.id === 'novato' ? 1 : (0.85 + multA * 0.15)));
+      let hpB = Math.round((40 + cB.bonusHp) * (cB.id === 'novato' ? 1 : (0.85 + multB * 0.15)));
+      let powA = Math.round(cA.bonusPower * multA);
+      let powB = Math.round(cB.bonusPower * multB);
+      let shdA = 0, shdB = 0;
+
+      const avgCardA = cA.deck.reduce((acc, cid) => acc + ((CARD_DB[cid]?.damage || 0) + (CARD_DB[cid]?.block || 0) * 0.7 + (CARD_DB[cid]?.heal || 0) * 0.8), 0) / cA.deck.length;
+      const avgCardB = cB.deck.reduce((acc, cid) => acc + ((CARD_DB[cid]?.damage || 0) + (CARD_DB[cid]?.block || 0) * 0.7 + (CARD_DB[cid]?.heal || 0) * 0.8), 0) / cB.deck.length;
+
+      for (let turn = 1; turn <= 18; turn++) {
+        // Turno A
+        const actA = Math.round((avgCardA * multA + powA) * (0.85 + Math.random() * 0.35));
+        if (Math.random() < 0.25) shdA += Math.round(actA * 0.5);
+        else {
+          const abs = Math.min(shdB, actA);
+          shdB -= abs;
+          hpB -= (actA - abs);
+        }
+        if (hpB <= 0) return true;
+
+        // Turno B
+        const actB = Math.round((avgCardB * multB + powB) * (0.85 + Math.random() * 0.35));
+        if (Math.random() < 0.25) shdB += Math.round(actB * 0.5);
+        else {
+          const abs = Math.min(shdA, actB);
+          shdA -= abs;
+          hpA -= (actB - abs);
+        }
+        if (hpA <= 0) return false;
+      }
+      return hpA >= hpB;
+    }
+
+    function runLiveTournamentInGame() {
+      const classes = Object.values(CLASS_DB);
+      const matchesPerPair = 100;
+      const stats = classes.map(c => ({ cls: c, wins: 0, total: 0 }));
+
+      for (let i = 0; i < stats.length; i++) {
+        for (let j = i + 1; j < stats.length; j++) {
+          for (let m = 0; m < matchesPerPair; m++) {
+            const aWins = simulateQuickDuel(stats[i].cls, stats[j].cls);
+            stats[i].total++;
+            stats[j].total++;
+            if (aWins) stats[i].wins++;
+            else stats[j].wins++;
+          }
+        }
+      }
+
+      stats.sort((a, b) => (b.wins / b.total) - (a.wins / a.total));
+
+      const avgT1 = stats.filter(s => s.cls.tier === 1).reduce((acc, s) => acc + (s.wins / s.total) * 100, 0) / 6;
+      const avgT2 = stats.filter(s => s.cls.tier === 2).reduce((acc, s) => acc + (s.wins / s.total) * 100, 0) / 11;
+
+      document.getElementById('simulatorSummary').innerHTML = `
+        <span>📊 <strong>30.600 Duelos Simulados</strong></span>
+        <span class="text-sky-300">Média Grau 1 (Meta ~40%): <strong>${avgT1.toFixed(1)}%</strong></span>
+        <span class="text-amber-300">Média Grau 2 (Meta ~60%): <strong>${avgT2.toFixed(1)}%</strong></span>
+      `;
+
+      document.getElementById('simulatorResultsBody').innerHTML = stats.map((s, idx) => {
+        const wr = ((s.wins / s.total) * 100).toFixed(1);
+        const pct = simClassMods[s.cls.id] || 0;
+        const barColor = s.cls.tier === 2 ? 'bg-amber-500' : (s.cls.tier === 1 ? 'bg-sky-500' : 'bg-slate-500');
+        return `
+          <div class="flex flex-wrap items-center justify-between gap-2 p-2.5 rounded-xl bg-slate-900/90 border border-slate-800">
+            <div class="flex items-center gap-2 min-w-[180px]">
+              <span class="font-mono text-slate-400 w-6">#${idx + 1}</span>
+              <span class="text-base">${s.cls.icon}</span>
+              <div>
+                <div class="font-bold text-white">${s.cls.name} <span class="text-[10px] text-slate-400">(Grau ${s.cls.tier})</span></div>
+              </div>
+            </div>
+
+            <div class="flex-1 min-w-[140px] max-w-xs">
+              <div class="flex justify-between text-[11px] mb-1">
+                <span class="text-slate-400">Taxa de Vitória</span>
+                <span class="font-bold text-white">${wr}%</span>
+              </div>
+              <div class="w-full h-2 bg-slate-950 rounded-full overflow-hidden">
+                <div class="h-full ${barColor}" style="width: ${wr}%"></div>
+              </div>
+            </div>
+
+            <div class="flex items-center gap-1">
+              <button onclick="adjustSimClassPct('${s.cls.id}', -10)" class="px-2 py-1 rounded bg-rose-500/20 hover:bg-rose-500/35 text-rose-300 font-bold">-10%</button>
+              <input type="number" value="${pct}" onchange="setSimClassPct('${s.cls.id}', this.value)"
+                class="w-14 text-center bg-slate-950 border border-slate-700 rounded py-1 text-white font-mono font-bold" />
+              <button onclick="adjustSimClassPct('${s.cls.id}', 10)" class="px-2 py-1 rounded bg-emerald-500/20 hover:bg-emerald-500/35 text-emerald-300 font-bold">+10%</button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function resetFullCampaign() {
+      state.classId = 'novato';
+      state.level = 1;
+      state.xp = 0;
+      state.skillPoints = 1;
+      state.stage = 0;
+      state.customDeck = null;
+      startStage(0);
+      logMsg('↺ Campanha reiniciada para Novato Nível 1.', 'text-amber-300');
+    }
+
+    window.switchGameMode = switchGameMode;
+    window.evolveClass = evolveClass;
+    window.playCard = playCard;
+    window.endPlayerTurn = endPlayerTurn;
+    window.startStage = startStage;
+    window.findPvpMatch = findPvpMatch;
+    window.openGrimoireModal = openGrimoireModal;
+    window.closeGrimoireModal = closeGrimoireModal;
+    window.openDeckBuilderModal = openDeckBuilderModal;
+    window.closeDeckBuilderModal = closeDeckBuilderModal;
+    window.addCardToTempDeck = addCardToTempDeck;
+    window.removeCardFromTempDeck = removeCardFromTempDeck;
+    window.resetDeckToClassDefault = resetDeckToClassDefault;
+    window.saveCustomDeck = saveCustomDeck;
+    window.openOnlineModal = openOnlineModal;
+    window.closeOnlineModal = closeOnlineModal;
+    window.savePlayerNickname = savePlayerNickname;
+    window.copyRoomCode = copyRoomCode;
+    window.openSimulatorModal = openSimulatorModal;
+    window.closeSimulatorModal = closeSimulatorModal;
+    window.adjustSimClassPct = adjustSimClassPct;
+    window.setSimClassPct = setSimClassPct;
+    window.resetSimCardMods = resetSimCardMods;
+    window.applySimModsToGame = applySimModsToGame;
+    window.runLiveTournamentInGame = runLiveTournamentInGame;
+    window.resetFullCampaign = resetFullCampaign;
+
+    // Inicialização
+    startStage(0);
+  </script>
+</body>
+</html>
