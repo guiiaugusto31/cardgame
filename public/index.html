@@ -132,6 +132,58 @@ h1,h2,h3,.cz{font-family:Cinzel,Georgia,serif}
 @media(prefers-reduced-motion:reduce){.combat.low::after{animation:none}}
 /* ===== responsivo: celular e computador ===== */
 
+/* ===== visual novo das cartas ===== */
+.card{--rim:#8a8fa8;--c1:#232842;--c2:#10131f;--glow:#9aa6ff;--g2:rgba(150,160,255,.35);border-radius:13px;border:3px solid var(--rim);background:linear-gradient(165deg,var(--c1),var(--c2) 62%);box-shadow:0 5px 12px #000b,inset 0 0 0 1px #ffffff2a,inset 0 0 18px #000c;overflow:visible}
+.card.atk{--rim:#d65a43;--c1:#4d1b22;--c2:#16101a;--glow:#ff6a4f;--g2:rgba(255,100,70,.42)}
+.card.skill{--rim:#4a93e0;--c1:#17315a;--c2:#0f1626;--glow:#5db4ff;--g2:rgba(80,170,255,.4)}
+.card.power{--rim:#e0b22c;--c1:#4a3812;--c2:#171209;--glow:#ffd34d;--g2:rgba(255,205,70,.42)}
+.card .shn{position:absolute;inset:0;border-radius:10px;overflow:hidden;pointer-events:none;z-index:3}
+.card.r-r .shn::after,.card.up .shn::after{content:'';position:absolute;top:-60%;left:-70%;width:38%;height:220%;background:linear-gradient(90deg,transparent,#ffffff66,transparent);transform:rotate(18deg);animation:shn 4.2s ease-in-out infinite}
+@keyframes shn{0%,55%{left:-70%}100%{left:130%}}
+.card.r-u{box-shadow:0 5px 12px #000b,0 0 10px #7ec8ff55,inset 0 0 0 1px #cfe8ff55,inset 0 0 18px #000c}
+.card.r-r{box-shadow:0 5px 12px #000b,0 0 16px #ffcf4d88,inset 0 0 0 1px #ffe9a088,inset 0 0 18px #000c}
+.card.r-r{border-color:#f0c24a}.card.up .nm{color:#9dffb0}.card.up{box-shadow:0 5px 12px #000b,0 0 14px #7dffa855,inset 0 0 0 1px #b8ffcc66,inset 0 0 18px #000c}
+.card .cost{background:radial-gradient(circle at 35% 28%,#b7e3ff,#2a74d0 55%,#10346e);border:2px solid #e3f2ff;box-shadow:0 0 10px #4aa8ff,0 2px 4px #000,inset 0 -5px 7px #0a2a5c99;text-shadow:0 1px 2px #000;z-index:4}
+.card .nm{position:relative;margin:0 -3px 3px;background:linear-gradient(90deg,transparent,#000b 14%,#000b 86%,transparent);border-top:1px solid var(--rim);border-bottom:1px solid var(--rim);text-shadow:0 1px 2px #000;letter-spacing:.2px}
+.card .art{position:relative;overflow:hidden;border:2px solid var(--rim);background:radial-gradient(circle at 50% 58%,var(--g2),transparent 62%),linear-gradient(#0a0d19,#1b2038);box-shadow:inset 0 0 14px #000,0 1px 0 #ffffff22;text-shadow:0 0 14px var(--glow),0 3px 3px #000}
+.card .art::before{content:'';position:absolute;inset:-40%;opacity:.35;pointer-events:none}
+.card.atk .art::before{background:repeating-conic-gradient(from 0deg at 50% 62%,#ff6a4f33 0 8deg,transparent 8deg 22deg)}
+.card.skill .art::before{background:repeating-radial-gradient(circle at 50% 60%,#5db4ff33 0 5px,transparent 5px 14px)}
+.card.power .art::before{background:repeating-conic-gradient(from 10deg at 50% 60%,#ffd34d3a 0 5deg,transparent 5deg 15deg)}
+.card .ty{position:relative;z-index:2;width:fit-content;margin:-7px auto 3px;padding:1px 9px;border-radius:9px;background:var(--rim);color:#fff;font-weight:700;letter-spacing:1.4px;opacity:1;text-shadow:0 1px 1px #0008;box-shadow:0 1px 3px #000a}
+.card .tx{background:linear-gradient(#171b2e,#0b0e1b);border:1px solid #ffffff1c;box-shadow:inset 0 0 12px #000c}
+.card.dis{filter:grayscale(.6) brightness(.72)}
+/* ===== cenário vivo ===== */
+.combat>.sc{position:absolute;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+.combat>.field,.combat>.bottom{position:relative;z-index:2}.combat>.bottom{z-index:6}.field.fpv{position:relative}
+.sc{--fog:rgba(160,220,140,.10);--lt:rgba(190,255,150,.18)}
+.sc.ch1{--fog:rgba(255,120,40,.13);--lt:rgba(255,110,40,.24)}.sc.ch2{--fog:rgba(230,190,120,.13);--lt:rgba(255,220,150,.17)}
+.sc.ch3{--fog:rgba(150,200,255,.13);--lt:rgba(160,210,255,.19)}.sc.ch4{--fog:rgba(255,235,160,.10);--lt:rgba(255,240,170,.26)}.sc.ch5{--fog:rgba(170,80,255,.15);--lt:rgba(190,100,255,.25)}
+.sc .glow{position:absolute;left:10%;right:10%;top:4%;height:70%;background:radial-gradient(ellipse at 50% 45%,var(--lt),transparent 62%);animation:glowp 6s ease-in-out infinite}
+@keyframes glowp{50%{opacity:.6}}
+.sc .fog{position:absolute;left:-30%;width:160%;height:46%;bottom:18%;background:radial-gradient(ellipse at 30% 60%,var(--fog),transparent 60%),radial-gradient(ellipse at 75% 40%,var(--fog),transparent 55%);animation:fogd 38s linear infinite alternate}
+.sc .fog.f2{bottom:30%;opacity:.7;animation-duration:55s;animation-direction:alternate-reverse}
+@keyframes fogd{from{transform:translateX(-6%)}to{transform:translateX(6%)}}
+.sc .floor{position:absolute;left:-20%;right:-20%;bottom:0;height:46%;background:linear-gradient(transparent,rgba(0,0,0,.5) 40%,rgba(0,0,0,.82)),repeating-linear-gradient(90deg,transparent 0 78px,rgba(255,255,255,.05) 78px 80px),repeating-linear-gradient(0deg,transparent 0 46px,rgba(255,255,255,.04) 46px 48px);transform:perspective(520px) rotateX(58deg);transform-origin:50% 100%}
+.combat::before{content:'';position:absolute;inset:0;pointer-events:none;z-index:1;background:radial-gradient(ellipse at 50% 45%,transparent 45%,rgba(0,0,0,.55) 100%)}
+.fpv .ent .face{position:relative}.fpv .ent .face::after{content:'';position:absolute;left:10%;right:10%;bottom:-8px;height:16px;background:radial-gradient(ellipse,#000d,transparent 70%);z-index:-1}
+.fxp{position:fixed;inset:0;pointer-events:none;z-index:40;overflow:hidden}
+.fxp b{position:absolute;bottom:-12px;left:var(--x);width:var(--s);height:var(--s);border-radius:50%;background:var(--p,#d8ff8a);box-shadow:0 0 8px var(--p,#d8ff8a);opacity:0;animation:rise var(--d) linear infinite;animation-delay:var(--dl)}
+.fxp.ch0{--p:#d8ff8a}.fxp.ch1{--p:#ffa24a}.fxp.ch2{--p:#e8cf9a}.fxp.ch3{--p:#e6f6ff}.fxp.ch4{--p:#ffe9a0}.fxp.ch5{--p:#c58bff}
+.fxp.ch1 b{animation-duration:calc(var(--d)*.55)}.fxp.ch3 b{bottom:auto;top:-12px;animation-name:fall}
+@keyframes rise{0%{transform:translate(0,0);opacity:0}12%{opacity:.75}100%{transform:translate(var(--dx),-108vh);opacity:0}}
+@keyframes fall{0%{transform:translate(0,0);opacity:0}12%{opacity:.8}100%{transform:translate(var(--dx),108vh);opacity:0}}
+@media(prefers-reduced-motion:reduce){.fxp{display:none!important}.sc .glow,.sc .fog,.card .shn::after{animation:none!important}}
+/* ===== portas ===== */
+.door{position:relative}.door::after{content:'';position:absolute;left:-10%;right:-10%;bottom:28px;height:26px;background:radial-gradient(ellipse,var(--dg,#ffcf7a55),transparent 70%);z-index:-1;pointer-events:none}
+.arch{position:relative;box-shadow:0 0 0 5px #5a5662,0 0 0 8px #1b1920,0 10px 22px #000c,inset 0 0 34px #000}
+.arch::before{content:'';position:absolute;top:-17px;left:50%;width:26px;height:18px;margin-left:-13px;background:linear-gradient(#8d8898,#4b4756);border:2px solid #1b1920;border-radius:5px 5px 0 0;z-index:2}
+.arch span{filter:drop-shadow(0 0 8px #000) drop-shadow(0 0 10px var(--dg,#ffcf7a));text-shadow:0 0 12px var(--dg,#ffcf7a)}
+.d-porta{--dg:#ffb85a66}.d-porta .arch{background:repeating-linear-gradient(90deg,#3b240f 0 22px,#2a1809 22px 24px),linear-gradient(#5b3a1a,#2a1809);border-color:#9a6a35}
+.d-porta .arch::after{content:'';position:absolute;left:0;right:0;top:34%;height:10px;background:linear-gradient(#4b4b55,#202028);border-top:1px solid #8a8a96;border-bottom:1px solid #000;box-shadow:0 78px 0 #2b2b33}
+.d-caverna{--dg:#8a8a9a55}.d-fenda{--dg:#c070ff88}.d-boss{--dg:#ff4a2a99}.d-stairs{--dg:#aab0e055}
+
+
 .field.fpv{position:relative;justify-content:center;align-items:center;padding-bottom:6px;overflow:visible;background:radial-gradient(ellipse at 50% 55%,rgba(255,255,255,.07),transparent 62%)}
 .fpv .enemies{align-items:center;gap:26px;transform:scale(1.12);transform-origin:50% 55%;margin-bottom:60px}
 .fpv .ent .art-img{max-height:min(32vh,280px);max-width:280px}.fpv .ent.boss .art-img{max-height:min(38vh,340px);max-width:340px}
@@ -424,7 +476,7 @@ function desc(d){const a=[];
  if(d.exhaust)a.push('<i>Exaurir.</i>');
  return a.join(' ');}
 const TY={atk:'Ataque',skill:'Habilidade',power:'Poder'};
-function cardHTML(c,o={}){const d=cd(c);return `<div class="card ${d.type} r-${d.rar} ${o.cls||''}" ${o.attr||''} ${o.click?`onclick="${o.click}"`:''} title="${d.name}">
+function cardHTML(c,o={}){const d=cd(c);return `<div class="card ${d.type} r-${d.rar} ${c.u?'up ':''}${o.cls||''}" ${o.attr||''} ${o.click?`onclick="${o.click}"`:''} title="${d.name}"><span class="shn"></span>
 <div class="cost">${d.cost}</div><div class="nm">${d.name}</div><div class="art">${d.art}</div><div class="ty">${TY[d.type]}</div><div class="tx">${desc(d)}</div></div>${o.price!=null?`<div class="price">🪙 ${o.price}</div>`:''}`;}
 
 /* ===================== ARTE (reciclada do Sixfold / Gemini) =====================
@@ -615,7 +667,7 @@ function pjDelAsk(id){const c=PJ.load().list.find(x=>x.id===id);if(!c)return;mod
 function pjDel(id){const o=PJ.load();o.list=o.list.filter(c=>c.id!==id);if(o.sel===id)o.sel=o.list[0]?o.list[0].id:null;PJ.save(o);if(OL.ws&&OL.me)olSend({t:'chardel',id});closeModal();pjMenu();}
 
 /* ===================== UI BASE ===================== */
-function show(h,bg){const sc=$('#screen');sc.innerHTML=h;sc.style.cssText=bg?artBg(bg):'';updTop();}
+function show(h,bg){fxSync();const sc=$('#screen');sc.innerHTML=h;sc.style.cssText=bg?artBg(bg):'';updTop();}
 function updTop(){if(G&&G.mp)mpProgress();if(!G){$('#top').innerHTML='<h3>🏯 Masmorra dos Ecos</h3>';return;}
  $('#top').innerHTML=`<b class="cz">${CLS[G.k].e} ${CLS[G.k].n}</b><span>❤️ ${G.p.hp}/${G.p.mhp}</span><span>🪙 ${G.gold}</span><span>📍 Cap. ${G.ch+1} · Episódio ${Math.min(G.room+1,CH[G.ch].len)}/${CH[G.ch].len}</span>
  ${evoBadge()}<span>${G.relics.map(r=>`<span class="relic" title="${REL[r].n}: ${REL[r].d}">${REL[r].e}</span>`).join(' ')}</span><span class="sp"></span>
@@ -638,6 +690,11 @@ function armSVG(){return `<svg viewBox="0 0 150 270" xmlns="http://www.w3.org/20
 <g stroke="#0007" stroke-width="3" fill="url(#skg)"><rect x="34" y="14" width="19" height="52" rx="9"/><rect x="55" y="6" width="19" height="58" rx="9"/><rect x="76" y="8" width="19" height="56" rx="9"/><rect x="97" y="18" width="18" height="48" rx="9"/><path d="M34 70 Q22 58 14 40 Q12 32 20 32 Q28 34 38 52Z"/><rect x="30" y="44" width="90" height="38" rx="18"/></g></svg>`;}
 function armsHTML(){const col=ARMC[(CLS[G.k]||{}).v]||'#667';return `<div class="arms" style="--sl:${col};--sl2:#161826"><div class="arm al">${armSVG()}</div><div class="arm ar">${armSVG()}</div></div>`;}
 function armAct(k){if(RM||window.FAST)return;const a=document.querySelector('.arms');if(!a)return;a.classList.remove('swing','guard','cast','flinch');void a.offsetWidth;a.classList.add(k);setTimeout(()=>a&&a.classList.remove(k),650);}
+
+/* ===== cenário vivo: luz, névoa, chão e partículas por capítulo ===== */
+function sceneHTML(){return `<div class="sc ch${(G&&G.ch)||0}"><i class="glow"></i><i class="fog f1"></i><i class="fog f2"></i><i class="floor"></i></div>`;}
+function fxSync(){let e=document.getElementById('fxp');if(!e){e=document.createElement('div');e.id='fxp';e.className='fxp';let s='';for(let i=0;i<18;i++){const r=Math.random;s+=`<b style="--x:${(r()*100).toFixed(1)}%;--s:${(2+r()*4).toFixed(1)}px;--d:${(7+r()*9).toFixed(1)}s;--dl:-${(r()*14).toFixed(1)}s;--dx:${((r()-.5)*90).toFixed(0)}px"></b>`;}e.innerHTML=s;document.body.appendChild(e);}
+ const cl='fxp ch'+((G&&G.ch)||0);if(e.className!==cl)e.className=cl;e.style.display=(G&&G.p&&!window.FAST)?'':'none';}
 function soundBtn(){return `<button class="btn sm" onclick="toggleSound()">🔊 ${MUTE?'Som: desligado':'Som: ligado'}</button>`;}
 function toggleSound(){MUTE=!MUTE;try{localStorage.setItem('torre_mute',MUTE?'1':'0');}catch(e){}if(G)gameMenu();else title();}
 function title(){G=null;closeModal();const b=best();
@@ -879,7 +936,7 @@ function render(){const c=G.c,P=G.p;if(!c)return;
  let nk=0;const hand=c.hand.map((x,i)=>{const d=cd(x);const rot=(i-(hn-1)/2)*3;const fresh=!c.seen.has(x.uid);if(fresh){c.seen.add(x.uid);}
   return `<div style="transform:rotate(${rot}deg)">${cardHTML(x,{click:`playCard(${i})`,attr:`data-hi="${i}"${fresh&&!window.FAST?` style="animation-delay:${(nk++)*90}ms"`:''}`,cls:(fresh&&!window.FAST?'drawin ':'')+(effCost(d)>c.energy?'dis ':'')+(c.pending===i?'sel':'')})}</div>`;}).join('');
  const pw=Object.entries(P.pw).filter(([k,v])=>v>0).map(([k,v])=>`<span class="chip" title="${PW[k]}">✨${PW[k]} ${v}</span>`).join('');
- $('#screen').style.cssText='';$('#screen').innerHTML=`<div class="combat" style="${artBg(bgKey())}">${c.sh&&c.sh.length?`<div class="tag" style="text-align:center;padding:4px">👥 Lutando junto com: ${c.sh.join(', ')}</div>`:''}<div class="field fpv"><div class="player fp" data-w="p">
+ fxSync();$('#screen').style.cssText='';$('#screen').innerHTML=`<div class="combat" style="${artBg(bgKey())}">${sceneHTML()}${c.sh&&c.sh.length?`<div class="tag" style="text-align:center;padding:4px">👥 Lutando junto com: ${c.sh.join(', ')}</div>`:''}<div class="field fpv"><div class="player fp" data-w="p">
  <div class="hpbar p"><i style="width:${P.hp/P.mhp*100}%"></i></div><div class="hptx">${P.hp}/${P.mhp} ${P.blk?`<span class="blk">🛡️${P.blk}</span>`:''}</div><div class="chips">${chips(P)}${pw}</div></div>
  <div class="enemies">${en}</div>${armsHTML()}</div>
  <div class="bottom"><div class="left"><div class="orb" title="Energia">${c.energy}/3</div><div class="pile" onclick="viewPile('draw')">📚 Compra ${c.draw.length}</div></div>
