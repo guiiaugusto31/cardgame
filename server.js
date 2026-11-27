@@ -115,12 +115,25 @@ function hello(ws,msg){let tok=msg.token;let p=tok&&DB.players[tok];
  const taken=Object.entries(DB.players).some(([k,v])=>k!==tok&&v.name===name);if(taken)name=name+'#'+(1000+rnd(9000));
  p.name=name;touch();return {tok,p};}
 
+const zlib=require('zlib');
+let IDX=null;
+function loadIdx(){const f=[path.join(__dirname,'public','index.html'),path.join(__dirname,'..','torre','index.html')].find(x=>fs.existsSync(x));if(!f)return null;
+ const st=fs.statSync(f);if(IDX&&IDX.f===f&&IDX.m===st.mtimeMs)return IDX;
+ const raw=fs.readFileSync(f);const etag='"'+crypto.createHash('sha1').update(raw).digest('hex').slice(0,16)+'"';
+ IDX={f,m:st.mtimeMs,raw,etag,gz:zlib.gzipSync(raw,{level:6}),br:null};
+ const me=IDX;zlib.brotliCompress(raw,{params:{[zlib.constants.BROTLI_PARAM_QUALITY]:5,[zlib.constants.BROTLI_PARAM_SIZE_HINT]:raw.length}},(e,b)=>{if(!e)me.br=b;});return IDX;}
+const MANIFEST=JSON.stringify({name:'Masmorra dos Ecos',short_name:'Masmorra',start_url:'/',display:'fullscreen',orientation:'any',background_color:'#07090f',theme_color:'#0a0c16',icons:[{src:'/icon-192.png',sizes:'192x192',type:'image/png'},{src:'/icon-512.png',sizes:'512x512',type:'image/png'}]});
 const server=http.createServer((req,res)=>{
  if(req.url==='/health'){res.end('ok');return;}
+ if(req.url==='/manifest.webmanifest'){res.writeHead(200,{'Content-Type':'application/manifest+json','Cache-Control':'public, max-age=3600'});res.end(MANIFEST);return;}
+ if(req.url==='/icon-192.png'||req.url==='/icon-512.png'){const f=path.join(__dirname,'public',req.url.slice(1));if(!fs.existsSync(f)){res.writeHead(404);res.end();return;}res.writeHead(200,{'Content-Type':'image/png','Cache-Control':'public, max-age=86400'});fs.createReadStream(f).pipe(res);return;}
  if(req.url==='/'||req.url.startsWith('/?')||req.url==='/index.html'){
-  const f=[path.join(__dirname,'public','index.html'),path.join(__dirname,'..','torre','index.html')].find(x=>fs.existsSync(x));
-  if(!f){res.writeHead(404);res.end('index.html não encontrado');return;}
-  res.writeHead(200,{'Content-Type':'text/html; charset=utf-8'});fs.createReadStream(f).pipe(res);return;}
+  const I=loadIdx();if(!I){res.writeHead(404);res.end('index.html não encontrado');return;}
+  const h={'Content-Type':'text/html; charset=utf-8','ETag':I.etag,'Cache-Control':'no-cache','Vary':'Accept-Encoding'};
+  if(req.headers['if-none-match']===I.etag){res.writeHead(304,h);res.end();return;}
+  const ae=String(req.headers['accept-encoding']||'');let body=I.raw;
+  if(/\bbr\b/.test(ae)&&I.br){h['Content-Encoding']='br';body=I.br;}else if(/\bgzip\b/.test(ae)){h['Content-Encoding']='gzip';body=I.gz;}
+  h['Content-Length']=body.length;res.writeHead(200,h);res.end(body);return;}
  res.writeHead(404);res.end('not found');});
 const wss=new WebSocketServer({server,maxPayload:16*1024});
 
@@ -173,6 +186,7 @@ wss.on('connection',ws=>{
    send(ws,{t:'cjoined',ids:E.ids,kind:E.kind,hp:E.hp,mhp:E.mhp,mates});
    E.mem.forEach(x=>{if(x!==c.id){const o=r.members.get(x);if(o)send(o.ws,{t:'cmate',name:me.name,on:true});}});return;}
   if(m.t==='cinit'&&me.enc){const E=r.enc.get(me.enc);if(E&&!E.hp&&Array.isArray(m.hp)){E.hp=m.hp.map(x=>Math.max(0,x|0));E.mhp=(m.mhp||m.hp).map(x=>Math.max(1,x|0));E.pend.forEach(x=>{const o=r.members.get(x);if(o)send(o.ws,{t:'csync',hp:E.hp,mhp:E.mhp});});E.pend.clear();}return;}
+  if(m.t==='cblk'&&me.enc){const E=r.enc.get(me.enc);if(!E||E.done)return;const a=Math.max(0,Math.min(60,m.a|0));if(!a)return;E.mem.forEach(x=>{if(x!==c.id){const o=r.members.get(x);if(o)send(o.ws,{t:'cblk',a,from:me.name});}});return;}
   if(m.t==='cdmg'&&me.enc&&Array.isArray(m.d)){const E=r.enc.get(me.enc);if(!E||E.done)return;const d=m.d.slice(0,8).map(x=>Math.max(0,Math.min(250,x|0)));
    if(E.hp)E.hp=E.hp.map((h,i)=>Math.max(0,h-(d[i]||0)));const ar=a=>Array.isArray(a)?a.map(x=>Math.max(0,Math.min(20,x|0))):[];const v=ar(m.v),w=ar(m.w);E.mem.forEach(x=>{if(x!==c.id){const o=r.members.get(x);if(o)send(o.ws,{t:'cdmg',d,v,w,from:me.name});}});
    if(E.hp&&E.hp.every(h=>h<=0))E.done=true;return;}
