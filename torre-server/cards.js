@@ -4,7 +4,7 @@ function def(id,name,cost,type,rar,cls,p,up){CARDS[id]={id,name,cost,type,rar,cl
 def('g_strike','Golpe',1,'atk','s','g',{dmg:6,art:'🗡️'},{dmg:9});
 def('g_def','Defender',1,'skill','s','g',{blk:5,art:'🛡️'},{blk:8});
 def('g_bash','Esmagar',2,'atk','s','g',{dmg:8,vuln:2,art:'🔨'},{dmg:10,vuln:3});
-def('g_twin','Golpe Duplo',1,'atk','c','g',{dmg:5,hits:2,art:'⚔️'},{dmg:7});
+def('g_twin','Golpe Duplo',1,'atk','c','g',{dmg:4,hits:2,art:'⚔️'},{dmg:5});
 def('g_firm','Postura Firme',1,'skill','c','g',{blk:6,retain:true,art:'🧱'},{blk:9});
 def('g_cleave','Varredura',1,'atk','c','g',{dmg:8,aoe:true,art:'🌀'},{dmg:11});
 def('g_fist','Punho de Ferro',1,'atk','c','g',{dmg:7,strip:true,art:'👊'},{dmg:10});
@@ -25,19 +25,19 @@ def('g_pal_martir','Golpe do Mártir',1,'atk','u','g',{dmg:12,sac:.2,holy:true,a
 def('g_pal_juizo','Juízo Sagrado',2,'atk','r','g',{bodyslam:true,bmul:1,dmg:10,sac:.2,holy:true,art:'⚖️'},{dmg:14});
 def('g_pal_cruzada','Cruzada',3,'atk','r','g',{bodyslam:true,bmul:1,spend:true,aoe:true,strip:true,holy:true,art:'🏹'},{cost:2});
 def('g_pal_aureola','Auréola',1,'power','r','g',{power:'halo',amt:4,holy:true,art:'😇'},{amt:6});
-def('g_steel','Tempestade de Aço',2,'atk','r','g',{dmg:5,hits:4,art:'🌪️'},{hits:5});
+def('g_steel','Tempestade de Aço',2,'atk','r','g',{dmg:4,hits:4,art:'🌪️'},{hits:5});
 def('m_spark','Faísca',1,'atk','s','m',{dmg:6,art:'⚡'},{dmg:9});
 def('m_ward','Barreira',1,'skill','s','m',{blk:5,art:'🔰'},{blk:8});
 def('m_focus','Foco Mental',1,'skill','s','m',{draw:2,art:'🧠'},{draw:3});
 def('m_ice','Dardo Gélido',1,'atk','s','m',{dmg:5,weak:1,art:'❄️'},{dmg:7,weak:2});
-def('m_fire','Bola de Fogo',2,'atk','c','m',{dmg:9,aoe:true,art:'🔥'},{dmg:12});
+def('m_fire','Bola de Fogo',2,'atk','c','m',{dmg:12,aoe:true,art:'🔥'},{dmg:16});
 def('m_chain','Cadeia de Raios',1,'atk','c','m',{dmg:4,aoe:true,art:'🌩️'},{dmg:6});
 def('m_missile','Mísseis',1,'atk','c','m',{dmg:3,hits:3,art:'☄️'},{hits:4});
 def('m_flash','Lampejo',0,'skill','c','m',{nrg:1,draw:1,exhaust:true,art:'💡'},{exhaust:false});
 def('m_frost','Escudo Gélido',1,'skill','c','m',{blk:7,weak:1,art:'🧊'},{blk:10});
 def('m_mark','Marca Arcana',1,'skill','c','m',{vuln:2,draw:1,art:'🎯'},{vuln:3});
 def('m_nova','Nova',3,'atk','u','m',{dmg:16,aoe:true,art:'💥'},{dmg:22});
-def('m_drain','Dreno Vital',2,'atk','u','m',{dmg:10,heal:4,exhaust:true,art:'🩸'},{dmg:13,heal:6});
+def('m_drain','Dreno Vital',2,'atk','u','m',{dmg:12,heal:4,exhaust:true,art:'🩸'},{dmg:15,heal:6});
 def('m_aura','Aura Protetora',2,'power','u','m',{power:'plated',amt:3,art:'🔮'},{amt:4});
 def('m_mind','Mente Aguçada',2,'power','u','m',{power:'insight',amt:1,art:'👁️'},{cost:1});
 def('m_chan','Canalizar',1,'power','r','m',{power:'ritual',amt:1,art:'🌀'},{amt:2});
@@ -54,7 +54,7 @@ def('g_sig_bast','Fortaleza Viva',2,'power','r','g',{power:'plated',amt:6,ev:'si
 def('g_sig_ving','Fúria do Veterano',1,'skill','r','g',{str:4,selfdmg:6,exhaust:true,ev:'sig',art:'🔥'},{str:5});
 def('m_ev_pulso','Pulso Arcano',1,'atk','c','m',{dmg:7,draw:1,ev:'t1',art:'💫'},{dmg:10});
 def('m_ev_eter','Fonte de Éter',0,'skill','u','m',{nrg:1,draw:1,exhaust:true,ev:'t1',art:'🔷'},{draw:2});
-def('m_ev_onda','Onda Arcana',2,'atk','u','m',{dmg:10,aoe:true,weak:1,ev:'t1',art:'🌊'},{dmg:14});
+def('m_ev_onda','Onda Arcana',2,'atk','u','m',{dmg:12,aoe:true,weak:1,ev:'t1',art:'🌊'},{dmg:16});
 def('m_tec_fio','Fio Prateado',0,'atk','u','m',{dmg:3,draw:1,ev:'tecelao',art:'🧵'},{dmg:5});
 def('m_tec_trama','Trama de Éter',1,'skill','u','m',{blk:6,draw:1,ev:'tecelao',art:'🕸️'},{blk:9});
 def('m_des_raio','Raio Concentrado',2,'atk','u','m',{dmg:18,vuln:2,ev:'destruidor',art:'🔆'},{dmg:24});
@@ -65,12 +65,12 @@ def('fo_strike','Golpe Incendiário',1,'atk','s','fo',{dmg:6,art:'🗡️'},{dmg
 def('fo_def','Guarda de Guerra',1,'skill','s','fo',{blk:5,art:'🛡️'},{blk:8});
 def('fo_charge','Carga',2,'atk','s','fo',{dmg:12,selfdmg:3,art:'🔥'},{dmg:16});
 def('fo_blood','Pacto de Sangue',1,'skill','s','fo',{str:2,selfdmg:4,art:'🩸'},{str:3});
-def('fo_slash','Corte de Cerco',1,'atk','c','fo',{dmg:5,hits:2,art:'⚔️'},{dmg:7});
+def('fo_slash','Corte de Cerco',1,'atk','c','fo',{dmg:4,hits:2,art:'⚔️'},{dmg:5});
 def('fo_banner','Estandarte',1,'skill','c','fo',{blk:4,str:1,art:'🚩'},{blk:6});
 def('fo_torch','Tocha',0,'atk','c','fo',{dmg:4,selfdmg:1,art:'🔦'},{dmg:6});
 def('fo_cannon','Canhão de Cerco',2,'atk','u','fo',{dmg:16,vuln:1,art:'💣'},{dmg:20});
 def('fo_rage','Furor',1,'skill','u','fo',{str:3,selfdmg:5,exhaust:true,art:'😡'},{str:4});
-def('fo_wave','Bombardeio',2,'atk','u','fo',{dmg:9,aoe:true,art:'💥'},{dmg:12});
+def('fo_wave','Bombardeio',2,'atk','u','fo',{dmg:12,aoe:true,art:'💥'},{dmg:16});
 def('fo_inferno','Cerco Infernal',3,'atk','r','fo',{dmg:22,aoe:true,vuln:1,exhaust:true,art:'🌋'},{dmg:30});
 def('fo_ev_lanca','Lança de Brasa',1,'atk','u','fo',{dmg:8,weak:1,ev:'t1',art:'🔱'},{dmg:11});
 def('fo_ev_marcha','Marcha de Guerra',1,'skill','c','fo',{blk:6,draw:1,ev:'t1',art:'🥁'},{blk:9});
@@ -88,7 +88,7 @@ def('ag_ripple','Ondulação',0,'skill','c','ag',{blk:3,draw:1,art:'〰️'},{bl
 def('ag_rain','Chuva Mansa',1,'skill','c','ag',{heal:5,blk:3,art:'🌧️'},{heal:7,blk:5});
 def('ag_tide','Maré Cheia',2,'atk','u','ag',{dmg:14,weak:1,art:'🌊'},{dmg:18});
 def('ag_frost','Geada',1,'atk','u','ag',{dmg:6,vuln:1,weak:1,art:'❄️'},{dmg:9});
-def('ag_deluge','Dilúvio',2,'atk','u','ag',{dmg:9,aoe:true,weak:1,art:'🌧️'},{dmg:12});
+def('ag_deluge','Dilúvio',2,'atk','u','ag',{dmg:12,aoe:true,weak:1,art:'🌧️'},{dmg:16});
 def('ag_source','Nascente Eterna',2,'power','r','ag',{power:'plated',amt:5,art:'⛲'},{amt:7});
 def('ag_ev_orvalho','Orvalho Restaurador',1,'skill','c','ag',{heal:8,ev:'t1',art:'💦'},{heal:12});
 def('ag_ev_rio','Fôlego do Rio',1,'skill','u','ag',{blk:7,draw:1,ev:'t1',art:'🏞️'},{blk:10});
@@ -116,17 +116,17 @@ def('lu_sen_muralha','Muralha Sagrada',1,'skill','u','lu',{blk:9,heal:3,ev:'sent
 def('lu_sig_sen','Santuário',2,'power','r','lu',{power:'plated',amt:7,ev:'sig',art:'⛪'},{amt:9});
 def('lu_inq_marca','Marca da Culpa',1,'atk','u','lu',{dmg:6,vuln:1,weak:1,ev:'inquisidor',art:'⛓️'},{dmg:9});
 def('lu_inq_fogueira','Fogueira',2,'atk','u','lu',{dmg:17,weak:1,ev:'inquisidor',art:'🔥'},{dmg:22});
-def('lu_sig_inq','Sentença Final',2,'atk','r','lu',{dmg:24,vuln:2,exhaust:true,ev:'sig',art:'⚖️'},{dmg:32});
+def('lu_sig_inq','Sentença Final',2,'atk','r','lu',{dmg:20,vuln:2,exhaust:true,ev:'sig',art:'⚖️'},{dmg:26});
 def('tr_strike','Lâmina Sombria',1,'atk','s','tr',{dmg:6,art:'🗡️'},{dmg:9});
 def('tr_def','Manto de Sombras',1,'skill','s','tr',{blk:5,art:'🌑'},{blk:8});
 def('tr_omen','Mau Agouro',1,'skill','s','tr',{weak:1,vuln:1,blk:3,art:'🦉'},{weak:2,vuln:2});
-def('tr_claw','Garras',1,'atk','c','tr',{dmg:5,hits:2,art:'🐾'},{dmg:7});
+def('tr_claw','Garras',1,'atk','c','tr',{dmg:4,hits:2,art:'🐾'},{dmg:5});
 def('tr_shade','Sombra',0,'atk','c','tr',{dmg:4,art:'👤'},{dmg:6});
 def('tr_drain','Dreno',1,'atk','c','tr',{dmg:7,heal:3,art:'🩸'},{dmg:10,heal:4});
 def('tr_reap','Ceifa',2,'atk','u','tr',{dmg:14,vuln:2,art:'⚰️'},{dmg:18});
 def('tr_sac','Sacrifício',0,'skill','u','tr',{str:2,selfdmg:5,exhaust:true,art:'🕯️'},{str:3});
 def('tr_veil','Véu da Morte',1,'skill','u','tr',{blk:8,weak:1,art:'🕸️'},{blk:11});
-def('tr_end','Último Suspiro',3,'atk','r','tr',{dmg:32,vuln:2,exhaust:true,art:'💀'},{dmg:42});
+def('tr_end','Último Suspiro',3,'atk','r','tr',{dmg:28,vuln:2,exhaust:true,art:'💀'},{dmg:36});
 def('tr_ev_sussurro','Sussurro Final',1,'atk','u','tr',{dmg:8,heal:2,ev:'t1',art:'🌘'},{dmg:11,heal:3});
 def('tr_ev_osso','Armadura de Ossos',1,'skill','u','tr',{blk:8,weak:1,ev:'t1',art:'🦴'},{blk:11});
 def('tr_ev_pacto','Pacto de Almas',1,'skill','c','tr',{draw:2,selfdmg:3,ev:'t1',art:'👻'},{draw:3});
@@ -134,7 +134,7 @@ def('tr_car_dente','Mordida',1,'atk','u','tr',{dmg:9,heal:4,ev:'carniceiro',art:
 def('tr_car_banquete','Banquete',2,'atk','u','tr',{dmg:18,heal:8,ev:'carniceiro',art:'🍖'},{dmg:22,heal:10});
 def('tr_sig_car','Sede Eterna',2,'power','r','tr',{power:'ritual',amt:1,ev:'sig',art:'🧛'},{amt:2});
 def('tr_mal_praga','Praga',1,'skill','u','tr',{vuln:2,weak:2,ev:'maldito',art:'☠️'},{vuln:3,weak:3});
-def('tr_mal_ceifa','Foice Maldita',2,'atk','u','tr',{dmg:12,hits:2,vuln:1,ev:'maldito',art:'🪓'},{dmg:16});
+def('tr_mal_ceifa','Foice Maldita',2,'atk','u','tr',{dmg:10,hits:2,vuln:1,ev:'maldito',art:'🪓'},{dmg:13});
 def('tr_sig_mal','Fim dos Tempos',3,'atk','r','tr',{dmg:20,aoe:true,vuln:3,weak:3,exhaust:true,ev:'sig',art:'⏳'},{dmg:28});
 const CLS={
  g:{n:'Paladino',e:'🛡️',hp:80,v:'Neutro · Sagrado',d:'Armadura: o Escudo vira dano, pode ser retido e protege aliados. Sacrifique vida para golpear mais forte.',deck:['g_strike','g_strike','g_strike','g_strike','g_def','g_def','g_def','g_def','g_bash','g_firm']},
@@ -142,7 +142,7 @@ const CLS={
  fo:{n:'Arauto da Guerra',e:'🔥',hp:78,v:'Fogo',d:'Agressão e sacrifício: gasta vida para golpear mais forte.',deck:['fo_strike', 'fo_strike', 'fo_strike', 'fo_strike', 'fo_def', 'fo_def', 'fo_def', 'fo_def', 'fo_charge', 'fo_blood']},
  ag:{n:'Sacerdote das Marés',e:'💧',hp:84,v:'Água',d:'Cura e fluxo: resiste ao longo do tempo e mantém o ritmo.',deck:['ag_strike', 'ag_strike', 'ag_strike', 'ag_strike', 'ag_def', 'ag_def', 'ag_def', 'ag_def', 'ag_spring', 'ag_spring']},
  lu:{n:'Clérigo da Aurora',e:'✨',hp:82,v:'Luz',d:'Proteção e purificação: ataques que também protegem.',deck:['lu_strike', 'lu_strike', 'lu_strike', 'lu_strike', 'lu_def', 'lu_def', 'lu_def', 'lu_def', 'lu_smite', 'lu_smite']},
- tr:{n:'Ceifador',e:'🌑',hp:74,v:'Trevas',d:'Risco e recompensa: drena vida e castiga o inimigo.',deck:['tr_strike', 'tr_strike', 'tr_strike', 'tr_strike', 'tr_def', 'tr_def', 'tr_def', 'tr_def', 'tr_omen', 'tr_omen']}
+ tr:{n:'Ceifador',e:'🌑',hp:74,v:'Sombrio',d:'Risco e recompensa: drena vida e castiga o inimigo.',deck:['tr_strike', 'tr_strike', 'tr_strike', 'tr_strike', 'tr_def', 'tr_def', 'tr_def', 'tr_def', 'tr_omen', 'tr_omen']}
 };
 const EVO={
  g:{t1:{n:'Postura Firme',d:'Começa cada combate com 8 de Escudo.',fx:{blk0:8}},
