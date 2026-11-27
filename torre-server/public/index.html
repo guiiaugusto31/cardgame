@@ -557,8 +557,8 @@ function juiceFx(fx,vfx){if(RM||window.FAST)return;const said={},say=n=>{if(!sai
 const CARDS={};
 function def(id,name,cost,type,rar,cls,p,up){CARDS[id]={id,name,cost,type,rar,cls,art:p.art||'✨',...p,up:up||{}};}
 // --- Guardião
-def('g_strike','Golpe',1,'atk','s','g',{dmg:6,art:'🗡️'},{dmg:9});
-def('g_def','Defender',1,'skill','s','g',{blk:5,art:'🛡️'},{blk:8});
+def('g_strike','Golpe',1,'atk','s','g',{dmg:6,neutral:true,art:'🗡️'},{dmg:9});
+def('g_def','Defender',1,'skill','s','g',{blk:5,neutral:true,art:'🛡️'},{blk:8});
 def('g_bash','Esmagar',2,'atk','s','g',{dmg:8,vuln:2,art:'🔨'},{dmg:10,vuln:3});
 def('g_twin','Golpe Duplo',1,'atk','c','g',{dmg:4,hits:2,art:'⚔️'},{dmg:5});
 def('g_firm','Postura Firme',1,'skill','c','g',{blk:6,retain:true,art:'🧱'},{blk:9});
@@ -704,6 +704,9 @@ const CLS={
  lu:{n:'Clérigo da Aurora',e:'✨',hp:82,v:'Luz',d:'Proteção e purificação: ataques que também protegem.',deck:['lu_strike', 'lu_strike', 'lu_strike', 'lu_strike', 'lu_def', 'lu_def', 'lu_def', 'lu_def', 'lu_smite', 'lu_smite']},
  tr:{n:'Ceifador',e:'🌑',hp:74,v:'Sombrio',d:'Risco e recompensa: drena vida e castiga o inimigo.',deck:['tr_strike', 'tr_strike', 'tr_strike', 'tr_strike', 'tr_def', 'tr_def', 'tr_def', 'tr_def', 'tr_omen', 'tr_omen']}
 };
+const NEUT=['g_strike','g_strike','g_strike','g_strike','g_strike','g_def','g_def','g_def','g_def','g_def'];
+CLS.g.start=[...NEUT,'g_firm','g_bash','g_pal_conv','g_pal_martir','g_pal_muralha'];
+CLS.m.start=[...NEUT,'m_focus','m_ice','m_fire','m_chain','m_flash'];
 const PW={plated:'Armadura Viva',ritual:'Ritual',insight:'Mente Aguçada'};
 function effCost(d){const c=G&&G.c;if(!c||!d.cost)return d.cost;const f=evoFx().first0||0;return (c.pl||0)<f?d.cost-1:d.cost;}
 function cd(c){const b=CARDS[c.id];const o={...b,...(c.u?b.up:{})};o.name=b.name+(c.u?'+':'');return o;}
@@ -874,11 +877,33 @@ function gate(cb){if(!(G&&G.mp&&OL.ws&&OL.ws.readyState===1))return cb();const t
  olSend({t:'gate',ch:G.ch,room:G.room});setTimeout(()=>{if(G&&G.gw===tok){G.gw=null;cb();}},120000);}
 function newRun(k,mp,at,daily,pj){
  RNG=null;G={mp:mp?{...mp}:null,k,p:{hp:CLS[k].hp,mhp:CLS[k].hp,blk:0,str:0,weak:0,vuln:0,fresh:{weak:0,vuln:0},pw:{ritual:0,plated:0,insight:0,keep:0,halo:0}},
-  gold:60,deck:CLS[k].deck.map(id=>({id,u:false})),relics:[],ch:0,room:0,doors:[],hard:false,upUsed:false,fx:[],vfx:[],c:null,removed:0,nodeN:0};
+  gold:60,deck:(CLS[k].start||CLS[k].deck).map(id=>({id,u:false})),relics:[],ch:0,room:0,doors:[],hard:false,upUsed:false,fx:[],vfx:[],c:null,removed:0,nodeN:0};
  if(daily&&!mp){G.daily={seed:dSeed()};reseed('start');}
+ if(pj&&pj.tut&&!mp){G.pj=pj.id;G.tut={s:0};G.deck=NEUT.map(id=>({id,u:false}));G.p.hp=G.p.mhp=70;return tutIntro();}
  if(pj&&!mp){G.pj=pj.id;if(pj.snap){Object.assign(G,JSON.parse(JSON.stringify(pj.snap)));G.c=null;G.fx=[];G.vfx=[];if(G.doors&&G.doors.length)return gate(showDoors);return chapterIntro();}}
  if(at&&at.room>0){G.ch=at.ch;G.room=at.room;gate(genDoors);}else{if(at)G.ch=at.ch;chapterIntro();}
 }
+
+
+/* ===================== TUTORIAL E ESCOLHA DE CLASSE ===================== */
+const TUTT=['① Este é o seu turno. Você tem 3 ⚡ de energia e cada carta custa energia. Clique em uma carta de ATAQUE (vermelha) e depois no inimigo.',
+ '② Acima do inimigo está a INTENÇÃO dele: o ícone mostra o que ele fará (aqui, atacar e quanto de dano). Jogue uma carta de DEFESA (azul) para ganhar Escudo 🛡️, que bloqueia dano.',
+ '③ Quando acabar a energia, ou as cartas úteis, clique em Terminar Turno. Os inimigos agem, o Escudo some e você compra novas cartas.',
+ '④ Continue atacando até a vida do inimigo chegar a 0. Se a sua chegar a 0, você perde. Vença para terminar o treino.'];
+function tutIntro(){G.c=null;show(`<div class="center"><h2>🎓 Treino do Aprendiz</h2><p style="max-width:560px">Bem-vindo à Masmorra dos Ecos! <b>O objetivo:</b> atravessar 6 capítulos de masmorra e derrotar o chefe de cada um.</p>
+ <p class="tag" style="max-width:560px">Em cada capítulo você escolhe portas: combates, lojas, eventos, tesouros e descansos. Vencer dá ouro, relíquias e novas cartas para o seu baralho. Se você cair, volta ao início do capítulo. No meio da campanha, sua classe evolui.</p>
+ <p class="tag" style="max-width:560px">Agora um combate de treino: nada se perde aqui.</p><button class="btn gold" onclick="tutFight()">Treinar combate ➜</button></div>`,'bg_map');}
+function tutFight(){G.tut=G.tut||{};G.tut.s=0;G.p.hp=G.p.mhp=70;G.p.blk=0;startCombat(['slime'],'fight');const e=G.c.en[0];e.hp=e.mhp=22;render();}
+function tutAdv(k){const T=G&&G.tut;if(!T)return;if(T.s===0&&k==='atk')T.s=1;else if(T.s===1&&(k==='skill'||k==='end'))T.s=k==='end'?3:2;else if(T.s===2&&k==='end')T.s=3;}
+function tutHint(){let o=document.getElementById('tuth');if(!(G&&G.tut&&G.c&&!G.c.over)){if(o)o.remove();return;}
+ if(!o){o=document.createElement('div');o.id='tuth';o.style.cssText='position:fixed;top:58px;left:50%;transform:translateX(-50%);max-width:min(600px,92vw);z-index:9500;pointer-events:none;background:#0b101bee;border:2px solid #e0a82e;border-radius:12px;padding:10px 16px;color:#fff;font-size:15px;line-height:1.35;text-align:center;box-shadow:0 6px 22px #000b';document.body.appendChild(o);}
+ o.textContent=tx(TUTT[Math.min(G.tut.s,3)]);}
+function tutDone(){const o=document.getElementById('tuth');if(o)o.remove();G.c=null;sfx('win');
+ show(`<div class="center"><h2>🎓 Treino concluído!</h2><p style="max-width:560px">Agora escolha a sua primeira classe. Você recebe 5 cartas fixas dela e novas cartas da classe depois de cada combate. No meio da campanha ela evolui para uma segunda classe.</p>
+ <div class="row">${CLS1.map(x=>`<div style="background:#161a2b;border:2px solid ${x.ok?'#6a58c8':'#3a3a4a'};border-radius:12px;padding:16px;width:210px;${x.ok?'cursor:pointer':'opacity:.55'}" ${x.ok?`onclick="classPick('${x.k}')"`:''}><div style="font-size:54px">${x.e}</div><h3>${x.n}</h3>${x.ok?`<p class="tag">Veio: ${CLS[x.k].v}</p><p class="tag">❤️ ${CLS[x.k].hp} HP<br>${CLS[x.k].d}</p><div style="zoom:.42;display:flex;flex-wrap:wrap;justify-content:center;gap:8px;pointer-events:none;margin-top:6px">${CLS[x.k].start.slice(10).map(id=>cardHTML({id,u:false},{cls:'noh'})).join('')}</div>`:`<p class="tag">${x.d}</p><p class="tag"><b>Em breve</b></p>`}</div>`).join('')}</div></div>`,'bg_map');}
+const CLS1=[{k:'gu',n:'Guerreiro',e:'⚔️',d:'Ataque e bloqueio equilibrados, ideal para aprender.',ok:false},{k:'g',n:'Paladino',e:'🛡️',ok:true},{k:'lt',n:'Lutador',e:'👊',d:'Fúria e agarrar: golpes múltiplos e Força ao apanhar.',ok:false},{k:'m',n:'Mago Arcano',e:'🔮',ok:true},{k:'gt',n:'Gatuno',e:'🗡️',d:'Cartas baratas, combos e golpe furtivo.',ok:false}];
+function classPick(k){const o=PJ.load(),c=o.list.find(x=>x.id===G.pj);if(c){c.k=k;delete c.nocls;c.cls1=k;c.evo={t:0,trail:null};c.run=null;c.ckpt=null;PJ.save(o);pjSync();}G.tut=null;pjPlay(G.pj);}
+function tutLose(){const o=document.getElementById('tuth');if(o)o.remove();G.c=null;show(`<div class="center"><h2>Treino</h2><p>Você caiu no treino, mas nada se perde. Tente de novo!</p><button class="btn gold" onclick="tutFight()">Tentar de novo</button></div>`,'bg_map');}
 
 /* ===== run diária ===== */
 const dSeed=()=>new Date().toISOString().slice(0,10);
@@ -912,14 +937,16 @@ function pjMenu(){const o=PJ.load();G=null;RNG=null;closeModal();
  show(`<div class="center"><h2>👤 Personagens</h2><p class="tag" style="max-width:520px">Crie personagens para a campanha. Cada um guarda o próprio progresso e a evolução, e o selecionado joga o PvP com ranking próprio.</p>
  <div class="row" style="align-items:stretch">${o.list.map(c=>pjCard(c,o.sel===c.id)).join('')}${o.list.length<8?`<div style="background:#161a2b;border:2px dashed #6a58c8;border-radius:12px;padding:16px;width:210px;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center" onclick="pjNew()"><div style="font-size:54px">➕</div><h3>Novo personagem</h3></div>`:''}</div><button class="btn" onclick="title()">Voltar</button></div>`);}
 function pjCard(c,sel){const r=c.run,ev=pjEvoTxt(c);
- return `<div style="background:#161a2b;border:2px solid ${sel?'#e0a82e':'#6a58c8'};border-radius:12px;padding:16px;width:210px;display:flex;flex-direction:column;gap:6px;align-items:center"><div style="font-size:48px">${CLS[c.k].e}</div><h3>${c.name}</h3><p class="tag">${CLS[c.k].n}</p><p class="tag">Veio: ${CLS[c.k].v}</p>${ev?`<p class="tag">Evolução: ${ev}</p>`:'<p class="tag">Sem evolução</p>'}${c.wins?`<p class="tag">Vitórias: ${c.wins}</p>`:''}${c.best?`<p class="tag">Melhor: Cap. ${c.best}</p>`:''}
+ return `<div style="background:#161a2b;border:2px solid ${sel?'#e0a82e':'#6a58c8'};border-radius:12px;padding:16px;width:210px;display:flex;flex-direction:column;gap:6px;align-items:center"><div style="font-size:48px">${c.nocls?'🎓':CLS[c.k].e}</div><h3>${c.name}</h3><p class="tag">${c.nocls?'Aprendiz (sem classe)':CLS[c.k].n}</p>${c.nocls?'':`<p class="tag">Veio: ${CLS[c.k].v}</p>`}${ev?`<p class="tag">Evolução: ${ev}</p>`:'<p class="tag">Sem evolução</p>'}${c.wins?`<p class="tag">Vitórias: ${c.wins}</p>`:''}${c.best?`<p class="tag">Melhor: Cap. ${c.best}</p>`:''}
  <button class="btn gold sm" onclick="pjPlay('${c.id}')">${r?`Continuar (Cap. ${r.ch+1}, ep. ${Math.min(r.room+1,CH[r.ch].len)})`:'Começar campanha'}</button><button class="btn sm ${sel?'gold':''}" onclick="pjSel('${c.id}')">${sel?'✅ Selecionado':'Selecionar'}</button><button class="btn sm" onclick="pjDelAsk('${c.id}')">🗑 Apagar</button></div>`;}
-function pjNew(){show(`<div class="center"><h2>➕ Novo personagem</h2><label class="tag">Nome do personagem<br><input id="pjName" maxlength="16" style="padding:8px;border-radius:6px;border:1px solid #6a58c8;background:#0b101b;color:#fff;width:240px"></label>
+function pjNewOld(){show(`<div class="center"><h2>➕ Novo personagem</h2><label class="tag">Nome do personagem<br><input id="pjName" maxlength="16" style="padding:8px;border-radius:6px;border:1px solid #6a58c8;background:#0b101b;color:#fff;width:240px"></label>
  <h3>Escolha a classe</h3><div class="row">${Object.keys(CLS).map(k=>`<div style="background:#161a2b;border:2px solid #6a58c8;border-radius:12px;padding:16px;width:200px;cursor:pointer" onclick="pjCreate('${k}')"><div style="font-size:54px">${CLS[k].e}</div><h3>${CLS[k].n}</h3><p class="tag">Veio: ${CLS[k].v}</p><p class="tag">❤️ ${CLS[k].hp} HP<br>${CLS[k].d}</p></div>`).join('')}</div><button class="btn" onclick="pjMenu()">Voltar</button></div>`);}
-function pjCreate(k){const o=PJ.load();if(o.list.length>=8){msg('Limite de 8 personagens.');return;}let nm=pjEsc((($('#pjName')||{}).value||'')).trim().slice(0,16);if(!nm)nm=CLS[k].n;
+function pjNew(){show(`<div class="center"><h2>➕ Novo personagem</h2><label class="tag">Nome do personagem<br><input id="pjName" maxlength="16" style="padding:8px;border-radius:6px;border:1px solid #6a58c8;background:#0b101b;color:#fff;width:240px"></label>
+ <p class="tag" style="max-width:480px">Todo personagem começa como Aprendiz, sem classe. Você faz um treino rápido que explica o combate e o objetivo do jogo, e depois escolhe a sua primeira classe.</p><button class="btn gold" onclick="pjCreate('g')">Começar treino ➜</button><button class="btn" onclick="pjMenu()">Voltar</button></div>`);}
+function pjCreate(k){const o=PJ.load();if(o.list.length>=8){msg('Limite de 8 personagens.');return;}let nm=pjEsc((($('#pjName')||{}).value||'')).trim().slice(0,16);if(!nm)nm='Aprendiz';
  if(o.list.some(c=>c.name===nm)){let i=2;while(o.list.some(c=>c.name===nm.slice(0,13)+' '+i))i++;nm=nm.slice(0,13)+' '+i;}
- const c={id:pjId(),name:nm,k,evo:{t:0,trail:null},run:null,ckpt:null,best:0,wins:0,deaths:0};o.list.push(c);o.sel=c.id;PJ.save(o);pjSync();pjPlay(c.id);}
-function pjPlay(id){const o=PJ.load(),c=o.list.find(x=>x.id===id);if(!c)return pjMenu();o.sel=id;PJ.save(o);pjSync();newRun(c.k,null,null,false,{id:c.id,snap:c.run});}
+ const c={id:pjId(),name:nm,k,nocls:true,evo:{t:0,trail:null},run:null,ckpt:null,best:0,wins:0,deaths:0};o.list.push(c);o.sel=c.id;PJ.save(o);pjSync();pjPlay(c.id);}
+function pjPlay(id){const o=PJ.load(),c=o.list.find(x=>x.id===id);if(!c)return pjMenu();o.sel=id;PJ.save(o);pjSync();if(c.nocls)return newRun('g',null,null,false,{id:c.id,tut:true});newRun(c.k,null,null,false,{id:c.id,snap:c.run});}
 function pjSel(id){const o=PJ.load();o.sel=id;PJ.save(o);pjSync();pjMenu();}
 function pjDelAsk(id){const c=PJ.load().list.find(x=>x.id===id);if(!c)return;modal(`<h2>${c.name}</h2><p>Apagar ${c.name}? O progresso será perdido.</p><div class="row"><button class="btn gold" onclick="pjDel('${id}')">Apagar</button><button class="btn" onclick="closeModal()">Cancelar</button></div>`);}
 function pjDel(id){const o=PJ.load();o.list=o.list.filter(c=>c.id!==id);if(o.sel===id)o.sel=o.list[0]?o.list[0].id:null;PJ.save(o);if(OL.ws&&OL.me)olSend({t:'chardel',id});closeModal();pjMenu();}
@@ -927,7 +954,7 @@ function pjDel(id){const o=PJ.load();o.list=o.list.filter(c=>c.id!==id);if(o.sel
 /* ===================== UI BASE ===================== */
 function show(h,bg){fxSync();try{MUS.set(G?'map':'menu',G?CH[G.ch].el:'terra');}catch(e){}const sc=$('#screen');sc.innerHTML=h;sc.style.cssText=bg?artBg(bg):'';updTop();}
 function updTop(){if(G&&G.mp)mpProgress();if(!G){$('#top').innerHTML='<h3>🏯 Masmorra dos Ecos</h3>';return;}
- $('#top').innerHTML=`<b class="cz">${CLS[G.k].e} ${CLS[G.k].n}</b><span>❤️ ${G.p.hp}/${G.p.mhp}</span><span>🪙 ${G.gold}</span><span>📍 Cap. ${G.ch+1} · Episódio ${Math.min(G.room+1,CH[G.ch].len)}/${CH[G.ch].len}</span>
+ $('#top').innerHTML=`<b class="cz">${G.tut?'🎓 Aprendiz':CLS[G.k].e+' '+CLS[G.k].n}</b><span>❤️ ${G.p.hp}/${G.p.mhp}</span><span>🪙 ${G.gold}</span><span>📍 Cap. ${G.ch+1} · Episódio ${Math.min(G.room+1,CH[G.ch].len)}/${CH[G.ch].len}</span>
  ${evoBadge()}<span>${G.relics.map(r=>`<span class="relic" title="${REL[r].n}: ${REL[r].d}">${REL[r].e}</span>`).join(' ')}</span><span class="sp"></span>
  <button class="btn sm" onclick="viewPile('deck')">🃏 Baralho (${G.deck.length})</button>${G.mp&&G.mp.party?`<button class="btn sm" onclick="partyView()">👥 ${G.mp.party.members.length}</button>`:''}<button class="btn sm" onclick="gameMenu()">☰ Menu</button>`;}
 function modal(h){const m=$('#modal');m.innerHTML=h;m.classList.add('on');}
@@ -1323,10 +1350,10 @@ function flyCard(i,d,tid,cb){const el=document.querySelector(`[data-hi="${i}"]`)
  a.onfinish=()=>{cl.remove();cb();};}
 function doPlay(i,tid){const c=G.c;const d=cd(c.hand[i]);if(window.FAST)return applyPlay(i,tid);
  c.busy=true;c.pending=null;flyCard(i,d,tid,()=>{c.busy=false;if(G.c===c&&!c.over)applyPlay(i,tid);});}
-function applyPlay(i,tid){const c=G.c,P=G.p;const card=c.hand[i];const hp0=c.en.map(e=>e.hp),vu0=c.en.map(e=>e.vuln),we0=c.en.map(e=>e.weak);const d=cd(card);const E0=evoFx();c.energy-=effCost(d);c.hand.splice(i,1);c.pending=null;
+function applyPlay(i,tid){const c=G.c,P=G.p;const card=c.hand[i];if(G.tut)tutAdv(CARDS[card.id].type);const hp0=c.en.map(e=>e.hp),vu0=c.en.map(e=>e.vuln),we0=c.en.map(e=>e.weak);const d=cd(card);const E0=evoFx();c.energy-=effCost(d);c.hand.splice(i,1);c.pending=null;
  const al=c.en.filter(e=>e.hp>0);const tg=d.aoe?al:[tid!=null?c.en[tid]:al[0]];
  G.vfx=G.vfx||[];
- if(d.bodyslam||d.dmg){const st=atkStyle(d);tg.forEach(t=>G.vfx.push({w:'e'+t.id,k:'atk',st,c:d.cls,h:d.hits||1}));G.vfx.push({w:'p',k:'lunge',st});}
+ if(d.bodyslam||d.dmg){const st=atkStyle(d);tg.forEach(t=>G.vfx.push({w:'e'+t.id,k:'atk',st,c:d.neutral?'n':d.cls,h:d.hits||1}));G.vfx.push({w:'p',k:'lunge',st});}
  if(d.weak||d.vuln)tg.forEach(t=>G.vfx.push({w:'e'+t.id,k:'debuff'}));
  if(d.blk)G.vfx.push({w:'p',k:'shield'});if(d.heal)G.vfx.push({w:'p',k:'heal'});if(d.power)G.vfx.push({w:'p',k:'power'});
  if(d.nrg)c.energy+=d.nrg;
@@ -1354,7 +1381,7 @@ function applyPlay(i,tid){const c=G.c,P=G.p;const card=c.hand[i];const hp0=c.en.
  render();}
 const hnum=()=>G.c?G.c.hand.length:0;
 function monFxIdx(e){const k=String(e.k||e.n||''),h=[...k].reduce((a,c)=>a+c.charCodeAt(0),0);if(/slime|aranha|cobra|veneno|rato|peste|sapo|lodo/i.test(k))return 4;if(FLY.has(e.k))return 3;if(e.boss||e.hp>=60)return[2,5][h%2];return[0,1,3][h%3];}
-async function endTurn(){const c=G.c,P=G.p;if(!c||c.busy||c.over)return;c.busy=true;c.pending=null;
+async function endTurn(){const c=G.c,P=G.p;if(!c||c.busy||c.over)return;c.busy=true;if(G.tut)tutAdv('end');c.pending=null;
  if(!window.FAST){document.querySelectorAll('.hand .card').forEach((el,k)=>{el.style.animation=`discard .35s ${k*35}ms forwards`;});await sleep(330+hnum()*35);}
  c.disc.push(...c.hand);c.hand=[];P.blk+=P.pw.plated+(evoFx().plated||0)+(has('ash')?2*Math.max(0,c.energy):0);{const ht=evoFx().healturn||0;if(ht&&P.hp<P.mhp){const x=Math.min(ht,P.mhp-P.hp);P.hp+=x;G.fx.push({w:'p',t:'+'+x,c:'heal'});}}if((P.pw.plated||evoFx().plated))G.vfx=[{w:'p',k:'shield'}];render();await sleep(350);
  if(c.sh){c.waitEnd=true;render();olSend({t:'cend'});await new Promise(r=>{c.phaseRes=r;setTimeout(r,70000);});c.waitEnd=false;c.phaseRes=null;if(G.c!==c||c.over)return;}
@@ -1416,7 +1443,7 @@ function render(){const c=G.c,P=G.p;if(!c)return;
  updTop();
  G.fx.forEach(f=>{const el=document.querySelector(`[data-w="${f.w}"]`);if(!el)return;if(f.t){const s=document.createElement('div');s.className='fl '+f.c;s.textContent=f.t;juiceNum(s,f);el.appendChild(s);setTimeout(()=>s.remove(),1000);}
   if(f.c==='dmg'&&f.t){const fc=el.querySelector('.face');if(fc){fc.classList.add('shake');}}});
- armPos();hpGhost();try{MUS.set(c.kind==='boss'?'boss':'combat',c.kind==='boss'?c.en[0].k:CH[G.ch].el);}catch(e){}juiceFx(G.fx,G.vfx);
+ armPos();hpGhost();tutHint();try{MUS.set(c.kind==='boss'?'boss':'combat',c.kind==='boss'?c.en[0].k:CH[G.ch].el);}catch(e){}juiceFx(G.fx,G.vfx);
  (G.vfx||[]).forEach(v=>{if(v.w==='p'){let m={lunge:'swing',shield:'guard',heal:'cast',power:'cast'}[v.k];if(v.k==='lunge'&&PROJ.has(v.st))m='cast';if(m)armAct(m);}const el=document.querySelector(`[data-w="${v.w}"]`);if(!el)return;if(v.k==='atk'){atkFx(el,v);return;}
   if(v.k==='lunge'||v.k==='elunge'){const f=el.querySelector('.face');if(f)f.classList.add(v.k==='lunge'?'lunge-r':'lunge-l');return;}
   if(v.k==='rx'){const cb=document.querySelector('.combat'),sp=ART['rx_'+v.s];if(cb&&sp&&!window.FAST){const cr=cb.getBoundingClientRect(),tr=(el.querySelector('.face')||el).getBoundingClientRect(),w=210,s=document.createElement('div');s.style.cssText=`position:absolute;pointer-events:none;z-index:48;left:${tr.left+tr.width/2-cr.left-w/2}px;top:${tr.top+tr.height*.5-cr.top-w/2}px;width:${w}px;height:${w}px;background:url("${sp}") center/contain no-repeat;filter:drop-shadow(0 0 14px #fff8)`;cb.appendChild(s);s.animate([{opacity:0,transform:'scale(.4)'},{opacity:1,transform:'scale(1.05)',offset:.35},{opacity:0,transform:'scale(1.25)'}],{duration:800,easing:'ease-out',fill:'forwards'});setTimeout(()=>s.remove(),880);}return;}
@@ -1480,6 +1507,7 @@ function evOK(c){if(!c.ev)return true;const E=G&&G.evo;if(!E)return false;if(c.e
 function evoPassives(){const E=G&&G.evo;if(!E||!E.t)return [];const C=EVO[G.k];const a=[C.t1];if(E.trail&&E.t>=2){const T=C.trails[E.trail];a.push(E.t>=3?T.t3:T.t2);}return a;}
 function evoBadge(){const E=G&&G.evo;if(!E||!E.t)return '';const ps=evoPassives().map(x=>x.n+': '+x.d).join(' | ');
  const tr=E.trail?EVO[G.k].trails[E.trail]:null;return `<span class="relic" style="cursor:help" title="${ps}">✦ ${EVO_T[E.t-1]}${tr?' · '+tr.e+' '+tr.n:''}</span>`;}
+function evoFive(T){const ids=[...T.cards];const pool=Object.values(CARDS).filter(x=>x.cls===G.k&&x.rar==='u'&&!ids.includes(x.id)&&evOK(x));let i=0;while(ids.length<5&&pool.length){const x=pool.splice(rnd(pool.length),1)[0];ids.push(x.id);if(++i>20)break;}ids.forEach(id=>G.deck.push({id,u:false}));return ids;}
 function evoGo(){const n=G.evoCont;G.evoCont=null;if(n)n();}
 function evoStep(next){const tn=EVO_AT.indexOf(G.ch)+1;if(!tn)return next();G.evo=G.evo||{t:0,trail:null};if(G.evo.t>=tn)return next();G.evoCont=next;
  const C=EVO[G.k];
@@ -1495,12 +1523,12 @@ function evoStep(next){const tn=EVO_AT.indexOf(G.ch)+1;if(!tn)return next();G.ev
  const T=C.trails[G.evo.trail],sg=T.sig;G.deck.push({id:sg,u:false});
  show(`<div class="center"><h2>✦ Evolução de classe: ${EVO_T[2]}</h2><p class="tag">${T.e} ${T.n}</p><h3>${T.t3.n}</h3><p>${T.t3.d}</p><p class="tag">Carta Assinatura adicionada ao seu baralho:</p>
   <div class="row" style="transform:scale(.9)">${cardHTML({id:sg,u:false},{cls:'noh'})}</div><button class="btn gold" onclick="evoGo()">Continuar ➜</button></div>`,'bg_map');}
-function evoTrail(k){const E=G.evo;E.trail=k;E.t=2;const T=EVO[G.k].trails[k],n=E.next;E.next=null;
- show(`<div class="center"><h2>✦ ${T.e} ${T.n}</h2><h3>${T.t2.n}</h3><p>${T.t2.d}</p><p class="tag">Cartas exclusivas liberadas nas recompensas e nas lojas.</p><button class="btn gold" id="evoGo">Continuar ➜</button></div>`,'bg_map');
+function evoTrail(k){const E=G.evo;E.trail=k;E.t=2;const T=EVO[G.k].trails[k],n=E.next;E.next=null;const gift=evoFive(T);
+ show(`<div class="center"><h2>✦ ${T.e} ${T.n}</h2><h3>${T.t2.n}</h3><p>${T.t2.d}</p><p class="tag">Cartas exclusivas liberadas nas recompensas e nas lojas. Você recebe 5 cartas fixas da nova classe:</p><div class="row" style="transform:scale(.7);margin:-30px 0">${gift.map(id=>cardHTML({id,u:false},{cls:'noh'})).join('')}</div><button class="btn gold" id="evoGo">Continuar ➜</button></div>`,'bg_map');
  $('#evoGo').onclick=()=>n();}
 
 /* ===================== FIM DE COMBATE ===================== */
-function winCombat(){const c=G.c;if(!G||!c)return;reseed('w'+G.ch+'_'+G.room+'_'+G.nodeN+'_'+G.node);if(c.sh)olSend({t:'cleave'});const k=c.kind;
+function winCombat(){const c=G.c;if(!G||!c)return;if(G.tut)return tutDone();reseed('w'+G.ch+'_'+G.room+'_'+G.nodeN+'_'+G.node);if(c.sh)olSend({t:'cleave'});const k=c.kind;
  let gold={fight:10+rnd(11),horde:20+rnd(16),mini:30+rnd(21),boss:80+rnd(41)}[k];let lv={fight:0,horde:0,mini:1,boss:2}[k];
  if(G.bonus){gold=Math.round(gold*1.5);lv=Math.min(2,lv+1);}if(G.mp)gold=Math.round(gold*G.mp.gold);if(has('crown'))gold=Math.round(gold*1.25);
  G.gold+=gold;let relic=null;
@@ -1520,7 +1548,7 @@ function showFountain(){const el=CH[G.ch].el,key=ART['fonte_'+el]?'fonte_'+el:'f
 function drinkFountain(){G.p.mhp+=8;G.p.hp=G.p.mhp;snd(660,.3,'sine');G.shop=null;G.shopMode='boss';showShop();}
 function pickCard(id){G.deck.push({id,u:false});G.rw.picked=true;snd(800,.1,'triangle');showReward();}
 function takeRelic(){gainRelic(G.rw.relic);G.rw.rtaken=true;snd(900,.2,'triangle');showReward();}
-function defeat(){if(!G||!G.c)return;sfx('lose');saveBest(false);G.c=null;if(G.mp){olSend({t:'dead'});return spectate();}
+function defeat(){if(!G||!G.c)return;sfx('lose');if(G.tut)return tutLose();saveBest(false);G.c=null;if(G.mp){olSend({t:'dead'});return spectate();}
  if(G.pj)return pjDefeat();
  show(`<div class="center"><h1 class="big" style="color:#c0392b">DERROTA</h1><p>Você caiu no Capítulo ${G.ch+1}, episódio ${G.room+1}.</p>${dEnd(false)}<button class="btn gold" onclick="title()">Nova jornada</button></div>`);}
 function victory(){G.c=null;if(G.mp)olSend({t:'done',ch:G.ch});
@@ -2206,6 +2234,35 @@ const D=[
 ['Causa dano igual ao seu Escudo ×{1} em todos.','Deal damage equal to your Block ×{1} to all.','Наносит всем урон, равный щиту ×{1}.','全体に自分のシールド×{1}のダメージを与える。'],
 ['Causa dano igual ao seu Escudo ×{1} +{2} em todos.','Deal damage equal to your Block ×{1} +{2} to all.','Наносит всем урон, равный щиту ×{1} +{2}.','全体に自分のシールド×{1}+{2}のダメージを与える。'],
 ['Armadura: o Escudo vira dano, pode ser retido e protege aliados. Sacrifique vida para golpear mais forte.','Armor: Block becomes damage, can be kept, and protects allies. Sacrifice life to strike harder.','Броня: щит становится уроном, сохраняется и защищает союзников. Жертвуйте здоровьем ради сильных ударов.','アーマー：シールドがダメージになり、持ち越せて、味方も守る。HPを捧げて強く打つ。'],
+["🎓 Treino do Aprendiz", "🎓 Apprentice Training", "🎓 Обучение ученика", "🎓 見習いの訓練"],
+["Bem-vindo à Masmorra dos Ecos!", "Welcome to the Dungeon of Echoes!", "Добро пожаловать в Подземелье Эха!", "エコーの地下牢へようこそ！"],
+["O objetivo:", "The goal:", "Цель:", "目的："],
+["atravessar 6 capítulos de masmorra e derrotar o chefe de cada um.", "cross 6 dungeon chapters and defeat the boss of each one.", "пройти 6 глав подземелья и победить босса каждой из них.", "6つの章を進み、各章のボスを倒すこと。"],
+["Em cada capítulo você escolhe portas: combates, lojas, eventos, tesouros e descansos. Vencer dá ouro, relíquias e novas cartas para o seu baralho. Se você cair, volta ao início do capítulo. No meio da campanha, sua classe evolui.", "In each chapter you choose doors: fights, shops, events, treasures and rests. Winning gives gold, relics and new cards for your deck. If you fall, you return to the start of the chapter. Halfway through the campaign, your class evolves.", "В каждой главе вы выбираете двери: бои, магазины, события, сокровища и отдых. Победа даёт золото, реликвии и новые карты. Если вы падёте, вы вернётесь в начало главы. В середине кампании ваш класс эволюционирует.", "各章で扉を選びます：戦闘、店、イベント、宝、休憩。勝つと金、遺物、新しいカードが手に入ります。倒れると章の始めに戻ります。キャンペーンの半ばでクラスが進化します。"],
+["Agora um combate de treino: nada se perde aqui.", "Now a training fight: nothing is lost here.", "Теперь тренировочный бой: здесь ничего не теряется.", "では訓練戦闘です。ここでは何も失いません。"],
+["Treinar combate ➜", "Train combat ➜", "Тренировочный бой ➜", "戦闘を訓練 ➜"],
+["🎓 Treino concluído!", "🎓 Training complete!", "🎓 Обучение завершено!", "🎓 訓練完了！"],
+["Agora escolha a sua primeira classe. Você recebe 5 cartas fixas dela e novas cartas da classe depois de cada combate. No meio da campanha ela evolui para uma segunda classe.", "Now choose your first class. You get 5 fixed cards from it, and new class cards after each fight. Halfway through the campaign it evolves into a second class.", "Теперь выберите первый класс. Вы получаете 5 фиксированных карт, а после каждого боя — новые карты класса. В середине кампании он эволюционирует во второй класс.", "最初のクラスを選びましょう。固定カード5枚がもらえ、戦闘のたびにクラスの新しいカードが手に入ります。キャンペーンの半ばで第2のクラスに進化します。"],
+["Em breve", "Coming soon", "Скоро", "近日公開"],
+["Guerreiro", "Warrior", "Воин", "戦士"],
+["Lutador", "Brawler", "Боец", "格闘家"],
+["Gatuno", "Rogue", "Вор", "盗賊"],
+["Ataque e bloqueio equilibrados, ideal para aprender.", "Balanced attack and block, ideal for learning.", "Сбалансированные атака и блок, хорошо для обучения.", "攻撃とブロックのバランス型。学習に最適。"],
+["Fúria e agarrar: golpes múltiplos e Força ao apanhar.", "Fury and grapple: multi-hits and Strength when hit.", "Ярость и захват: многократные удары и Сила при получении урона.", "怒りと掴み：連続攻撃と被弾で筋力。"],
+["Cartas baratas, combos e golpe furtivo.", "Cheap cards, combos and sneak attacks.", "Дешёвые карты, комбо и скрытные удары.", "低コストカード、コンボ、不意打ち。"],
+["Treino", "Training", "Обучение", "訓練"],
+["Você caiu no treino, mas nada se perde. Tente de novo!", "You fell in training, but nothing is lost. Try again!", "Вы пали в тренировке, но ничего не потеряно. Попробуйте ещё раз!", "訓練で倒れましたが、何も失いません。もう一度！"],
+["Tentar de novo", "Try again", "Попробовать снова", "もう一度"],
+["Todo personagem começa como Aprendiz, sem classe. Você faz um treino rápido que explica o combate e o objetivo do jogo, e depois escolhe a sua primeira classe.", "Every character starts as an Apprentice, with no class. You do a quick training that explains combat and the goal of the game, then choose your first class.", "Каждый персонаж начинает учеником без класса. Вы проходите быстрое обучение, которое объясняет бой и цель игры, а затем выбираете первый класс.", "全てのキャラクターはクラスなしの見習いから始まります。戦闘とゲームの目的を説明する短い訓練の後、最初のクラスを選びます。"],
+["Começar treino ➜", "Start training ➜", "Начать обучение ➜", "訓練を始める ➜"],
+["Aprendiz (sem classe)", "Apprentice (no class)", "Ученик (без класса)", "見習い（クラスなし）"],
+["🎓 Aprendiz", "🎓 Apprentice", "🎓 Ученик", "🎓 見習い"],
+["Elementos:", "Elements:", "Элементы:", "属性："],
+["① Este é o seu turno. Você tem 3 ⚡ de energia e cada carta custa energia. Clique em uma carta de ATAQUE (vermelha) e depois no inimigo.", "① This is your turn. You have 3 ⚡ energy and each card costs energy. Click an ATTACK card (red) and then the enemy.", "① Это ваш ход. У вас 3 ⚡ энергии, и каждая карта стоит энергию. Нажмите на карту АТАКИ (красную), а затем на врага.", "① あなたのターンです。⚡エネルギーは3で、カードごとにエネルギーを使います。攻撃カード（赤）をクリックし、次に敵をクリックしてください。"],
+["② Acima do inimigo está a INTENÇÃO dele: o ícone mostra o que ele fará (aqui, atacar e quanto de dano). Jogue uma carta de DEFESA (azul) para ganhar Escudo 🛡️, que bloqueia dano.", "② Above the enemy is its INTENT: the icon shows what it will do (here, attack and how much damage). Play a DEFENSE card (blue) to gain Block 🛡️, which stops damage.", "② Над врагом его НАМЕРЕНИЕ: значок показывает, что он сделает (здесь — атаку и урон). Сыграйте карту ЗАЩИТЫ (синюю), чтобы получить Блок 🛡️, который поглощает урон.", "② 敵の上に「意図」が表示されます。アイコンは敵の行動（ここでは攻撃とダメージ量）を示します。防御カード（青）を使ってブロック🛡️を得ましょう。ダメージを防ぎます。"],
+["③ Quando acabar a energia, ou as cartas úteis, clique em Terminar Turno. Os inimigos agem, o Escudo some e você compra novas cartas.", "③ When you run out of energy or useful cards, click End Turn. Enemies act, your Block fades and you draw new cards.", "③ Когда закончится энергия или полезные карты, нажмите «Конец хода». Враги действуют, Блок исчезает, и вы берёте новые карты.", "③ エネルギーか有用なカードがなくなったら「ターン終了」を押します。敵が行動し、ブロックは消え、新しいカードを引きます。"],
+["④ Continue atacando até a vida do inimigo chegar a 0. Se a sua chegar a 0, você perde. Vença para terminar o treino.", "④ Keep attacking until the enemy's health reaches 0. If yours reaches 0, you lose. Win to finish the training.", "④ Атакуйте, пока здоровье врага не достигнет 0. Если ваше достигнет 0 — вы проиграете. Победите, чтобы завершить обучение.", "④ 敵の体力が0になるまで攻撃しましょう。あなたの体力が0になると負けです。勝って訓練を終えましょう。"],
+["Você recebe 5 cartas fixas da nova classe:", "You receive 5 fixed cards of the new class:", "Вы получаете 5 фиксированных карт нового класса:", "新しいクラスの固定カード5枚を受け取ります："],
 ['Ataque','Attack','Атака','アタック'],['Habilidade','Skill','Навык','スキル'],['Poder','Power','Сила духа','パワー'],
 ['Causa dano igual ao seu Escudo.','Deal damage equal to your Block.','Наносит урон, равный вашему щиту.','自分のシールドと同じダメージを与える。'],
 ['Causa {1} de dano.','Deal {1} damage.','Наносит {1} урона.','{1}ダメージを与える。'],

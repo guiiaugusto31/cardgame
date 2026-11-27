@@ -1,8 +1,8 @@
 'use strict';
 const CARDS={};
 function def(id,name,cost,type,rar,cls,p,up){CARDS[id]={id,name,cost,type,rar,cls,...p,up:up||{}};}
-def('g_strike','Golpe',1,'atk','s','g',{dmg:6,art:'🗡️'},{dmg:9});
-def('g_def','Defender',1,'skill','s','g',{blk:5,art:'🛡️'},{blk:8});
+def('g_strike','Golpe',1,'atk','s','g',{dmg:6,neutral:true,art:'🗡️'},{dmg:9});
+def('g_def','Defender',1,'skill','s','g',{blk:5,neutral:true,art:'🛡️'},{blk:8});
 def('g_bash','Esmagar',2,'atk','s','g',{dmg:8,vuln:2,art:'🔨'},{dmg:10,vuln:3});
 def('g_twin','Golpe Duplo',1,'atk','c','g',{dmg:4,hits:2,art:'⚔️'},{dmg:5});
 def('g_firm','Postura Firme',1,'skill','c','g',{blk:6,retain:true,art:'🧱'},{blk:9});
