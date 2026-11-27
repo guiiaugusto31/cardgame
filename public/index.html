@@ -629,6 +629,12 @@ def('g_vin_furia','Golpe Furioso',1,'atk','u','g',{dmg:9,selfdmg:3,ev:'vingador'
 def('g_vin_cicatriz','Cicatrizes',0,'skill','u','g',{str:1,selfdmg:3,exhaust:true,ev:'vingador',art:'🩸'},{str:2});
 def('g_sig_bast','Fortaleza Viva',2,'power','r','g',{power:'plated',amt:6,ev:'sig',art:'🏯'},{amt:8});
 def('g_sig_ving','Fúria do Veterano',1,'skill','r','g',{str:4,selfdmg:6,exhaust:true,ev:'sig',art:'🔥'},{str:5});
+def('g_esp_prece','Prece Serena',1,'skill','u','g',{blk:8,heal:4,ev:'espirito',art:'🙏'},{blk:11,heal:6});
+def('g_esp_luz','Luz Curativa',2,'skill','u','g',{heal:10,draw:1,exhaust:true,ev:'espirito',art:'✨'},{heal:14});
+def('g_sig_esp','Graça Eterna',2,'power','r','g',{power:'halo',amt:3,ev:'sig',art:'🕊️'},{amt:4});
+def('g_vam_mordida','Mordida Rubra',1,'atk','u','g',{dmg:8,heal:3,ev:'vampiro',art:'🧛'},{dmg:11,heal:5});
+def('g_vam_sede','Sede Antiga',2,'atk','u','g',{dmg:6,hits:2,vuln:1,ev:'vampiro',art:'🩸'},{dmg:8,vuln:2});
+def('g_sig_vam','Senhor da Noite',2,'power','r','g',{power:'ritual',amt:1,ev:'sig',art:'🦇'},{amt:2});
 def('m_ev_pulso','Pulso Arcano',1,'atk','c','m',{dmg:7,draw:1,ev:'t1',art:'💫'},{dmg:10});
 def('m_ev_eter','Fonte de Éter',0,'skill','u','m',{nrg:1,draw:1,exhaust:true,ev:'t1',art:'🔷'},{draw:2});
 def('m_ev_onda','Onda Arcana',2,'atk','u','m',{dmg:12,aoe:true,weak:1,ev:'t1',art:'🌊'},{dmg:16});
@@ -638,6 +644,12 @@ def('m_des_raio','Raio Concentrado',2,'atk','u','m',{dmg:18,vuln:2,ev:'destruido
 def('m_des_surto','Surto de Poder',1,'skill','u','m',{str:2,exhaust:true,ev:'destruidor',art:'⚡'},{str:3});
 def('m_sig_tec','Tear de Éter',2,'power','r','m',{power:'insight',amt:2,ev:'sig',art:'🪡'},{amt:3});
 def('m_sig_des','Cataclismo',3,'atk','r','m',{dmg:30,aoe:true,vuln:2,exhaust:true,ev:'sig',art:'🌋'},{dmg:40});
+def('m_bru_praga','Praga Sombria',1,'atk','u','m',{dmg:5,weak:2,vuln:1,ev:'bruxo',art:'☠️'},{dmg:7,weak:2,vuln:2});
+def('m_bru_mau','Mau-Olhado',1,'skill','u','m',{weak:2,vuln:2,aoe:true,ev:'bruxo',art:'🧿'},{weak:3,vuln:3});
+def('m_sig_bru','Véu das Maldições',2,'power','r','m',{power:'plated',amt:5,ev:'sig',art:'🌑'},{amt:7});
+def('m_nec_toque','Toque Gélido',1,'atk','u','m',{dmg:7,heal:2,ev:'necro',art:'🦴'},{dmg:10,heal:3});
+def('m_nec_legiao','Legião de Ossos',2,'atk','u','m',{dmg:5,hits:2,aoe:true,ev:'necro',art:'💀'},{dmg:7});
+def('m_sig_nec','Coro de Almas',2,'power','r','m',{power:'insight',amt:2,ev:'sig',art:'⚰️'},{amt:3});
 /* --- classes por Veio: Fogo (fo), Água (ag), Luz (lu), Sombrio (tr) --- */
 def('fo_strike','Golpe Incendiário',1,'atk','s','fo',{dmg:6,art:'🗡️'},{dmg:9});
 def('fo_def','Guarda de Guerra',1,'skill','s','fo',{blk:5,art:'🛡️'},{blk:8});
@@ -1473,6 +1485,7 @@ function applyPlay(i,tid){const c=G.c,P=G.p;const card=c.hand[i];if(G.tut)tutAdv
  if(d.power)null;else if(d.exhaust)c.exh.push(card);else c.disc.push(card);
  {const E=evoFx();c.pl=(c.pl||0)+1;if(E.flow&&c.pl%3===0){c.energy+=1;G.fx.push({w:'p',t:'+1 ⚡',c:'heal'});if(E.flow>=2)draw(E.flow-1);}}
  if(E0.drain){const dl=c.en.reduce((s,e,k)=>s+hp0[k]-e.hp,0);const hl=Math.min(P.mhp-P.hp,Math.floor(dl*E0.drain));if(hl>0){P.hp+=hl;G.fx.push({w:'p',t:'+'+hl,c:'heal'});}}
+ if(E0.soul){const kl=c.en.filter((e,j)=>hp0[j]>0&&e.hp<=0).length;for(let q=0;q<kl;q++){if((c.sl||0)>=E0.soul)break;c.sl=(c.sl||0)+1;P.str++;G.fx.push({w:'p',t:'+1 💪',c:'blk'});const h=Math.min(3,P.mhp-P.hp);if(h>0){P.hp+=h;G.fx.push({w:'p',t:'+'+h,c:'heal'});}}}
  if(c.sh){const dd=c.en.map((e,k)=>hp0[k]-e.hp),vv=c.en.map((e,k)=>e.vuln-vu0[k]),ww=c.en.map((e,k)=>e.weak-we0[k]);if([...dd,...vv,...ww].some(x=>x>0))olSend({t:'cdmg',d:dd,v:vv,w:ww});}
  if(P.hp<=0){render();return setTimeout(defeat,500);}
  if(c.en.every(e=>e.hp<=0)){c.over=true;render();return setTimeout(winCombat,700);}
@@ -1564,14 +1577,22 @@ const EVO={
    bastiao:{n:'Bastião',e:'🏰',d:'Defesa total: o escudo que sobra não se perde.',
     t2:{n:'Muralha Viva',d:'Mantém 50% do Escudo no turno seguinte e ganha 5 de Escudo no fim do turno.',fx:{keep:.5,plated:5}},t3:{n:'Inabalável',d:'Mantém 70% do Escudo no turno seguinte e ganha 11 de Escudo no fim do turno.',fx:{keep:.7,plated:11}},sig:'g_sig_bast',cards:['g_bas_muro','g_bas_golpe']},
    vingador:{n:'Vingador',e:'🔥',d:'Cada ferida alimenta a fúria.',
-    t2:{n:'Sangue Quente',d:'Ganha 1 Força ao perder vida (até 2 vezes por combate).',fx:{rage:2}},t3:{n:'Fúria Eterna',d:'Ganha 1 Força ao perder vida (até 3 vezes por combate).',fx:{rage:3}},sig:'g_sig_ving',cards:['g_vin_furia','g_vin_cicatriz']}},
+    t2:{n:'Sangue Quente',d:'Ganha 1 Força ao perder vida (até 2 vezes por combate).',fx:{rage:2}},t3:{n:'Fúria Eterna',d:'Ganha 1 Força ao perder vida (até 3 vezes por combate).',fx:{rage:3}},sig:'g_sig_ving',cards:['g_vin_furia','g_vin_cicatriz']},
+   espirito:{n:'Espiritualista',e:'🕊️',d:'Fé que cura: recupera vida a cada turno e protege.',
+    t2:{n:'Chama Interior',d:'Cura 3 HP no fim do seu turno.',fx:{healturn:3}},t3:{n:'Espírito Radiante',d:'Cura 6 HP no fim do seu turno e ganha 3 de Escudo no fim do turno.',fx:{healturn:6,plated:3}},sig:'g_sig_esp',cards:['g_esp_prece','g_esp_luz']},
+   vampiro:{n:'Vampiro',e:'🧛',d:'Sangue por sangue: cura com cada golpe.',
+    t2:{n:'Sede de Sangue',d:'Cura 25% do dano causado.',fx:{drain:.25}},t3:{n:'Sangue Imortal',d:'Cura 45% do dano causado e começa o combate com 1 de Força.',fx:{drain:.45,str0:1}},sig:'g_sig_vam',cards:['g_vam_mordida','g_vam_sede']}},
   t1cards:['g_ev_guard','g_ev_ram','g_ev_resolve']},
  m:{t1:{n:'Mente Aberta',d:'Compra 3 cartas extras no primeiro turno de cada combate.',fx:{draw0:3}},
   trails:{
    tecelao:{n:'Tecelão',e:'🧵',d:'Fluxo constante de cartas e energia.',
     t2:{n:'Fio de Éter',d:'A cada 3ª carta jogada no turno, ganha 1 de Energia.',fx:{flow:1}},t3:{n:'Tear Infinito',d:'A cada 3ª carta jogada no turno, ganha 1 de Energia e compra 2 cartas. Começa cada combate com 1 de Força.',fx:{flow:3,str0:1}},sig:'m_sig_tec',cards:['m_tec_fio','m_tec_trama']},
    destruidor:{n:'Destruidor',e:'☄️',d:'Poder bruto desde o primeiro golpe.',
-    t2:{n:'Fúria Arcana',d:'Começa cada combate com 1 de Força.',fx:{str0:1}},t3:{n:'Cataclismo',d:'Começa cada combate com 2 de Força.',fx:{str0:2}},sig:'m_sig_des',cards:['m_des_raio','m_des_surto']}},
+    t2:{n:'Fúria Arcana',d:'Começa cada combate com 1 de Força.',fx:{str0:1}},t3:{n:'Cataclismo',d:'Começa cada combate com 2 de Força.',fx:{str0:2}},sig:'m_sig_des',cards:['m_des_raio','m_des_surto']},
+   bruxo:{n:'Bruxo',e:'🧿',d:'Maldições: enfraquece tudo antes do golpe.',
+    t2:{n:'Mau Agouro',d:'Inimigos começam o combate com 2 Vulnerável.',fx:{vulnstart:2}},t3:{n:'Maldição Total',d:'Inimigos começam o combate com 3 Vulnerável e você compra 2 cartas extras no primeiro turno.',fx:{vulnstart:3,draw0:2}},sig:'m_sig_bru',cards:['m_bru_praga','m_bru_mau']},
+   necro:{n:'Necromante',e:'💀',d:'Almas e ossos: cada morte alimenta você.',
+    t2:{n:'Colheita de Almas',d:'Ao matar um inimigo, ganha 1 de Força e cura 3 HP (até 2 vezes por combate).',fx:{soul:2}},t3:{n:'Legião Eterna',d:'Ao matar um inimigo, ganha 1 de Força e cura 3 HP (até 4 vezes por combate).',fx:{soul:4}},sig:'m_sig_nec',cards:['m_nec_toque','m_nec_legiao']}},
   t1cards:['m_ev_pulso','m_ev_eter','m_ev_onda']},
  fo:{t1:{n:'Sede de Guerra',d:'Ganha 1 Força ao jogar uma carta que custa vida (até 2 vezes por combate).',fx:{selfstr:2}},
   trails:{
@@ -2483,6 +2504,42 @@ const D=[
 ['Dano = seu Escudo +{1}.','Damage = your Block +{1}.','Урон = щит +{1}.','ダメージ=シールド+{1}。'],
 ['Dano = seu Escudo em todos.','Damage = your Block to all.','Урон = щит по всем.','ダメージ=シールド(全体)。'],
 ['Dano = seu Escudo +{1} em todos.','Damage = your Block +{1} to all.','Урон = щит +{1} по всем.','ダメージ=シールド+{1}(全体)。'],
+['Espiritualista','Spiritualist','Спиритуалист','霊導師'],
+['Fé que cura: recupera vida a cada turno e protege.','Healing faith: recovers HP every turn and protects.','Исцеляющая вера: восстанавливает ЗДР каждый ход и защищает.','癒しの信仰:毎ターンHPを回復し、身を守る。'],
+['Chama Interior','Inner Flame','Внутреннее пламя','内なる炎'],
+['Cura 3 HP no fim do seu turno.','Heal 3 HP at the end of your turn.','Лечит 3 ЗДР в конце вашего хода.','ターン終了時にHPを3回復する。'],
+['Espírito Radiante','Radiant Spirit','Сияющий дух','輝く霊'],
+['Cura 6 HP no fim do seu turno e ganha 3 de Escudo no fim do turno.','Heal 6 HP at the end of your turn and gain 3 Block at the end of the turn.','Лечит 6 ЗДР в конце вашего хода и даёт 3 Щита в конце хода.','ターン終了時にHPを6回復し、シールドを3得る。'],
+['Vampiro','Vampire','Вампир','吸血鬼'],
+['Sangue por sangue: cura com cada golpe.','Blood for blood: heals with every strike.','Кровь за кровь: лечит с каждым ударом.','血には血を:攻撃のたびに回復する。'],
+['Sede de Sangue','Bloodthirst','Жажда крови','血の渇き'],
+['Cura 25% do dano causado.','Heal 25% of damage dealt.','Лечит 25% нанесённого урона.','与えたダメージの25%回復する。'],
+['Sangue Imortal','Immortal Blood','Бессмертная кровь','不滅の血'],
+['Cura 45% do dano causado e começa o combate com 1 de Força.','Heal 45% of damage dealt and start combat with 1 Strength.','Лечит 45% нанесённого урона; бой начинается с 1 Силы.','与えたダメージの45%回復し、戦闘を筋力1で始める。'],
+['Bruxo','Warlock','Колдун','呪術師'],
+['Maldições: enfraquece tudo antes do golpe.','Curses: weakens everything before the strike.','Проклятия: ослабляет всё до удара.','呪い:攻撃の前にすべてを弱らせる。'],
+['Mau Agouro','Ill Omen','Дурное предзнаменование','凶兆'],
+['Inimigos começam o combate com 2 Vulnerável.','Enemies start combat with 2 Vulnerable.','Враги начинают бой с 2 Уязвимости.','敵は脆弱2で戦闘を始める。'],
+['Maldição Total','Total Curse','Полное проклятие','完全なる呪い'],
+['Inimigos começam o combate com 3 Vulnerável e você compra 2 cartas extras no primeiro turno.','Enemies start combat with 3 Vulnerable and you draw 2 extra cards on the first turn.','Враги начинают бой с 3 Уязвимости, а вы берёте 2 доп. карты в первый ход.','敵は脆弱3で戦闘を始め、最初のターンに追加で2枚引く。'],
+['Necromante','Necromancer','Некромант','死霊術師'],
+['Almas e ossos: cada morte alimenta você.','Souls and bones: every death feeds you.','Души и кости: каждая смерть питает вас.','魂と骨:すべての死があなたを養う。'],
+['Colheita de Almas','Soul Harvest','Жатва душ','魂の収穫'],
+['Ao matar um inimigo, ganha 1 de Força e cura 3 HP (até 2 vezes por combate).','On killing an enemy, gain 1 Strength and heal 3 HP (up to 2 times per combat).','При убийстве врага вы получаете 1 Силу и лечите 3 ЗДР (до 2 раз за бой).','敵を倒すと筋力1を得てHPを3回復する(戦闘ごとに最大2回)。'],
+['Legião Eterna','Eternal Legion','Вечный легион','永遠の軍団'],
+['Ao matar um inimigo, ganha 1 de Força e cura 3 HP (até 4 vezes por combate).','On killing an enemy, gain 1 Strength and heal 3 HP (up to 4 times per combat).','При убийстве врага вы получаете 1 Силу и лечите 3 ЗДР (до 4 раз за бой).','敵を倒すと筋力1を得てHPを3回復する(戦闘ごとに最大4回)。'],
+['Prece Serena','Serene Prayer','Тихая молитва','静かな祈り'],
+['Luz Curativa','Healing Light','Целительный свет','癒しの光'],
+['Graça Eterna','Eternal Grace','Вечная милость','永遠の恩寵'],
+['Mordida Rubra','Crimson Bite','Багровый укус','紅の牙'],
+['Sede Antiga','Ancient Thirst','Древняя жажда','太古の渇き'],
+['Senhor da Noite','Lord of the Night','Повелитель ночи','夜の主'],
+['Praga Sombria','Dark Plague','Тёмная чума','暗き疫'],
+['Mau-Olhado','Evil Eye','Дурной глаз','邪眼'],
+['Véu das Maldições','Veil of Curses','Завеса проклятий','呪いの帳'],
+['Toque Gélido','Chilling Touch','Леденящее касание','凍てつく手'],
+['Legião de Ossos','Legion of Bones','Легион костей','骸骨の軍団'],
+['Coro de Almas','Choir of Souls','Хор душ','魂の合唱'],
 ['Ataque','Attack','Атака','アタック'],['Habilidade','Skill','Навык','スキル'],['Poder','Power','Сила духа','パワー'],
 ['Dano = seu Escudo.','Damage = your Block.','Наносит урон, равный вашему щиту.','自分のシールドと同じダメージを与える。'],
 ['Causa {1} de dano.','Deal {1} damage.','Наносит {1} урона.','{1}ダメージを与える。'],
