@@ -35,7 +35,7 @@ h1,h2,h3,.cz{font-family:Cinzel,Georgia,serif}
 .card .nm{font-family:Cinzel;font-weight:700;font-size:13px;text-align:center;padding:2px 0 4px 18px;line-height:1.1}
 .card .art{height:58px;border-radius:6px;background:#0b0e1a;display:flex;align-items:center;justify-content:center;font-size:34px;border:1px solid #333}
 .card .ty{font-size:9px;text-align:center;text-transform:uppercase;letter-spacing:1px;margin:3px 0;opacity:.8}
-.card .tx{font-size:11px;line-height:1.25;text-align:center;flex:1;display:flex;align-items:center;justify-content:center;padding:2px 3px;background:#0d1020;border-radius:5px}
+.card .tx{font-size:calc(11px*var(--tf,1));line-height:1.25;text-align:center;flex:1;display:flex;align-items:center;justify-content:center;padding:2px 3px;background:#0d1020;border-radius:5px}
 .card.r-u .nm{color:#7ec8ff}.card.r-r .nm{color:#ffcf4d}
 .card:hover{transform:translateY(-14px) scale(1.07);z-index:20;box-shadow:0 0 18px rgba(160,130,255,.7)}
 .card.dis{filter:grayscale(.7) brightness(.7)}
@@ -255,15 +255,15 @@ body{overscroll-behavior:none;-webkit-text-size-adjust:100%}
 input,select,textarea{font-size:16px}
 .modal{padding:max(12px,env(safe-area-inset-top)) max(12px,env(safe-area-inset-right)) max(12px,env(safe-area-inset-bottom)) max(12px,env(safe-area-inset-left))}
 #zoom{position:fixed;inset:0;z-index:99999;display:none;align-items:center;justify-content:center;background:rgba(3,6,14,.78);pointer-events:none}
-#zoom.on{display:flex}#zoom .card{width:200px;height:286px;transform:none!important;margin:0;animation:none}#zoom .card .nm{font-size:18px}#zoom .card .tx{font-size:15px}#zoom .card .art{height:96px;font-size:56px}#zoom .card .ty{font-size:11px}
+#zoom.on{display:flex}#zoom .card{width:200px;height:286px;transform:none!important;margin:0;animation:none}#zoom .card .nm{font-size:18px}#zoom .card .tx{font-size:calc(15px*var(--tf,1))}#zoom .card .art{height:96px;font-size:56px}#zoom .card .ty{font-size:11px}
 @media(hover:none){.card:hover{transform:none;box-shadow:none}.card.sel:hover{transform:translateY(-26px) scale(1.1);box-shadow:0 0 22px #ffd34d}.btn:hover{background:#2b2350;transform:none}.btn.gold:hover{background:#6b4a10}.door:hover,.node.cur:hover{transform:none}.pile:hover{background:#1b2038}
  .btn{min-height:44px}.btn.sm{min-height:38px;padding:7px 12px}.pile{padding:9px 12px;font-size:13px}}
 /* telas grandes */
-@media(min-width:1100px) and (min-height:760px){.card{width:156px;height:222px}.card .art{height:72px;font-size:42px}.card .nm{font-size:14.5px}.card .tx{font-size:12.5px}.card .ty{font-size:10px}
+@media(min-width:1100px) and (min-height:760px){.card{width:156px;height:222px}.card .art{height:72px;font-size:42px}.card .nm{font-size:14.5px}.card .tx{font-size:calc(12.5px*var(--tf,1))}.card .ty{font-size:10px}
  .ent .face{font-size:92px}.ent.boss .face{font-size:124px}.player .face{font-size:88px}.hpbar{width:150px;height:14px}.hptx{font-size:13px}.intent{font-size:14px}.orb{width:96px;height:96px;font-size:30px}.left,.right{width:130px}.bottom{min-height:250px}
  .art-img{max-height:min(30vh,250px);max-width:250px}.ent.boss .art-img{max-height:min(34vh,290px);max-width:290px}.player .art-img{max-height:min(32vh,260px)}
  .door{width:170px}.arch{width:150px;height:220px}.hint{max-width:170px;font-size:13px}#top{font-size:15px;padding:10px 18px}}
-@media(min-width:1700px){.card{width:176px;height:250px}.card .tx{font-size:14px}.card .nm{font-size:16px}.bottom{min-height:280px}}
+@media(min-width:1700px){.card{width:176px;height:250px}.card .tx{font-size:calc(14px*var(--tf,1))}.card .nm{font-size:16px}.bottom{min-height:280px}}
 /* celular em pé e telas estreitas */
 @media(max-width:700px){
  #top{gap:6px 10px;padding:6px 8px;font-size:12px}#top .cz{font-size:13px}.relic{font-size:20px}
@@ -274,7 +274,7 @@ input,select,textarea{font-size:16px}
  .row>div[onclick][style*="border-radius:12px"] .tag{font-size:11px}
  .doors{gap:12px}.door{width:96px;gap:6px}.arch{width:88px;height:130px;font-size:30px;border-radius:44px 44px 6px 6px}.hint{max-width:100px;font-size:11px;padding:3px 6px}
  .modal{padding:10px;gap:10px}.modal .grid{gap:12px;padding:6px}
- .card{width:92px;height:132px;padding:4px;border-width:2px}.card .cost{width:26px;height:26px;left:-8px;top:-8px;font-size:13px}.card .nm{font-size:9.5px;padding:1px 0 2px 14px}.card .art{height:30px;font-size:20px}.card .ty{font-size:7px;margin:2px 0}.card .tx{font-size:8.5px;line-height:1.15}
+ .card{width:92px;height:132px;padding:4px;border-width:2px}.card .cost{width:26px;height:26px;left:-8px;top:-8px;font-size:13px}.card .nm{font-size:9.5px;padding:1px 0 2px 14px}.card .art{height:30px;font-size:20px}.card .ty{font-size:7px;margin:2px 0}.card .tx{font-size:calc(8.5px*var(--tf,1));line-height:1.15}
  .card.sel{transform:translateY(-16px) scale(1.06)}
  .field{padding:6px 2% 4px;gap:6px}.enemies{gap:8px}.ent{min-width:84px;gap:2px}.ent .face{font-size:50px}.ent.boss .face{font-size:68px}.ent .cz{font-size:11px!important}
  .player{min-width:74px}.player .face{font-size:46px}.hpbar{width:84px;height:10px}.hptx{font-size:10px}.intent{font-size:11px;padding:1px 7px}.chip{font-size:10px}
@@ -297,7 +297,7 @@ input,select,textarea{font-size:16px}
 @media(max-height:500px) and (orientation:landscape){
  #top{padding:3px 8px;font-size:11px;gap:4px 8px}.btn.sm{min-height:30px;padding:4px 8px}
  .center{padding:8px;gap:8px;justify-content:flex-start}.center h1.big{font-size:28px}.menu .mbtn{padding:8px 12px}
- .card{width:78px;height:112px}.card .nm{font-size:8.5px}.card .art{height:24px;font-size:16px}.card .tx{font-size:7.5px}.card .ty{display:none}.card .cost{width:22px;height:22px;font-size:11px}
+ .card{width:78px;height:112px}.card .nm{font-size:8.5px}.card .art{height:24px;font-size:16px}.card .tx{font-size:calc(7.5px*var(--tf,1))}.card .ty{display:none}.card .cost{width:22px;height:22px;font-size:11px}
  .ent .face{font-size:40px}.ent.boss .face{font-size:54px}.player .face{font-size:38px}.art-img{max-height:min(24vh,80px);max-width:80px}.ent.boss .art-img{max-height:min(30vh,100px)}.player .art-img{max-height:min(26vh,86px)}
  .hpbar{width:76px;height:8px}.hptx{font-size:9px}.intent{font-size:10px}.field{padding:2px 2%}
  .bottom{display:flex;min-height:0;padding:2px 6px 6px;gap:6px;align-items:flex-end}.hand{padding:10px 4px 6px;overflow-x:auto;justify-content:safe center}.hand .card{margin:0 -10px}
@@ -387,7 +387,7 @@ body .card[class*="el-"] .cost{background:none;aspect-ratio:1;height:auto;displa
 body .card[class*="el-"] .nm{display:flex;align-items:center;justify-content:center;padding:0;font-size:7.4cqw;white-space:nowrap;font-weight:800;overflow:hidden;background:none!important;text-transform:none;letter-spacing:0;border:0}
 body .card[class*="el-"] .art{display:flex;align-items:center;justify-content:center;font-size:25cqw;height:auto;background:none!important;overflow:hidden;margin:0}
 body .card[class*="el-"] .ty{display:flex;align-items:center;justify-content:center;font-size:5.2cqw;line-height:1;font-weight:700;padding:0;margin:0;height:auto;background:var(--tc)!important;border-radius:20px;color:#fff;transform:scaleY(.82)}
-body .card[class*="el-"] .tx{display:flex;align-items:center;justify-content:center;text-align:center;background:none!important;border:0;overflow:hidden;padding:2% 3%;line-height:1.1;font-size:7.4cqw!important}
+body .card[class*="el-"] .tx{display:flex;align-items:center;justify-content:center;text-align:center;background:none!important;border:0;overflow:hidden;padding:2% 3%;line-height:1.12;font-size:calc(7.4cqw*var(--tf,1))!important}
 body .card.up[class*="el-"] .nm{text-shadow:0 0 6px #7dffa8}
 body .card.el-g::before{background-image:var(--fr-g)}
 body .card.el-g .cost{left:7.97%;top:6.32%;width:12.49%;height:8.84%;color:#f3dfb4;text-shadow:0 1px 2px #000a}
@@ -515,6 +515,8 @@ body .fpv .ent .art-img{filter:drop-shadow(0 1px 2px #000b);margin-bottom:-7px;p
 body .fpv .ent:not(.fly) .face::after{left:12%;right:12%;bottom:-6px;height:20px;background:radial-gradient(ellipse at 50% 50%,#000f 0,#000d 35%,#0006 62%,transparent 80%);filter:blur(2px);z-index:0}
 body .fpv .ent.fly .face::after{background:radial-gradient(ellipse,#000b 0,#0005 45%,transparent 72%);filter:blur(3px);z-index:0}
 body .fpv .ent.boss:not(.fly) .face::after{left:14%;right:14%;height:20px}
+body .card .ty.h2{left:10%!important;width:80%!important;font-size:4.3cqw!important;letter-spacing:0!important;white-space:nowrap;gap:.35em}
+body .card .tx{line-height:1.18;overflow:hidden}
 </style>
 </head>
 <body>
@@ -803,10 +805,10 @@ const PW={plated:'Armadura Viva',ritual:'Ritual',insight:'Mente Aguçada'};
 function effCost(d){const c=G&&G.c;if(!c||!d.cost)return d.cost;const f=evoFx().first0||0;return (c.pl||0)<f?d.cost-1:d.cost;}
 function cd(c){const b=CARDS[c.id];const o={...b,...(c.u?b.up:{})};o.name=b.name+(c.u?'+':'');return o;}
 function desc(d){const a=[];
- if(d.bodyslam){const bm=d.bmul&&d.bmul!==1?' ×'+d.bmul:'';a.push('Causa dano igual ao seu Escudo'+bm+(d.dmg?' +'+d.dmg:'')+(d.aoe?' em todos':'')+'.');}
- if(d.strip)a.push(d.aoe?'Remove o Escudo de todos.':'Remove o Escudo do alvo.');if(d.stripdmg)a.push('Causa dano extra igual ao Escudo removido.');if(d.spend)a.push('Consome todo o seu Escudo.');
+ if(d.bodyslam){const bm=d.bmul&&d.bmul!==1?' ×'+d.bmul:'';a.push('Dano = seu Escudo'+bm+(d.dmg?' +'+d.dmg:'')+(d.aoe?' em todos':'')+'.');}
+ if(d.strip)a.push(d.aoe?'Remove o Escudo de todos.':'Remove o Escudo do alvo.');if(d.stripdmg)a.push('Dano extra = Escudo removido.');if(d.spend)a.push('Gasta todo o Escudo.');
  if(d.dmg&&!d.bodyslam)a.push(`Causa ${d.dmg}${d.hits>1?'×'+d.hits:''} de dano${d.aoe?' em todos':''}.`);
- if(d.blk)a.push(`Ganha ${d.blk} de Escudo.`);if(d.gblk)a.push(`Você e aliados ganham ${d.gblk} de Escudo.`);if(d.retain)a.push('Retém o Escudo no próximo turno.');if(d.sac)a.push(`Sacrifício: perde ${Math.round(d.sac*100)}% da vida máxima; dano ×1.5.`);
+ if(d.blk)a.push(`Ganha ${d.blk} de Escudo.`);if(d.gblk)a.push(`Todos ganham ${d.gblk} de Escudo.`);if(d.retain)a.push('Retém o Escudo.');if(d.sac)a.push(`Sacrifício: -${Math.round(d.sac*100)}% vida máx.; dano ×1.5.`);
  if(d.weak)a.push(`Aplica ${d.weak} Fraqueza${d.aoe?' em todos':''}.`);
  if(d.vuln)a.push(`Aplica ${d.vuln} Vulnerável${d.aoe?' em todos':''}.`);
  if(d.heal)a.push(`Cura ${d.heal} HP.`);
@@ -815,15 +817,16 @@ function desc(d){const a=[];
  if(d.selfdmg)a.push(`Perde ${d.selfdmg} HP.`);
  if(d.str)a.push(`Ganha ${d.str} Força.`);
  if(d.power==='keep')a.push('Poder: retém +25% do Escudo no próximo turno.');
- if(d.power==='halo')a.push(`Poder: início do turno, você e aliados ganham ${d.amt} de Escudo.`);
+ if(d.power==='halo')a.push(`Poder: início do turno, todos ganham ${d.amt} de Escudo.`);
  if(d.power==='plated')a.push(`Poder: no fim do turno ganha ${d.amt} Escudo.`);
  if(d.power==='ritual')a.push(`Poder: início do turno, ganha ${d.amt} Força.`);
  if(d.power==='insight')a.push(`Poder: compre +${d.amt} carta por turno.`);
  if(d.exhaust)a.push('<i>Exaurir.</i>');
  return a.join(' ');}
 const TY={atk:'Ataque',skill:'Habilidade',power:'Poder'};
+function txScale(d){const n=desc(d).replace(/<[^>]+>/g,'').length;return n<=30?1:n<=44?.9:n<=58?.8:n<=76?.72:n<=96?.64:.58;}
 function cardHTML(c,o={}){const d=cd(c);return `<div class="card ${d.type} r-${d.rar} el-${VK(d.cls)} ${c.u?'up ':''}${o.cls||''}" ${o.attr||''} ${o.click?`onclick="${o.click}"`:''} title="${d.name}"><span class="shn"></span>
-<div class="cost">${d.cost}</div><div class="nm">${d.name}</div><div class="art">${ART['ic_'+d.id]?`<img src="${ART['ic_'+d.id]}" alt="">`:d.art}</div><div class="ty">${TY[d.type]}${d.holy?' · <i class="holy">Sagrado</i>':''}</div><div class="tx">${desc(d)}</div></div>${o.price!=null?`<div class="price">🪙 ${o.price}</div>`:''}`;}
+<div class="cost">${d.cost}</div><div class="nm">${d.name}</div><div class="art">${ART['ic_'+d.id]?`<img src="${ART['ic_'+d.id]}" alt="">`:d.art}</div><div class="ty${d.holy?' h2':''}"><span>${TY[d.type]}</span>${d.holy?' <i class="holy">· Sagrado</i>':''}</div><div class="tx" style="--tf:${txScale(d)}">${desc(d)}</div></div>${o.price!=null?`<div class="price">🪙 ${o.price}</div>`:''}`;}
 
 /* ===================== ARTE (reciclada do Sixfold / Gemini) =====================
    Preencha ART com data-URIs base64 ou caminhos. Chaves ausentes caem para emoji/gradiente.
@@ -2339,17 +2342,17 @@ const D=[
 ['Neutro','Neutral','Нейтральное','無'],
 ['Remove o Escudo do alvo.','Remove the target\'s Block.','Снимает щит цели.','対象のシールドを除去する。'],
 ['Remove o Escudo de todos.','Remove Block from all enemies.','Снимает щит со всех врагов.','全敵のシールドを除去する。'],
-['Causa dano extra igual ao Escudo removido.','Deal extra damage equal to the Block removed.','Наносит доп. урон, равный снятому щиту.','除去したシールド分の追加ダメージを与える。'],
-['Consome todo o seu Escudo.','Consumes all your Block.','Поглощает весь ваш щит.','自分のシールドをすべて消費する。'],
-['Retém o Escudo no próximo turno.','Keep your Block next turn.','Щит сохраняется на следующий ход.','シールドを次のターンに持ち越す。'],
-['Você e aliados ganham {1} de Escudo.','You and allies gain {1} Block.','Вы и союзники получаете {1} щита.','自分と味方がシールドを{1}得る。'],
-['Sacrifício: perde {1}% da vida máxima; dano ×1.5.','Sacrifice: lose {1}% max HP; damage ×1.5.','Жертва: теряете {1}% макс. ЗДР; урон ×1.5.','犠牲：最大HPの{1}%を失い、ダメージ×1.5。'],
+['Dano extra = Escudo removido.','Extra damage = Block removed.','Наносит доп. урон, равный снятому щиту.','除去したシールド分の追加ダメージを与える。'],
+['Gasta todo o Escudo.','Spends all your Block.','Поглощает весь ваш щит.','自分のシールドをすべて消費する。'],
+['Retém o Escudo.','Keep your Block.','Щит сохраняется на следующий ход.','シールドを次のターンに持ち越す。'],
+['Todos ganham {1} de Escudo.','All gain {1} Block.','Вы и союзники получаете {1} щита.','自分と味方がシールドを{1}得る。'],
+['Sacrifício: -{1}% vida máx.; dano ×1.5.','Sacrifice: -{1}% max HP; damage ×1.5.','Жертва: теряете {1}% макс. ЗДР; урон ×1.5.','犠牲：最大HPの{1}%を失い、ダメージ×1.5。'],
 ['Poder: retém +25% do Escudo no próximo turno.','Power: keep +25% of your Block next turn.','Сила духа: +25% щита сохраняется на следующий ход.','パワー: シールドを次のターンに+25%持ち越す。'],
-['Poder: início do turno, você e aliados ganham {1} de Escudo.','Power: at turn start, you and allies gain {1} Block.','Сила духа: в начале хода вы и союзники получаете {1} щита.','パワー: ターン開始時、自分と味方がシールドを{1}得る。'],
-['Causa dano igual ao seu Escudo ×{1}.','Deal damage equal to your Block ×{1}.','Наносит урон, равный щиту ×{1}.','自分のシールド×{1}のダメージを与える。'],
-['Causa dano igual ao seu Escudo ×{1} +{2}.','Deal damage equal to your Block ×{1} +{2}.','Наносит урон, равный щиту ×{1} +{2}.','自分のシールド×{1}+{2}のダメージを与える。'],
-['Causa dano igual ao seu Escudo ×{1} em todos.','Deal damage equal to your Block ×{1} to all.','Наносит всем урон, равный щиту ×{1}.','全体に自分のシールド×{1}のダメージを与える。'],
-['Causa dano igual ao seu Escudo ×{1} +{2} em todos.','Deal damage equal to your Block ×{1} +{2} to all.','Наносит всем урон, равный щиту ×{1} +{2}.','全体に自分のシールド×{1}+{2}のダメージを与える。'],
+['Poder: início do turno, todos ganham {1} de Escudo.','Power: at turn start, all gain {1} Block.','Сила духа: в начале хода вы и союзники получаете {1} щита.','パワー: ターン開始時、自分と味方がシールドを{1}得る。'],
+['Dano = seu Escudo ×{1}.','Damage = your Block ×{1}.','Наносит урон, равный щиту ×{1}.','自分のシールド×{1}のダメージを与える。'],
+['Dano = seu Escudo ×{1} +{2}.','Damage = your Block ×{1} +{2}.','Наносит урон, равный щиту ×{1} +{2}.','自分のシールド×{1}+{2}のダメージを与える。'],
+['Dano = seu Escudo ×{1} em todos.','Damage = your Block ×{1} to all.','Наносит всем урон, равный щиту ×{1}.','全体に自分のシールド×{1}のダメージを与える。'],
+['Dano = seu Escudo ×{1} +{2} em todos.','Damage = your Block ×{1} +{2} to all.','Наносит всем урон, равный щиту ×{1} +{2}.','全体に自分のシールド×{1}+{2}のダメージを与える。'],
 ['Armadura: o Escudo vira dano, pode ser retido e protege aliados. Sacrifique vida para golpear mais forte.','Armor: Block becomes damage, can be kept, and protects allies. Sacrifice life to strike harder.','Броня: щит становится уроном, сохраняется и защищает союзников. Жертвуйте здоровьем ради сильных ударов.','アーマー：シールドがダメージになり、持ち越せて、味方も守る。HPを捧げて強く打つ。'],
 ["🎓 Treino do Aprendiz", "🎓 Apprentice Training", "🎓 Обучение ученика", "🎓 見習いの訓練"],
 ["Bem-vindo à Masmorra dos Ecos!", "Welcome to the Dungeon of Echoes!", "Добро пожаловать в Подземелье Эха!", "エコーの地下牢へようこそ！"],
@@ -2477,8 +2480,11 @@ const D=[
 ['Cirurgia Final','Final Surgery','Последняя операция','最後の手術'],
 ['Ervas Medicinais','Medicinal Herbs','Лечебные травы','薬草'],
 ['Praga Negra','Black Blight','Чёрная порча','黒き疫'],
+['Dano = seu Escudo +{1}.','Damage = your Block +{1}.','Урон = щит +{1}.','ダメージ=シールド+{1}。'],
+['Dano = seu Escudo em todos.','Damage = your Block to all.','Урон = щит по всем.','ダメージ=シールド(全体)。'],
+['Dano = seu Escudo +{1} em todos.','Damage = your Block +{1} to all.','Урон = щит +{1} по всем.','ダメージ=シールド+{1}(全体)。'],
 ['Ataque','Attack','Атака','アタック'],['Habilidade','Skill','Навык','スキル'],['Poder','Power','Сила духа','パワー'],
-['Causa dano igual ao seu Escudo.','Deal damage equal to your Block.','Наносит урон, равный вашему щиту.','自分のシールドと同じダメージを与える。'],
+['Dano = seu Escudo.','Damage = your Block.','Наносит урон, равный вашему щиту.','自分のシールドと同じダメージを与える。'],
 ['Causa {1} de dano.','Deal {1} damage.','Наносит {1} урона.','{1}ダメージを与える。'],
 ['Causa {1}×{2} de dano.','Deal {1}×{2} damage.','Наносит {1}×{2} урона.','{1}×{2}ダメージを与える。'],
 ['Causa {1} de dano em todos.','Deal {1} damage to all.','Наносит {1} урона всем.','全体に{1}ダメージを与える。'],
