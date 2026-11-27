@@ -417,6 +417,34 @@ body .card.el-m .art{left:13.98%;top:16.19%;width:72.51%;height:43.62%}
 body .card.el-m .ty{left:29.86%;top:61.24%;width:39.81%;height:3.61%}
 body .card.el-m .tx{left:12.44%;top:66.11%;width:75.47%;height:24.75%;color:#e6f6ff}
 body .card.el-lu .nm,body .card.el-lu .tx{text-shadow:none}
+
+/* ===== barra de HP, ícones de ação e garras (v4) ===== */
+body .hpbar{position:relative;height:16px;border-radius:9px;border:2px solid #0a0a10;background:linear-gradient(#1a0a0d,#2e1016);box-shadow:0 0 0 1px #6b6f86,0 2px 6px #000a,inset 0 2px 4px #000c;overflow:hidden}
+body .hpbar.p{background:linear-gradient(#08140c,#10281a);box-shadow:0 0 0 1px #b98a4a,0 2px 6px #000a,inset 0 2px 4px #000c}
+body .hpbar .gh{position:absolute;left:0;top:0;bottom:0;background:linear-gradient(#fff6,#ffd0a0aa);transition:width .6s ease-out;z-index:1}
+body .hpbar i{position:absolute;left:0;top:0;bottom:0;height:auto;z-index:2;transition:width .25s;background:linear-gradient(#ff7a6a,#d0323a 55%,#8a1520)}
+body .hpbar.p i{background:linear-gradient(#7dff9a,#2fbf55 55%,#14793a)}
+body .hpbar.warn i{background:linear-gradient(#ffe07a,#f0a020 55%,#a86010)}
+body .hpbar.crit i{background:linear-gradient(#ff7a6a,#d0323a 55%,#8a1520);animation:hpcrit .8s ease-in-out infinite alternate}
+@keyframes hpcrit{to{filter:brightness(1.45)}}
+body .hpbar s{position:absolute;inset:0;z-index:3;pointer-events:none;background:repeating-linear-gradient(90deg,transparent 0 calc(10% - 1px),#0007 calc(10% - 1px) 10%),linear-gradient(#fff5,#fff0 45%,#0003 100%)}
+body .hpbar .hpn{display:none}
+.ib{--ic:#ffd34d;display:inline-flex;align-items:center;gap:3px;padding:1px 8px 1px 4px;margin:0 2px;border-radius:14px;border:2px solid var(--ic);background:radial-gradient(circle at 30% 30%,#2a2f48,#0b0e18);box-shadow:0 0 8px var(--ic),inset 0 0 6px #000;font-family:Cinzel,serif;font-weight:800;line-height:1}
+.ib svg{width:18px;height:18px;fill:var(--ic);filter:drop-shadow(0 0 3px var(--ic))}
+.ib b{font-size:15px;color:#fff;text-shadow:0 1px 2px #000}.ib u{text-decoration:none;font-size:11px;color:var(--ic)}.ib em{font-style:normal;font-size:11px;color:#fff}
+.ib.atk{--ic:#ff5a4a;animation:ibpulse 1s ease-in-out infinite alternate}.ib.blk{--ic:#5db4ff}.ib.buff{--ic:#ffd34d}.ib.deb{--ic:#b98aff}.ib.deb2{--ic:#ff7aa0}
+@keyframes ibpulse{to{box-shadow:0 0 14px var(--ic),inset 0 0 6px #000;transform:scale(1.06)}}
+body .intent{background:none;border:0;padding:0;display:flex;gap:2px;justify-content:center;flex-wrap:wrap}
+.scrclaw{position:absolute;left:50%;top:44%;width:0;height:0;z-index:30;pointer-events:none}
+.scrclaw i{position:absolute;width:5px;height:210px;left:0;top:-105px;border-radius:50% 50% 50% 50%/10% 10% 90% 90%;background:linear-gradient(#fff,#ff4a3a 50%,#7a0a14);box-shadow:0 0 14px #ff3a2a;transform:rotate(25deg) translateX(-40px) scaleY(0);transform-origin:50% 0;animation:scrclaw .35s ease-out forwards}
+.scrclaw i:nth-child(2){margin-left:34px;animation-delay:.05s}.scrclaw i:nth-child(3){margin-left:68px;animation-delay:.1s}
+@keyframes scrclaw{0%{transform:rotate(25deg) translateX(-40px) scaleY(0);opacity:1}60%{transform:rotate(25deg) translateX(-40px) scaleY(1);opacity:1}100%{transform:rotate(25deg) translateX(-40px) scaleY(1);opacity:0}}
+@media(max-width:700px),(max-height:500px){body .hpbar{height:11px}.ib svg{width:13px;height:13px}.ib b{font-size:12px}}
+body .field.fpv{padding-top:52px;box-sizing:border-box}
+body .fpv .ent .art-img{max-height:min(33vh,240px)}
+body .fpv .ent .intent{order:0}body .fpv .ent .cz{order:1}body .fpv .ent .hpbar{order:2}body .fpv .ent .hptx{order:3}body .fpv .ent .chips{order:4}body .fpv .ent .face{order:5}
+body .fpv .ent .hpbar{width:150px}
+body .fpv .ent .art-img{max-height:min(30vh,220px)}
 </style>
 </head>
 <body>
@@ -1143,20 +1171,29 @@ async function endTurn(){const c=G.c,P=G.p;if(!c||c.busy||c.over)return;c.busy=t
  ['weak','vuln'].forEach(k=>{if(P[k]>P.fresh[k])P[k]--;P.fresh[k]=0;});
  c.en.forEach(e=>{if(e.weak>0)e.weak--;if(e.vuln>0)e.vuln--;e.mi++;setIntent(e);});
  startTurn();}
+const IC={atk:'<svg viewBox="0 0 24 24"><path d="M20.5 2.5l1 6-11 11-3.5-3.5z"/><path d="M5.5 12.5l6 6-2 2-6-6z"/><path d="M3 17l4 4-2.2.7L2.3 19.2z"/></svg>',
+ blk:'<svg viewBox="0 0 24 24"><path d="M12 2l8.5 3v6.2c0 5.2-3.6 9.2-8.5 10.8C7.1 20.400 3.500 16.400 3.500 11.200V5z"/></svg>',
+ str:'<svg viewBox="0 0 24 24"><path d="M12 2l7 9h-4.500v11h-5V11H5z"/></svg>',
+ weak:'<svg viewBox="0 0 24 24"><path d="M12 22l-7-9h4.500V2h5v11H19z"/></svg>',
+ vuln:'<svg viewBox="0 0 24 24"><path d="M12 21.500S3 16 3 9.500A5 5 0 0112 7a5 5 0 019 2.500C21 16 12 21.500 12 21.500z"/><path d="M12 7l-2 4 3 2-2 4" fill="none" stroke="#0b0e18" stroke-width="1.600"/></svg>'};
+function ib(k,cls,main,sub,lab){return `<span class="ib ${cls}">${IC[k]}${main!=null?`<b>${main}</b>`:''}${sub?`<u>${sub}</u>`:''}${lab?`<em>${lab}</em>`:''}</span>`;}
 function intentTxt(e){const m=e.intent,P=G.p;const a=[];
- if(m.d){const v=calc(Math.round(m.d*e.dm),e.str,e.weak,P.vuln);a.push(`⚔️ ${v}${m.n>1?'×'+m.n:''}`);}
- if(m.blk)a.push('🛡️'+m.blk);if(m.str)a.push('💪+'+m.str);if(m.weak)a.push('🌫️Fraq.');if(m.vuln)a.push('💔Vuln.');return a.join(' ');}
+ if(m.d){const v=calc(Math.round(m.d*e.dm),e.str,e.weak,P.vuln);a.push(ib('atk','atk',v,m.n>1?'×'+m.n:''));}
+ if(m.blk)a.push(ib('blk','blk',m.blk));if(m.str)a.push(ib('str','buff','+'+m.str));if(m.weak)a.push(ib('weak','deb',null,'','Fraq.'));if(m.vuln)a.push(ib('vuln','deb2',null,'','Vuln.'));return a.join('');}
+function hpbar(o,cls){const pct=Math.max(0,o.hp/o.mhp*100),prev=Math.max(pct,(o._ph==null?pct:o._ph/o.mhp*100));o._ph=o.hp;const lv=pct<=25?' crit':pct<=50?' warn':'';
+ return `<div class="hpbar ${cls||''}${lv}"><b class="gh" style="width:${prev}%" data-to="${pct}"></b><i style="width:${pct}%"></i><s></s><span class="hpn">${Math.max(0,o.hp)}</span></div>`;}
+function hpGhost(){document.querySelectorAll('.hpbar .gh').forEach(g=>{const to=g.dataset.to;if(parseFloat(g.style.width)>parseFloat(to)+.1){setTimeout(()=>{g.style.width=to+'%';},520);}});}
 function chips(o){const a=[];if(o.str)a.push(`<span class="chip" title="Força">💪${o.str}</span>`);if(o.weak>0)a.push(`<span class="chip" title="Fraqueza: -25% de dano">🌫️${o.weak}</span>`);if(o.vuln>0)a.push(`<span class="chip" title="Vulnerável: +50% de dano recebido">💔${o.vuln}</span>`);return a.join('');}
 function render(){const c=G.c,P=G.p;if(!c)return;
  const en=c.en.map(e=>`<div class="ent ${e.boss?'boss':''} ${e.hp<=0?'dead':''} ${c.pending!=null&&e.hp>0?'tgt':''}" data-w="e${e.id}" onclick="clickEnemy(${e.id})">
  ${e.hp>0?`<div class="intent">${intentTxt(e)}</div>`:'<div class="intent">&nbsp;</div>'}<div class="face">${artImg('char_'+e.k,e.e)}</div><div class="cz" style="font-size:13px">${e.n}</div>
- <div class="hpbar"><i style="width:${e.hp/e.mhp*100}%"></i></div><div class="hptx">${e.hp}/${e.mhp} ${e.blk?`<span class="blk">🛡️${e.blk}</span>`:''}</div><div class="chips">${chips(e)}</div></div>`).join('');
+ ${hpbar(e)}<div class="hptx">${e.hp}/${e.mhp} ${e.blk?`<span class="blk">🛡️${e.blk}</span>`:''}</div><div class="chips">${chips(e)}</div></div>`).join('');
  const hn=c.hand.length;
  let nk=0;const hand=c.hand.map((x,i)=>{const d=cd(x);const rot=(i-(hn-1)/2)*3;const fresh=!c.seen.has(x.uid);if(fresh){c.seen.add(x.uid);}
   return `<div style="transform:rotate(${rot}deg)">${cardHTML(x,{click:`playCard(${i})`,attr:`data-hi="${i}"${fresh&&!window.FAST?` style="animation-delay:${(nk++)*90}ms"`:''}`,cls:(fresh&&!window.FAST?'drawin ':'')+(effCost(d)>c.energy?'dis ':'')+(c.pending===i?'sel':'')})}</div>`;}).join('');
  const pw=Object.entries(P.pw).filter(([k,v])=>v>0).map(([k,v])=>`<span class="chip" title="${PW[k]}">✨${PW[k]} ${v}</span>`).join('');
  fxSync();$('#screen').style.cssText='';$('#screen').innerHTML=`<div class="combat" style="${artBg(bgKey())}">${sceneHTML()}${c.sh&&c.sh.length?`<div class="tag" style="text-align:center;padding:4px">👥 Lutando junto com: ${c.sh.join(', ')}</div>`:''}<div class="field fpv"><div class="player fp" data-w="p">
- <div class="hpbar p"><i style="width:${P.hp/P.mhp*100}%"></i></div><div class="hptx">${P.hp}/${P.mhp} ${P.blk?`<span class="blk">🛡️${P.blk}</span>`:''}</div><div class="chips">${chips(P)}${pw}</div></div>
+ ${hpbar(P,'p')}<div class="hptx">${P.hp}/${P.mhp} ${P.blk?`<span class="blk">🛡️${P.blk}</span>`:''}</div><div class="chips">${chips(P)}${pw}</div></div>
  <div class="enemies">${en}</div></div>${armsHTML()}
  <div class="bottom"><div class="left"><div class="orb el-${G.k}" title="Energia">${c.energy}/3</div><div class="pile" onclick="viewPile('draw')">📚 Compra ${c.draw.length}</div></div>
  <div class="hand">${hand}</div>
@@ -1164,9 +1201,10 @@ function render(){const c=G.c,P=G.p;if(!c)return;
  updTop();
  G.fx.forEach(f=>{const el=document.querySelector(`[data-w="${f.w}"]`);if(!el)return;if(f.t){const s=document.createElement('div');s.className='fl '+f.c;s.textContent=f.t;juiceNum(s,f);el.appendChild(s);setTimeout(()=>s.remove(),1000);}
   if(f.c==='dmg'&&f.t){const fc=el.querySelector('.face');if(fc){fc.classList.add('shake');}}});
- armPos();juiceFx(G.fx,G.vfx);
+ armPos();hpGhost();juiceFx(G.fx,G.vfx);
  (G.vfx||[]).forEach(v=>{if(v.w==='p'){const m={lunge:'swing',shield:'guard',heal:'cast',power:'cast'}[v.k];if(m)armAct(m);}const el=document.querySelector(`[data-w="${v.w}"]`);if(!el)return;
   if(v.k==='lunge'||v.k==='elunge'){const f=el.querySelector('.face');if(f)f.classList.add(v.k==='lunge'?'lunge-r':'lunge-l');return;}
+  if(v.k==='claw'){const cb=document.querySelector('.combat');if(cb){const s=document.createElement('div');s.className='scrclaw';s.innerHTML='<i></i><i></i><i></i>';cb.appendChild(s);setTimeout(()=>s.remove(),700);}return;}
   const d=document.createElement('div');d.className='vfx v-'+v.k;el.appendChild(d);setTimeout(()=>d.remove(),800);});
  G.vfx=[];G.fx=[];}
 
@@ -1372,10 +1410,10 @@ function pvpRender(v){const P=OL.pv;P.prev=P.v;P.v=v;const me=v.me,op=v.op,pr=P.
  const pw=o=>Object.entries(o.pw).filter(([k,x])=>x>0).map(([k,x])=>`<span class="chip" title="${PW[k]}">✨${PW[k]} ${x}</span>`).join('');
  const hn=me.hand.length;const hand=me.hand.map((id,i)=>`<div style="transform:rotate(${(i-(hn-1)/2)*3}deg)">${cardHTML({id,u:false},{click:`pvpPlay(${i})`,attr:`data-hi="${i}"`,cls:(!v.mine||CARDS[id].cost>me.energy?'dis':'')})}</div>`).join('');
  $('#screen').style.cssText='';$('#screen').innerHTML=`<div class="combat" style="${artBg(bgKey())}"><div class="field"><div class="player" data-w="p"><div class="face">${artImg('hero_'+P.hero,CLS[P.hero].e)}</div>
- <div class="hpbar p"><i style="width:${me.hp/me.mhp*100}%"></i></div><div class="hptx">${me.hp}/${me.mhp} ${me.blk?`<span class="blk">🛡️${me.blk}</span>`:''}</div><div class="chips">${chips(me)}${pw(me)}</div></div>
+ ${hpbar(me,'p')}<div class="hptx">${me.hp}/${me.mhp} ${me.blk?`<span class="blk">🛡️${me.blk}</span>`:''}</div><div class="chips">${chips(me)}${pw(me)}</div></div>
  <div style="align-self:center;text-align:center;display:flex;flex-direction:column;gap:8px;align-items:center"><div class="intent">${v.mine?'Seu turno':'Turno do oponente'} · <span id="pvpT">⏱ ${v.left}s</span></div><p class="tag">Rodada ${v.round}</p>${v.last&&v.last.by==='op'?`<div style="transform:scale(.8)">${cardHTML({id:v.last.id,u:false},{cls:'noh'})}</div>`:''}</div>
  <div class="enemies"><div class="ent" data-w="o"><div class="intent">${P.op.name} · ⭐ ${P.op.elo}</div><div class="face">${artImg('hero_'+P.op.hero,CLS[P.op.hero].e)}</div>
- <div class="hpbar"><i style="width:${op.hp/op.mhp*100}%"></i></div><div class="hptx">${op.hp}/${op.mhp} ${op.blk?`<span class="blk">🛡️${op.blk}</span>`:''}</div><div class="chips">${chips(op)}${pw(op)}<span class="chip">🃏 ${op.handN}</span></div></div></div></div>
+ ${hpbar(op)}<div class="hptx">${op.hp}/${op.mhp} ${op.blk?`<span class="blk">🛡️${op.blk}</span>`:''}</div><div class="chips">${chips(op)}${pw(op)}<span class="chip">🃏 ${op.handN}</span></div></div></div></div>
  <div class="bottom"><div class="left"><div class="orb el-${G.k||'g'}" title="Energia">${me.energy}/3</div><div class="pile">📚 Compra ${me.drawN}</div></div><div class="hand">${hand}</div>
  <div class="right"><button class="btn" onclick="olSend({t:'endturn'})" ${v.mine?'':'disabled'}>Fim do Turno</button><div class="pile">🗑️ Descarte ${me.discN}</div><button class="btn sm" onclick="pvpGiveUp()">Desistir</button></div></div></div>`;
  const fx=(sel,d)=>{const el=document.querySelector(sel);if(!el||!d)return;const s=document.createElement('div');s.className='fl '+(d<0?'dmg':'heal');s.textContent=(d>0?'+':'')+d;el.appendChild(s);setTimeout(()=>s.remove(),1000);if(d<0){const f=el.querySelector('.face');if(f)f.classList.add('shake');}};
