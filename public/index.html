@@ -550,7 +550,7 @@ const SFX={hit:()=>{_noise(.12,1800,.12);_tone(160,60,.14,'triangle',.18)},big:(
  draw:()=>{_noise(.09,3500,.07,'bandpass')},play:()=>{_noise(.08,2500,.08,'bandpass');_tone(300,500,.08,'triangle',.05)},death:()=>{_tone(300,50,.5,'sawtooth',.12);_noise(.4,1000,.15)},
  turn:()=>{_tone(660,660,.15,'sine',.06);_tone(880,880,.25,'sine',.06,.1)},foe:()=>{_tone(220,180,.3,'sawtooth',.06);_tone(165,140,.3,'triangle',.06,.12)},
  win:()=>{[523,659,784,1047,1319].forEach((f,i)=>_tone(f,f,.28,'triangle',.08,i*.1))},lose:()=>{[392,330,262,196].forEach((f,i)=>_tone(f,f*.98,.4,'sawtooth',.07,i*.18))},coin:()=>{_tone(1200,1600,.12,'square',.05);_tone(1800,2200,.15,'square',.04,.07)}};
-function sfx(n){if(MUTE||window.FAST)return;try{SFX[n]&&SFX[n]();}catch(e){}}
+function sfx(n){if(MUTE||window.FAST)return;try{if((n==='win'||n==='lose')&&ORC.sting(n==='win'?'vitoria':'derrota'))return;SFX[n]&&SFX[n]();}catch(e){}}
 function vib(ms){try{if(!window.FAST&&navigator.vibrate&&matchMedia('(hover:none)').matches)navigator.vibrate(ms);}catch(e){}}
 function burst(el,col,n,spread){if(RM||window.FAST||!el)return;const r=el.getBoundingClientRect();for(let i=0;i<n;i++){const p=document.createElement('i');p.className='pt';const a=Math.random()*6.283,d=(spread||40)+Math.random()*(spread||40)*1.6;p.style.cssText=`left:${r.left+r.width/2}px;top:${r.top+r.height*.45}px;background:${col};color:${col}`;document.body.appendChild(p);p.animate([{transform:'translate(0,0) scale(1)',opacity:1},{transform:`translate(${Math.cos(a)*d}px,${Math.sin(a)*d+24}px) scale(.2)`,opacity:0}],{duration:420+Math.random()*280,easing:'cubic-bezier(.2,.8,.3,1)'}).onfinish=()=>p.remove();}}
 function shakeScr(a){if(RM||window.FAST)return;const cb=document.querySelector('.combat');if(!cb)return;const k=a*4;cb.animate([{transform:'translate(0,0)'},{transform:`translate(${-k}px,${k/2}px)`},{transform:`translate(${k}px,${-k/2}px)`},{transform:`translate(${-k/2}px,${k/3}px)`},{transform:'translate(0,0)'}],{duration:280});}
@@ -1059,7 +1059,7 @@ function pjDelAsk(id){const c=PJ.load().list.find(x=>x.id===id);if(!c)return;mod
 function pjDel(id){const o=PJ.load();o.list=o.list.filter(c=>c.id!==id);if(o.sel===id)o.sel=o.list[0]?o.list[0].id:null;PJ.save(o);if(OL.ws&&OL.me)olSend({t:'chardel',id});closeModal();pjMenu();}
 
 /* ===================== UI BASE ===================== */
-function show(h,bg){fxSync();try{MUS.set(G?'map':'menu',G?CH[G.ch].el:'terra');}catch(e){}const sc=$('#screen');sc.innerHTML=h;sc.style.cssText=bg?artBg(bg):'';updTop();}
+let MOOD='';function show(h,bg){fxSync();try{MUS.set(G?(MOOD||'map'):'menu',G?CH[G.ch].el:'terra');}catch(e){}MOOD='';const sc=$('#screen');sc.innerHTML=h;sc.style.cssText=bg?artBg(bg):'';updTop();}
 function updTop(){if(G&&G.mp)mpProgress();if(!G){$('#top').innerHTML='<h3>🏯 Masmorra dos Ecos</h3>';return;}
  $('#top').innerHTML=`<b class="cz">${G.tut?'🎓 Aprendiz':CLS[G.k].e+' '+CLS[G.k].n}</b><span>❤️ ${G.p.hp}/${G.p.mhp}</span><span>🪙 ${G.gold}</span><span>📍 Cap. ${G.ch+1} · Episódio ${Math.min(G.room+1,CH[G.ch].len)}/${CH[G.ch].len}</span>
  ${evoBadge()}<span>${G.relics.map(r=>`<span class="relic" title="${REL[r].n}: ${REL[r].d}">${REL[r].e}</span>`).join(' ')}</span><span class="sp"></span>
@@ -1198,13 +1198,41 @@ MUS.sched=function(step,t){const P=MUS.P,a=AC,bar=Math.floor(step/8)%4,s=step%8,
  else if(Math.random()<.55){const n=sc[Math.floor(Math.random()*sc.length)]+12*(1+Math.floor(Math.random()*2));MUS.voice('square',mf(P.r+12+n),t,e8*.8,.03,.005,null,true);}};
 MUS.tick=function(){if(!MUS.P||!AC)return;const e8=60/MUS.P.bpm/2;while(MUS.next<AC.currentTime+.3){MUS.sched(MUS.step,MUS.next);MUS.next+=e8;MUS.step++;}};
 MUS.stop=function(){if(MUS.timer){clearInterval(MUS.timer);MUS.timer=null;}if(MUS.bus&&AC){const b=MUS.bus;b.gain.cancelScheduledValues(AC.currentTime);b.gain.setTargetAtTime(0,AC.currentTime,.12);setTimeout(()=>{try{b.disconnect();}catch(e){}},900);MUS.bus=null;}MUS.k='';};
-MUS.set=function(mode,key){if(window.FAST||MUTE||!MUS.on){if(MUS.timer)MUS.stop();MUS.want=[mode,key];return;}MUS.want=[mode,key];const kk=mode+':'+key;if(kk===MUS.k&&MUS.timer)return;
+MUS.setChip=function(mode,key){if(window.FAST||MUTE||!MUS.on){if(MUS.timer)MUS.stop();MUS.want=[mode,key];return;}MUS.want=[mode,key];const kk=mode+':'+key;if(kk===MUS.k&&MUS.timer)return;
  let base;if(mode==='boss')base=MB[key]||MB.boss;else base=MT[key]||MT.terra;
  const P=Object.assign({},base,{mode});if(mode==='combat'){P.bpm=base.bpm+22;P.kick=[0,4];P.sn=[4];P.hat=2;P.mo=null;}
  try{MUS.init();}catch(e){return;}
  if(MUS.bus){const b=MUS.bus;b.gain.setTargetAtTime(0,AC.currentTime,.1);setTimeout(()=>{try{b.disconnect();}catch(e){}},700);}
  MUS.bus=AC.createGain();MUS.bus.gain.value=.0001;MUS.bus.connect(MUS.master);MUS.bus.gain.setTargetAtTime(1,AC.currentTime+.05,.25);
  MUS.P=P;MUS.k=kk;MUS.step=0;MUS.next=AC.currentTime+.12;if(!MUS.timer)MUS.timer=setInterval(MUS.tick,70);MUS.tick();};
+/* ===== TRILHA ORQUESTRAL: arquivos mp3 em /music (piano, violinos, trompetes, clarinetes, clarone e acordeão); se não carregarem, volta a música sintetizada ===== */
+const ORC={v:'1',cur:null,pend:'',raw:{},fail:false,tok:0,master:null};
+const ORCD={menu:[101.053,25.263],mapa:[77.143,12.857],combate:[69.565,13.913],chefe:[66.667,13.333],descanso:[87.273,29.091]};
+ORC.track=function(mode){return {menu:'menu',map:'mapa',rest:'descanso',combat:'combate',boss:'chefe'}[mode]||null;};
+ORC.fetch=function(n){if(ORC.raw[n])return ORC.raw[n];return ORC.raw[n]=fetch('/music/'+n+'.mp3?v='+ORC.v).then(r=>{if(!r.ok)throw new Error(r.status);return r.arrayBuffer();}).catch(e=>{delete ORC.raw[n];throw e;});};
+ORC.decode=function(n){const a=_ac();return ORC.fetch(n).then(ab=>new Promise((res,rej)=>{const p=a.decodeAudioData(ab.slice(0),res,rej);if(p&&p.catch)p.catch(rej);}));};
+ORC.init=function(){const a=_ac();if(ORC.master)return;ORC.master=a.createGain();ORC.master.gain.value=.8;ORC.master.connect(a.destination);};
+ORC.fade=function(t){const T=ORC.cur;if(!T)return;ORC.cur=null;T.dead=true;clearInterval(T.timer);const a=AC;T.g.gain.cancelScheduledValues(a.currentTime);T.g.gain.setValueAtTime(T.g.gain.value,a.currentTime);T.g.gain.linearRampToValueAtTime(0,a.currentTime+t);
+ setTimeout(()=>{T.srcs.forEach(s=>{try{s.stop();}catch(e){}});try{T.g.disconnect();}catch(e){}T.buf=null;},t*1000+200);};
+ORC.stop=function(){ORC.tok++;ORC.pend='';ORC.fade(.5);};
+ORC.begin=function(n,buf){const a=AC;ORC.fade(1.2);const D=ORCD[n][0],L=ORCD[n][1],X=.25,T={n,g:a.createGain(),dead:false,srcs:[],timer:null,buf};
+ T.g.gain.setValueAtTime(.0001,a.currentTime);T.g.gain.linearRampToValueAtTime(1,a.currentTime+1.2);T.g.connect(ORC.master);ORC.cur=T;
+ const mk=(when,off,fin)=>{const s=a.createBufferSource(),g=a.createGain();s.buffer=buf;s.connect(g);g.connect(T.g);const end=when+(D-off);
+  if(fin){g.gain.setValueAtTime(0,when);g.gain.linearRampToValueAtTime(1,when+X);}g.gain.setValueAtTime(1,end-X);g.gain.linearRampToValueAtTime(0,end);
+  s.start(when,off);s.stop(end+.1);T.srcs.push(s);s.onended=()=>{const i=T.srcs.indexOf(s);if(i>=0)T.srcs.splice(i,1);};return end;};
+ let end=mk(a.currentTime+.05,0,false);
+ T.timer=setInterval(()=>{if(T.dead)return;if(end-AC.currentTime<2)end=mk(end-X,L-X,true);},500);};
+ORC.play=function(n,fb){const a=_ac();ORC.init();try{if(a.state==='suspended')a.resume();}catch(e){}
+ if(ORC.cur&&ORC.cur.n===n&&!ORC.cur.dead)return;if(ORC.pend===n)return;ORC.pend=n;const tok=++ORC.tok;
+ ORC.decode(n).then(buf=>{if(tok!==ORC.tok)return;ORC.pend='';ORC.begin(n,buf);ORC.warm();}).catch(e=>{if(tok!==ORC.tok)return;ORC.pend='';ORC.fail=true;if(fb)fb();});};
+ORC.warm=function(){if(ORC.warmed)return;ORC.warmed=1;try{if(navigator.connection&&navigator.connection.saveData)return;}catch(e){}
+ const q=['vitoria','derrota','mapa','combate','chefe','descanso','menu'];(function nx(){const n=q.shift();if(!n)return;ORC.fetch(n).catch(()=>{}).then(()=>setTimeout(nx,1500));})();};
+ORC.sting=function(n){if(window.FAST||MUTE||!MUS.on||!ORC.master||ORC.fail||!ORC.cur)return false;if(!ORC.raw[n]){ORC.fetch(n).catch(()=>{});return false;}const a=AC;
+ ORC.decode(n).then(buf=>{const s=a.createBufferSource(),g=a.createGain();g.gain.value=1;s.buffer=buf;s.connect(g);g.connect(a.destination);const m=ORC.master.gain,t=a.currentTime;m.cancelScheduledValues(t);m.setTargetAtTime(.22,t,.12);
+  setTimeout(()=>{try{m.setTargetAtTime(.8,AC.currentTime,.8);}catch(e){}},Math.max(1000,(buf.duration-1.2)*1000));s.start();}).catch(()=>{});return true;};
+MUS.set=function(mode,key){if(window.FAST||MUTE||!MUS.on){ORC.stop();return MUS.setChip(mode,key);}MUS.want=[mode,key];const tn=ORC.track(mode);
+ if(tn&&!ORC.fail){if(MUS.timer)MUS.stop();ORC.play(tn,()=>MUS.setChip(mode,key));return;}ORC.stop();return MUS.setChip(mode,key);};
+{const _ms=MUS.stop;MUS.stop=function(){try{ORC.stop();}catch(e){}_ms();};}
 MUS.sync=function(){if(MUTE||!MUS.on)MUS.stop();else if(MUS.want)MUS.set(MUS.want[0],MUS.want[1]);};
 document.addEventListener('visibilitychange',()=>{if(document.hidden){if(MUS.timer){clearInterval(MUS.timer);MUS.timer=null;}try{AC&&AC.suspend();}catch(e){}}else{try{AC&&AC.resume();}catch(e){}if(MUS.P&&!MUS.timer&&MUS.on&&!MUTE){MUS.next=AC.currentTime+.1;MUS.timer=setInterval(MUS.tick,70);}}});
 addEventListener('pointerdown',()=>{if(MUS.want&&!MUS.timer&&MUS.on&&!MUTE&&!window.FAST)MUS.set(MUS.want[0],MUS.want[1]);},{passive:true});
@@ -1364,7 +1392,7 @@ const EVENTS=[
   {l:"🃏 Entregar uma carta: +80 de ouro",ok:()=>G.deck.length>8,f:d=>evPick("Entregar qual carta?",G.deck.map((c,i)=>i),i=>{G.deck.splice(i,1);G.gold+=80;d({t:"A estátua engole a carta e cospe moedas."});})},
   {l:"🙏 Rezar: 50% de +12 ❤️ máx., 50% de −12 ❤️",ok:()=>G.p.hp>12,f:d=>{if(rand()<.5){G.p.mhp+=12;G.p.hp+=12;d({t:"Os olhos da estátua brilham em aprovação."});}else{EVHP(-12);d({t:"A estátua se fecha com um estrondo, e você sente o golpe."});}}},EV_LEAVE]}
 ];
-function showEvent(){const seen=G.evSeen||(G.evSeen=[]);let pool=EVENTS.filter(e=>!seen.includes(e.id));if(!pool.length){seen.length=0;pool=EVENTS.slice();}
+function showEvent(){MOOD='rest';const seen=G.evSeen||(G.evSeen=[]);let pool=EVENTS.filter(e=>!seen.includes(e.id));if(!pool.length){seen.length=0;pool=EVENTS.slice();}
  const E=pick(pool);seen.push(E.id);G.ev={E,res:null};renderEvent();}
 function renderEvent(){const V=G.ev,E=V.E;
  if(V.res){show(`<div class="center"><h2>${E.e} ${E.t}</h2><p style="max-width:480px">${V.res.t}</p>${V.res.h||''}<button class="btn gold" onclick="leaveRoom()">Continuar ➜</button></div>`,'bg_map');return;}
@@ -1408,7 +1436,7 @@ function doUp(i){G.deck[i].u=true;closeModal();snd(700,.2,'triangle');window._up
 function genShop(){const pool=Object.values(CARDS).filter(c=>c.cls===G.k&&c.rar!=='s'&&evOK(c));const want=['c','c','u','u','r'];const used=new Set();const items=[];
  want.forEach(r=>{const l=pool.filter(c=>c.rar===r&&!used.has(c.id));if(!l.length)return;const c=pick(l);used.add(c.id);items.push({id:c.id,price:Math.round(({c:45,u:75,r:150}[r]+rnd(11))*(has('coin')?.8:1)),sold:false});});
  const rl=Object.keys(REL).filter(r=>!has(r));return {items,relic:rl.length?pick(rl):null,relicPrice:Math.round(140*(has('coin')?.8:1)),rsold:false};}
-function showShop(){if(!G.shop)G.shop=genShop();const S=G.shop;const rm=75+25*G.removed;
+function showShop(){MOOD='rest';if(!G.shop)G.shop=genShop();const S=G.shop;const rm=75+25*G.removed;
  show(`<div class="center"><h2>🛒 ${G.shopMode==='boss'?'Mercador do Fim do Capítulo':'Mercador Errante'}</h2><div class="art-wrap">${artImg('shop_'+CH[G.ch].el,'🏪','big-art')}</div><p>🪙 ${G.gold}</p><div class="row">${S.items.map((it,i)=>it.sold?'':`<div>${cardHTML({id:it.id,u:false},{click:`buy(${i})`,price:it.price})}</div>`).join('')}</div>
  <div class="row">${S.relic&&!S.rsold?`<button class="btn gold" onclick="buyRelic()">${REL[S.relic].e} ${REL[S.relic].n} — ${REL[S.relic].d} (🪙${S.relicPrice})</button>`:''}
  <button class="btn gold" onclick="removeCard()">🗑️ Remover uma carta (🪙${rm})</button>
@@ -1683,7 +1711,7 @@ function showReward(){const R=G.rw;
  ${R.picked?'':`<h3>Escolha uma carta</h3><div class="row">${R.cards.map(id=>cardHTML({id,u:false},{click:`pickCard('${id}')`})).join('')}</div><button class="btn" onclick="G.rw.picked=true;showReward()">Pular</button>`}
  <button class="btn" onclick="afterReward()">Continuar ➜</button></div>`);}
 function afterReward(){if(G.rw.boss){if(G.ch>=CH.length-1){saveBest(true);return victory();}saveBest(false);return evoStep(showFountain);}nextRoom();}
-function showFountain(){const el=CH[G.ch].el,key=ART['fonte_'+el]?'fonte_'+el:'fonte_agua',tint=ART['fonte_'+el]?'':'filter:hue-rotate(80deg) brightness(.6) saturate(1.3);';
+function showFountain(){MOOD='rest';const el=CH[G.ch].el,key=ART['fonte_'+el]?'fonte_'+el:'fonte_agua',tint=ART['fonte_'+el]?'':'filter:hue-rotate(80deg) brightness(.6) saturate(1.3);';
  show(`<div class="center"><h2>⛲ Fonte de Cura</h2><div class="art-wrap">${artImg(key,'⛲','big-art')}</div><p>Beba para recuperar toda a vida e ganhar +8 HP máximo.</p><button class="btn gold" onclick="drinkFountain()">Beber da fonte</button></div>`,'bg_map');
  if(tint){const im=document.querySelector('#screen .big-art');if(im)im.style.cssText=tint;}}
 function drinkFountain(){G.p.mhp+=8;G.p.hp=G.p.mhp;snd(660,.3,'sine');G.shop=null;G.shopMode='boss';showShop();}

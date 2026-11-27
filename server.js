@@ -127,6 +127,11 @@ const server=http.createServer((req,res)=>{
  if(req.url==='/health'){res.end('ok');return;}
  if(req.url==='/manifest.webmanifest'){res.writeHead(200,{'Content-Type':'application/manifest+json','Cache-Control':'public, max-age=3600'});res.end(MANIFEST);return;}
  if(req.url==='/icon-192.png'||req.url==='/icon-512.png'){const f=path.join(__dirname,'public',req.url.slice(1));if(!fs.existsSync(f)){res.writeHead(404);res.end();return;}res.writeHead(200,{'Content-Type':'image/png','Cache-Control':'public, max-age=86400'});fs.createReadStream(f).pipe(res);return;}
+ {const mm=/^\/music\/([a-z]+)\.mp3(\?.*)?$/.exec(req.url);if(mm){const f=path.join(__dirname,'public','music',mm[1]+'.mp3');if(!fs.existsSync(f)){res.writeHead(404);res.end();return;}
+  const sz=fs.statSync(f).size,h={'Content-Type':'audio/mpeg','Accept-Ranges':'bytes','Cache-Control':'public, max-age=604800'},rg=/^bytes=(\d*)-(\d*)$/.exec(String(req.headers.range||''));
+  if(rg){let a=rg[1]===''?sz-Number(rg[2]):Number(rg[1]),b=rg[1]===''||rg[2]===''?sz-1:Math.min(Number(rg[2]),sz-1);if(!(a>=0&&a<=b)){res.writeHead(416,{'Content-Range':'bytes */'+sz});res.end();return;}
+   res.writeHead(206,{...h,'Content-Range':`bytes ${a}-${b}/${sz}`,'Content-Length':b-a+1});fs.createReadStream(f,{start:a,end:b}).pipe(res);return;}
+  res.writeHead(200,{...h,'Content-Length':sz});fs.createReadStream(f).pipe(res);return;}}
  if(req.url==='/'||req.url.startsWith('/?')||req.url==='/index.html'){
   const I=loadIdx();if(!I){res.writeHead(404);res.end('index.html não encontrado');return;}
   const h={'Content-Type':'text/html; charset=utf-8','ETag':I.etag,'Cache-Control':'no-cache','Vary':'Accept-Encoding'};
