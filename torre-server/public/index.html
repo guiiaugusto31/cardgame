@@ -508,6 +508,13 @@ body .fpv .ent.fly .face::after{bottom:-48px;transform:scale(.8)}
 
 /* Paladino: tag Sagrado */
 .card .ty i.holy{font-style:normal;color:#ffe9a8;text-shadow:0 0 6px #ffd24a,0 0 2px #fff}
+/* monstros pisando no chao: sombra de contato em vez de bolha escura */
+body .fpv .ent .face{filter:none}
+body .fpv .ent .face:not(:has(img)){filter:drop-shadow(0 3px 3px #000a)}
+body .fpv .ent .art-img{filter:drop-shadow(0 1px 2px #000b);margin-bottom:-7px;position:relative;z-index:1}
+body .fpv .ent:not(.fly) .face::after{left:12%;right:12%;bottom:-6px;height:20px;background:radial-gradient(ellipse at 50% 50%,#000f 0,#000d 35%,#0006 62%,transparent 80%);filter:blur(2px);z-index:0}
+body .fpv .ent.fly .face::after{background:radial-gradient(ellipse,#000b 0,#0005 45%,transparent 72%);filter:blur(3px);z-index:0}
+body .fpv .ent.boss:not(.fly) .face::after{left:14%;right:14%;height:20px}
 </style>
 </head>
 <body>
