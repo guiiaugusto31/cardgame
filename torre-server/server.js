@@ -173,6 +173,7 @@ wss.on('connection',ws=>{
    send(ws,{t:'cjoined',ids:E.ids,kind:E.kind,hp:E.hp,mhp:E.mhp,mates});
    E.mem.forEach(x=>{if(x!==c.id){const o=r.members.get(x);if(o)send(o.ws,{t:'cmate',name:me.name,on:true});}});return;}
   if(m.t==='cinit'&&me.enc){const E=r.enc.get(me.enc);if(E&&!E.hp&&Array.isArray(m.hp)){E.hp=m.hp.map(x=>Math.max(0,x|0));E.mhp=(m.mhp||m.hp).map(x=>Math.max(1,x|0));E.pend.forEach(x=>{const o=r.members.get(x);if(o)send(o.ws,{t:'csync',hp:E.hp,mhp:E.mhp});});E.pend.clear();}return;}
+  if(m.t==='cblk'&&me.enc){const E=r.enc.get(me.enc);if(!E||E.done)return;const a=Math.max(0,Math.min(60,m.a|0));if(!a)return;E.mem.forEach(x=>{if(x!==c.id){const o=r.members.get(x);if(o)send(o.ws,{t:'cblk',a,from:me.name});}});return;}
   if(m.t==='cdmg'&&me.enc&&Array.isArray(m.d)){const E=r.enc.get(me.enc);if(!E||E.done)return;const d=m.d.slice(0,8).map(x=>Math.max(0,Math.min(250,x|0)));
    if(E.hp)E.hp=E.hp.map((h,i)=>Math.max(0,h-(d[i]||0)));const ar=a=>Array.isArray(a)?a.map(x=>Math.max(0,Math.min(20,x|0))):[];const v=ar(m.v),w=ar(m.w);E.mem.forEach(x=>{if(x!==c.id){const o=r.members.get(x);if(o)send(o.ws,{t:'cdmg',d,v,w,from:me.name});}});
    if(E.hp&&E.hp.every(h=>h<=0))E.done=true;return;}

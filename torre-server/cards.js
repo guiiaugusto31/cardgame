@@ -5,16 +5,26 @@ def('g_strike','Golpe',1,'atk','s','g',{dmg:6,art:'🗡️'},{dmg:9});
 def('g_def','Defender',1,'skill','s','g',{blk:5,art:'🛡️'},{blk:8});
 def('g_bash','Esmagar',2,'atk','s','g',{dmg:8,vuln:2,art:'🔨'},{dmg:10,vuln:3});
 def('g_twin','Golpe Duplo',1,'atk','c','g',{dmg:5,hits:2,art:'⚔️'},{dmg:7});
-def('g_firm','Postura Firme',1,'skill','c','g',{blk:6,draw:1,art:'🧱'},{blk:8});
+def('g_firm','Postura Firme',1,'skill','c','g',{blk:6,retain:true,art:'🧱'},{blk:9});
 def('g_cleave','Varredura',1,'atk','c','g',{dmg:8,aoe:true,art:'🌀'},{dmg:11});
-def('g_fist','Punho de Ferro',1,'atk','c','g',{dmg:9,draw:1,art:'👊'},{dmg:10,draw:2});
-def('g_blood','Sangue Quente',0,'skill','c','g',{nrg:2,selfdmg:3,art:'🩸'},{nrg:3});
+def('g_fist','Punho de Ferro',1,'atk','c','g',{dmg:7,strip:true,art:'👊'},{dmg:10});
+def('g_blood','Bênção Protetora',0,'skill','c','g',{gblk:4,holy:true,art:'✨'},{gblk:6});
 def('g_slam','Golpe de Escudo',1,'atk','u','g',{bodyslam:true,art:'🛡️'},{cost:0});
-def('g_roar','Rugido',1,'skill','u','g',{weak:2,aoe:true,art:'🦁'},{weak:3});
-def('g_heavy','Machadada',2,'atk','u','g',{dmg:15,art:'🪓'},{dmg:19});
+def('g_roar','Rugido',1,'skill','u','g',{weak:2,aoe:true,gblk:3,holy:true,art:'🦁'},{weak:3,gblk:4});
+def('g_heavy','Machadada',2,'atk','u','g',{dmg:12,strip:true,stripdmg:true,art:'🪓'},{dmg:16});
 def('g_plate','Armadura Viva',1,'power','u','g',{power:'plated',amt:2,art:'⚙️'},{amt:3});
-def('g_oath','Juramento de Sangue',2,'power','r','g',{power:'ritual',amt:2,art:'📜'},{cost:1});
-def('g_fort','Bastião',2,'skill','r','g',{blk:24,exhaust:true,art:'🏰'},{blk:32});
+def('g_oath','Juramento do Escudo',2,'power','r','g',{power:'keep',amt:1,art:'📜'},{cost:1});
+def('g_fort','Bastião',2,'skill','r','g',{gblk:18,retain:true,exhaust:true,holy:true,art:'🏰'},{gblk:24});
+def('g_pal_conv','Converter Armadura',1,'atk','u','g',{bodyslam:true,bmul:1.5,spend:true,art:'⚔️'},{bmul:2});
+def('g_pal_cabeca','Cabeçada de Escudo',1,'atk','c','g',{bodyslam:true,bmul:.5,dmg:4,art:'🪖'},{dmg:6});
+def('g_pal_quebra','Quebra-Escudo',1,'atk','c','g',{dmg:5,aoe:true,strip:true,art:'💥'},{dmg:7});
+def('g_pal_muralha','Muralha Compartilhada',2,'skill','u','g',{gblk:12,holy:true,art:'🧱'},{gblk:16});
+def('g_pal_luz','Luz Redentora',1,'skill','u','g',{gblk:5,heal:3,holy:true,art:'🌟'},{gblk:7,heal:4});
+def('g_pal_vigil','Vigília',1,'skill','c','g',{blk:8,retain:true,art:'🕯️'},{blk:11});
+def('g_pal_martir','Golpe do Mártir',1,'atk','u','g',{dmg:12,sac:.2,holy:true,art:'⚜️'},{dmg:16});
+def('g_pal_juizo','Juízo Sagrado',2,'atk','r','g',{bodyslam:true,bmul:1,dmg:10,sac:.2,holy:true,art:'⚖️'},{dmg:14});
+def('g_pal_cruzada','Cruzada',3,'atk','r','g',{bodyslam:true,bmul:1,spend:true,aoe:true,strip:true,holy:true,art:'🏹'},{cost:2});
+def('g_pal_aureola','Auréola',1,'power','r','g',{power:'halo',amt:4,holy:true,art:'😇'},{amt:6});
 def('g_steel','Tempestade de Aço',2,'atk','r','g',{dmg:5,hits:4,art:'🌪️'},{hits:5});
 def('m_spark','Faísca',1,'atk','s','m',{dmg:6,art:'⚡'},{dmg:9});
 def('m_ward','Barreira',1,'skill','s','m',{blk:5,art:'🔰'},{blk:8});
@@ -127,7 +137,7 @@ def('tr_mal_praga','Praga',1,'skill','u','tr',{vuln:2,weak:2,ev:'maldito',art:'�
 def('tr_mal_ceifa','Foice Maldita',2,'atk','u','tr',{dmg:12,hits:2,vuln:1,ev:'maldito',art:'🪓'},{dmg:16});
 def('tr_sig_mal','Fim dos Tempos',3,'atk','r','tr',{dmg:20,aoe:true,vuln:3,weak:3,exhaust:true,ev:'sig',art:'⏳'},{dmg:28});
 const CLS={
- g:{n:'Guardião',e:'🛡️',hp:80,v:'Terra',d:'Resistente e brutal. Escudo, Força e golpes pesados.',deck:['g_strike','g_strike','g_strike','g_strike','g_strike','g_def','g_def','g_def','g_def','g_bash']},
+ g:{n:'Paladino',e:'🛡️',hp:80,v:'Neutro · Sagrado',d:'Armadura: o Escudo vira dano, pode ser retido e protege aliados. Sacrifique vida para golpear mais forte.',deck:['g_strike','g_strike','g_strike','g_strike','g_def','g_def','g_def','g_def','g_bash','g_firm']},
  m:{n:'Mago Arcano',e:'🔮',hp:65,v:'Ar',d:'Frágil, mas rápido. Compra de cartas, energia e dano em área.',deck:['m_spark','m_spark','m_spark','m_spark','m_ward','m_ward','m_ward','m_ward','m_focus','m_ice']},
  fo:{n:'Arauto da Guerra',e:'🔥',hp:78,v:'Fogo',d:'Agressão e sacrifício: gasta vida para golpear mais forte.',deck:['fo_strike', 'fo_strike', 'fo_strike', 'fo_strike', 'fo_def', 'fo_def', 'fo_def', 'fo_def', 'fo_charge', 'fo_blood']},
  ag:{n:'Sacerdote das Marés',e:'💧',hp:84,v:'Água',d:'Cura e fluxo: resiste ao longo do tempo e mantém o ritmo.',deck:['ag_strike', 'ag_strike', 'ag_strike', 'ag_strike', 'ag_def', 'ag_def', 'ag_def', 'ag_def', 'ag_spring', 'ag_spring']},
