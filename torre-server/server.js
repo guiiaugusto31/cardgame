@@ -115,12 +115,25 @@ function hello(ws,msg){let tok=msg.token;let p=tok&&DB.players[tok];
  const taken=Object.entries(DB.players).some(([k,v])=>k!==tok&&v.name===name);if(taken)name=name+'#'+(1000+rnd(9000));
  p.name=name;touch();return {tok,p};}
 
+const zlib=require('zlib');
+let IDX=null;
+function loadIdx(){const f=[path.join(__dirname,'public','index.html'),path.join(__dirname,'..','torre','index.html')].find(x=>fs.existsSync(x));if(!f)return null;
+ const st=fs.statSync(f);if(IDX&&IDX.f===f&&IDX.m===st.mtimeMs)return IDX;
+ const raw=fs.readFileSync(f);const etag='"'+crypto.createHash('sha1').update(raw).digest('hex').slice(0,16)+'"';
+ IDX={f,m:st.mtimeMs,raw,etag,gz:zlib.gzipSync(raw,{level:6}),br:null};
+ const me=IDX;zlib.brotliCompress(raw,{params:{[zlib.constants.BROTLI_PARAM_QUALITY]:5,[zlib.constants.BROTLI_PARAM_SIZE_HINT]:raw.length}},(e,b)=>{if(!e)me.br=b;});return IDX;}
+const MANIFEST=JSON.stringify({name:'Masmorra dos Ecos',short_name:'Masmorra',start_url:'/',display:'fullscreen',orientation:'any',background_color:'#07090f',theme_color:'#0a0c16',icons:[{src:'/icon-192.png',sizes:'192x192',type:'image/png'},{src:'/icon-512.png',sizes:'512x512',type:'image/png'}]});
 const server=http.createServer((req,res)=>{
  if(req.url==='/health'){res.end('ok');return;}
+ if(req.url==='/manifest.webmanifest'){res.writeHead(200,{'Content-Type':'application/manifest+json','Cache-Control':'public, max-age=3600'});res.end(MANIFEST);return;}
+ if(req.url==='/icon-192.png'||req.url==='/icon-512.png'){const f=path.join(__dirname,'public',req.url.slice(1));if(!fs.existsSync(f)){res.writeHead(404);res.end();return;}res.writeHead(200,{'Content-Type':'image/png','Cache-Control':'public, max-age=86400'});fs.createReadStream(f).pipe(res);return;}
  if(req.url==='/'||req.url.startsWith('/?')||req.url==='/index.html'){
-  const f=[path.join(__dirname,'public','index.html'),path.join(__dirname,'..','torre','index.html')].find(x=>fs.existsSync(x));
-  if(!f){res.writeHead(404);res.end('index.html não encontrado');return;}
-  res.writeHead(200,{'Content-Type':'text/html; charset=utf-8'});fs.createReadStream(f).pipe(res);return;}
+  const I=loadIdx();if(!I){res.writeHead(404);res.end('index.html não encontrado');return;}
+  const h={'Content-Type':'text/html; charset=utf-8','ETag':I.etag,'Cache-Control':'no-cache','Vary':'Accept-Encoding'};
+  if(req.headers['if-none-match']===I.etag){res.writeHead(304,h);res.end();return;}
+  const ae=String(req.headers['accept-encoding']||'');let body=I.raw;
+  if(/\bbr\b/.test(ae)&&I.br){h['Content-Encoding']='br';body=I.br;}else if(/\bgzip\b/.test(ae)){h['Content-Encoding']='gzip';body=I.gz;}
+  h['Content-Length']=body.length;res.writeHead(200,h);res.end(body);return;}
  res.writeHead(404);res.end('not found');});
 const wss=new WebSocketServer({server,maxPayload:16*1024});
 
